@@ -8,63 +8,64 @@ import * as styles from "../components/index.module.css"
 
 const links = [
   {
-    text: "Tutorial",
-    url: "https://www.gatsbyjs.com/docs/tutorial",
+    text: "dotnet dodo",
+    url: "/dodo",
     description:
-      "A great place to get started if you're new to web development. Designed to guide you through setting up your first Gatsby site.",
+    "A simple training platform that helps users understand building a system using algorithms in dotnet.",
   },
   {
-    text: "Examples",
-    url: "https://github.com/gatsbyjs/gatsby/tree/master/examples",
+    text: "tipout",
+    url: "/tipout",
     description:
-      "A collection of websites ranging from very basic to complex/complete that illustrate how to accomplish specific tasks within your Gatsby sites.",
+      "A simple, visual and intuitive approach to personal finance. Built for the service industry.",
   },
   {
-    text: "Plugin Library",
-    url: "https://www.gatsbyjs.com/plugins",
+    text: "digital by jason",
+    url: "/digitalbyjason",
     description:
-      "Learn how to add functionality and customize your Gatsby site or app with thousands of plugins built by our amazing developer community.",
+      "Presentations, Data Visualization and Information Design.",
   },
   {
-    text: "Build and Host",
-    url: "https://www.gatsbyjs.com/cloud",
+    text: "csdodo",
+    url: "/csdodo",
     description:
-      "Now you’re ready to show the world! Give your Gatsby site superpowers: Build and host on Gatsby Cloud. Get started for free!",
+      "Helping universities create clear online content and curriculum for advanced cs topics.",
   },
 ]
-
 const samplePageLinks = [
   {
-    text: "Page 2",
-    url: "page-2",
+    text: "About",
+    url: "/about",
     badge: false,
     description:
-      "A simple example of linking to another page within a Gatsby site",
+      "About our business",
   },
-  { text: "TypeScript", url: "using-typescript" },
-  { text: "Server Side Rendering", url: "using-ssr" },
-  { text: "Deferred Static Generation", url: "using-dsg" },
+  { text: "Contact", 
+    url: "/contact" },
+  { text: "Ventures", 
+    url: "/ventures" },
+  { text: "Consulting", 
+    url: "/consulting" },
 ]
 
+
 const moreLinks = [
-  { text: "Join us on Discord", url: "https://gatsby.dev/discord" },
+  { text: "About", 
+    url: "/about" },
   {
-    text: "Documentation",
-    url: "https://gatsbyjs.com/docs/",
+    text: "Ventures",
+    url: "/ventures",
   },
   {
-    text: "Starters",
-    url: "https://gatsbyjs.com/starters/",
+    text: "Consulting",
+    url: "/consulting",
   },
   {
-    text: "Showcase",
-    url: "https://gatsbyjs.com/showcase/",
+    text: "Blog",
+    url: "https://blog.felixaugust.com/",
   },
-  {
-    text: "Contributing",
-    url: "https://www.gatsbyjs.com/contributing/",
-  },
-  { text: "Issues", url: "https://github.com/gatsbyjs/gatsby/issues" },
+
+
 ]
 
 const utmParameters = `?utm_source=starter&utm_medium=start-page&utm_campaign=default-starter`
@@ -74,7 +75,7 @@ const IndexPage = () => (
     <Seo title="Home" />
     <div className={styles.textCenter}>
       <StaticImage
-        src="../images/example.png"
+        src="../images/rubik_3D.png"
         loading="eager"
         width={64}
         quality={95}
@@ -83,10 +84,11 @@ const IndexPage = () => (
         style={{ marginBottom: `var(--space-3)` }}
       />
       <h1>
-        Welcome to <b>Gatsby!</b>
+        <b>felix/august</b>
       </h1>
+      <h6>Data. Decisions. Design.</h6>
       <p className={styles.intro}>
-        <b>Example pages:</b>{" "}
+        {" "}
         {samplePageLinks.map((link, i) => (
           <React.Fragment key={link.url}>
             <Link to={link.url}>{link.text}</Link>
@@ -94,9 +96,9 @@ const IndexPage = () => (
           </React.Fragment>
         ))}
         <br />
-        Edit <code>src/pages/index.js</code> to update this page.
-      </p>
+        </p>
     </div>
+    
     <ul className={styles.list}>
       {links.map(link => (
         <li key={link.url} className={styles.listItem}>

@@ -25,7 +25,7 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
+      { <Header siteTitle={data.site.siteMetadata?.title || `Title`} /> }
       <div
         style={{
           margin: `0 auto`,
@@ -33,16 +33,15 @@ const Layout = ({ children }) => {
           padding: `var(--size-gutter)`,
         }}
       >
-        <main>{children}</main>
+       <main>{children}</main>
         <footer
           style={{
-            marginTop: `var(--space-5)`,
+            marginTop: `var(--space-2)`,
             fontSize: `var(--font-sm)`,
           }}
         >
-          © {new Date().getFullYear()} &middot; Built with
-          {` `}
-          <a href="https://www.gatsbyjs.com">Gatsby</a>
+          © {new Date().getFullYear()} &middot; <span></span>
+          <a href = "mailto: hello@felixaugust.com"> hello@felixaugust.com</a>
         </footer>
       </div>
     </>
