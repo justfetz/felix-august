@@ -112,7 +112,6 @@ const IndexPage = () => (
         </li>
       ))}
     </ul>
-<img src="https://www.google.com/finance/getchart?q=AMZN&p=20Y&i=86400" />
     {moreLinks.map((link, i) => (
       <React.Fragment key={link.url}>
         <a href={`${link.url}${utmParameters}`}>{link.text}</a>
