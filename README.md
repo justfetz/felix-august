@@ -52,8 +52,8 @@ I offer consulting services to help you with your algorithms, data, and operatio
   - Operations Research Consulting
 
 - **Contact:**
-  - **Email:** [your-email@example.com](mailto:jasonfetzer@protonmail.com)
-  - **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/jasonmfetzer)
+  - **Email:** [jasonfetzer@protonmail.com](mailto:jasonfetzer@protonmail.com)
+  - **LinkedIn:** [https://linkedin.com/in/jasonmfetzer](https://linkedin.com/in/jasonmfetzer)
 
 ## How to Use
 
