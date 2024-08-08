@@ -14,7 +14,7 @@ The Cutting Stock Problem is a classic optimization problem in operations resear
 - **Language:** Python
 - **Topics:** Optimization, Operations Research
 - **Features:** Efficient material cutting, waste minimization
-- **Repository:** [Cutting Stock Problem](https://github.com/yourusername/cutting-stock-problem)
+- **Repository:** [Cutting Stock Problem](https://github.com/yourusername/python-cutting-stock-problem)
 
 ### 2. N Machine M Jobs Problem
 This project addresses the N Machine M Jobs scheduling problem, aiming to find an optimal schedule to minimize the total completion time.
@@ -22,7 +22,7 @@ This project addresses the N Machine M Jobs scheduling problem, aiming to find a
 - **Language:** Python
 - **Topics:** Scheduling, Optimization, Operations Research
 - **Features:** Optimal job scheduling, Minimization of completion time
-- **Repository:** [N Machine M Jobs Problem](https://github.com/yourusername/n-machine-m-jobs)
+- **Repository:** [N Machine M Jobs Problem](https://github.com/yourusername/iit-cs-535-n-machine-m-jobs-java)
 
 ### 3. Encryption/Decryption Sample Projects
 Explore various sample projects that demonstrate basic encryption and decryption techniques, providing a hands-on approach to understanding cryptographic principles.
@@ -30,7 +30,7 @@ Explore various sample projects that demonstrate basic encryption and decryption
 - **Language:** Java
 - **Topics:** Cryptography, Data Security
 - **Features:** Basic encryption/decryption techniques, Secure data handling
-- **Repository:** [Encryption/Decryption Samples](https://github.com/yourusername/encryption-samples)
+- **Repository:** [Encryption/Decryption Samples](https://github.com/justfetz/hyperskill-encruption-decryption-java)
 
 ## Blog
 
@@ -52,8 +52,8 @@ I offer consulting services to help you with your algorithms, data, and operatio
   - Operations Research Consulting
 
 - **Contact:**
-  - **Email:** [your-email@example.com](mailto:your-email@example.com)
-  - **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/yourusername)
+  - **Email:** [your-email@example.com](mailto:jasonfetzer@protonmail.com)
+  - **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/jasonmfetzer)
 
 ## How to Use
 
@@ -63,7 +63,7 @@ I offer consulting services to help you with your algorithms, data, and operatio
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is not currently licensed.
 
 ---
 
