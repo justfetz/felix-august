@@ -69,3 +69,7 @@ h2 {
     font-style: normal;
   }
   
+  .wrapper {
+    display: grid;
+    grid-template-columns: 200px 200px 200px;
+  }
