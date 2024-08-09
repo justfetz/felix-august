@@ -41,17 +41,16 @@
         </div>
     </nav>
     
-    <!-- Hero Section -->
-    <header class="hero-section text-center text-white d-flex align-items-center" style="background: #000 url('rubycuby.png') center/cover no-repeat; height: 70vh;">
+    <!-- Simplified Hero Section -->
+    <header class="hero-section text-center text-dark d-flex align-items-center" style="background: #fff; height: 50vh;">
         <div class="container">
             <h1 class="display-4 custom-font">felix/august</h1>
             <p class="lead">Unlocking the Potential of AI, Algorithms, and Optimization Solutions in Manufacturing</p>
             <a href="about.html" class="btn btn-primary btn-lg mt-3">Learn More About Us</a>
         </div>
     </header>
-    
 
-    <!-- Content Sections -->
+    <!-- Ops Research & Algos Section -->
     <section class="algos py-5">
         <div class="container">
             <h2 class="text-center mb-4"><b>Ops Research & Algos</b></h2>
@@ -77,10 +76,10 @@
         </div>
     </section>
 
-    <!-- Repeat similar structure for other sections -->
-    <section class="projects-and-code py-5">
+    <!-- Ventures Section (Previously "Code") -->
+    <section class="ventures py-5">
         <div class="container">
-            <h2 class="text-center mb-4"><b>Code</b></h2>
+            <h2 class="text-center mb-4"><b>Ventures</b></h2>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <h4>
@@ -111,9 +110,34 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <p class="mb-0">&copy; 2024 Felix/August. All rights reserved.</p>
-    </footer>
+  <!-- Footer -->
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+        <p class="mb-0">
+            &copy; <span id="current-year"></span> Felix/August. All rights reserved.
+        </p>
+        <div class="social-links mt-2">
+            <a href="https://github.com/yourusername" class="text-white mr-3">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://linkedin.com/in/yourusername" class="text-white">
+                <i class="fab fa-linkedin"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Set the current year dynamically
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
