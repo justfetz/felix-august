@@ -35,76 +35,84 @@
                     <a class="nav-link" href="#">Contact</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="about.html">About Us</a> <!-- Link to the About page -->
+                    <a class="nav-link" href="about.html">About Us</a>
                 </li>
             </ul>
         </div>
     </nav>
     
-
-    <header class="text-center mt-4">
-        <h1 class="custom-font">felix/august</h1>
-        <p>We are some data, algorithm, optimization, visualization and AI nerds in manufacturing @ <a href="https://www.corrugatedsuppliescompany.com">CSC</a>.</p>
-        <p>In our spare time, we help companies communicate and extract value from their data through optimization, automation, and AI solutions.  Learn more about what we do @ <a href="https://www.corrugatedsuppliescompany.com">CSC</a>.</p>
+    <!-- Hero Section -->
+    <header class="hero-section text-center text-white bg-dark d-flex align-items-center" style="background: url('path/to/your/black-and-white-rubiks-cube.jpg') center/cover; height: 70vh;">
+        <div class="container">
+            <h1 class="display-4 custom-font">felix/august</h1>
+            <p class="lead">Unlocking the Potential of AI, Algorithms, and Optimization Solutions in Manufacturing</p>
+            <a href="about.html" class="btn btn-primary btn-lg mt-3">Learn More About Us</a>
+        </div>
     </header>
 
-    <!-- Existing content -->
-    <section class="algos">
-        <h2><b>Ops Research & Algos</b></h2>
-        <div class="article">
-            <p>Cutting Stock Problem</p>
-            <a href="#">An implementation of the Cutting Stock Problem that can be deployed on anywhere.</a>
-        </div>
-        <div class="article">
-            <p>N Machine M Jobs</p>
-            <a href="#">An example of a console brute-force implementation of job sequencing.</a>
-        </div>
-        <div class="article">
-            <p>Linear Equations Solver</p><i class="fab fa-github"></i>
-            <a href="#">A free and open-source linear equations console application in java.</a>
-        </div>
-    </section>
-    <section class="projects-and-code">
-        <h2><b>Code</b></h2>
-        <div class="article">
-            <p>Coffee Machine OOP</p><i class="fab fa-github"></i>
-            <a href="#">An implementation of a Coffee Maker in Java.</a>
-        </div>
-        <div class="article">
-            <p>Amazing Numbers</p>
-            <a href="#">Number Properties in Java of Buzz, Duck, Happy, Sad, etc.</a>
-        </div>
-        <div class="article">
-            <p>Encryption-Decryption</p><i class="fab fa-github"></i>
-            <a href="#">Encode and Decode. Encrypt and Decrypt.</a>
-        </div>
-        <div class="article">
-            <p>Room Manager</p><i class="fab fa-github"></i>
-            <a href="#">Identify capacity constraints in a fixed capacity building.</a>
+    <!-- Content Sections -->
+    <section class="algos py-5">
+        <div class="container">
+            <h2 class="text-center mb-4"><b>Ops Research & Algos</b></h2>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h4>Cutting Stock Problem</h4>
+                    <a href="#">An implementation of the Cutting Stock Problem that can be deployed anywhere.</a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h4>N Machine M Jobs</h4>
+                    <a href="#">An example of a console brute-force implementation of job sequencing.</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h4>
+                        Linear Equations Solver 
+                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
+                    </h4>
+                    <a href="#">A free and open-source linear equations console application in Java.</a>
+                </div>
+            </div>
         </div>
     </section>
-    <section class="visuals">
-        <h2><b>Visuals</b></h2>
-        <div class="visual-content">
-            <ul>
-                <li><div class="grid-item">All About Allen Iverson!</div></li>
-                <li><div class="grid-item">The Cost of Daycare in America</div></li>
-                <li><div class="grid-item">K Means Clustering in Tableau</div></li>
-                <li><div class="grid-item">A Simple Sales Dashboard</div></li>
-                <li><div class="grid-item">OEE Implementation & Scorecards</div></li>
-            </ul>
+
+    <!-- Repeat similar structure for other sections -->
+    <section class="projects-and-code py-5">
+        <div class="container">
+            <h2 class="text-center mb-4"><b>Code</b></h2>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h4>
+                        Coffee Machine OOP 
+                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
+                    </h4>
+                    <a href="#">An implementation of a Coffee Maker in Java.</a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h4>Amazing Numbers</h4>
+                    <a href="#">Number Properties in Java of Buzz, Duck, Happy, Sad, etc.</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h4>
+                        Encryption-Decryption 
+                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
+                    </h4>
+                    <a href="#">Encode and Decode. Encrypt and Decrypt.</a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h4>Room Manager</h4>
+                    <a href="#">Identify capacity constraints in a fixed capacity building.</a>
+                </div>
+            </div>
         </div>
     </section>
-    <section class="ventures">
-        <h2><b>Ventures/AI Initiaves</b></h2>
-        <div class="visual-content">
-            <ul>
-                <li><div class="grid-item">Talk To My Machine (An AI implementation)</div></li>
-                <li><div class="grid-item">Tipout</div></li>
-                <li><div class="grid-item">dotnet-dodo</div></li>        
-            </ul>
-        </div>
-    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0">&copy; 2024 Felix/August. All rights reserved.</p>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
