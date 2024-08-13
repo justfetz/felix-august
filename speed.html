@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3x3 Grid of Gauges</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 90%;
+            margin: auto;
+        }
+        .gauge {
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="grid-container">
+    <div class="gauge" id="gauge1"></div>
+    <div class="gauge" id="gauge2"></div>
+    <div class="gauge" id="gauge3"></div>
+    <div class="gauge" id="gauge4"></div>
+    <div class="gauge" id="gauge5"></div>
+    <div class="gauge" id="gauge6"></div>
+    <div class="gauge" id="gauge7"></div>
+    <div class="gauge" id="gauge8"></div>
+    <div class="gauge" id="gauge9"></div>
+</div>
+
+<script>
+function createGauge(container, value) {
+    const width = 200, height = 200;
+    const radius = Math.min(width, height) / 2;
+    const min = 500, max = 900;
+
+    const svg = d3.select(container)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`);
+
+    const arc = d3.arc()
+        .innerRadius(radius - 40)
+        .outerRadius(radius - 20)
+        .startAngle(-Math.PI / 2)
+        .endAngle(d => (d - min) / (max - min) * Math.PI - Math.PI / 2);
+
+    svg.append("path")
+        .datum(max)
+        .style("fill", "#ddd")
+        .attr("d", arc);
+
+    svg.append("path")
+        .datum(value)
+        .style("fill", "orange")
+        .attr("d", arc);
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .style("font-size", "24px")
+        .text(`${value} FPM`);
+}
+
+const speeds = [600, 700, 800, 650, 750, 850, 625, 725, 825];
+const gauges = d3.selectAll(".gauge");
+
+gauges.each(function(d, i) {
+    createGauge(this, speeds[i]);
+});
+</script>
+
+</body>
+</html>
