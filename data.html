@@ -3,21 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heatmap Example</title>
+    <title>Dynamic Heatmap</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
     <script>
-        const data = [
-            { week: '2024-01-01', day: 'Monday', value: 95 },
-            { week: '2024-01-08', day: 'Tuesday', value: 85 },
-            { week: '2024-01-15', day: 'Wednesday', value: 92 },
-            { week: '2024-01-22', day: 'Monday', value: 70 },
-            { week: '2024-01-29', day: 'Tuesday', value: 80 },
-            { week: '2024-02-5', day: 'Wednesday', value: 65 },
-            // Add more data points as needed
-        ];
-
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const margin = { top: 50, right: 30, bottom: 30, left: 60 };
         const width = 450 - margin.left - margin.right;
         const height = 450 - margin.top - margin.bottom;
@@ -28,7 +19,34 @@
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        // Function to get the current week's Monday date
+        function getMonday(d) {
+            d = new Date(d);
+            let day = d.getDay(),
+                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+            return new Date(d.setDate(diff));
+        }
+
+        // Function to get all days for the current week until yesterday
+        function getAllDays() {
+            const today = new Date();
+            const monday = getMonday(today);
+            const daysData = [];
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            for (let i = 0; i < 7; i++) {
+                let currentDay = new Date(monday.getTime() + i * oneDay);
+                if (currentDay >= today) break;
+                daysData.push({
+                    week: `${currentDay.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`,
+                    day: days[currentDay.getDay() - 1],
+                    value: Math.floor(Math.random() * 101) // Random value for example purposes
+                });
+            }
+            return daysData;
+        }
+
+        const data = getAllDays();
         const weeks = [...new Set(data.map(d => d.week))];
 
         const xScale = d3.scaleBand()
@@ -75,6 +93,7 @@
             .attr("text-anchor", "middle")
             .text(function(d) { return d.value + '%'; })
             .style("fill", "#fff");
+
     </script>
 </body>
 </html>
