@@ -75,3 +75,16 @@ h2 {
     grid-template-columns: 200px 200px 200px;
   }
 
+  .ventures h4 a i {
+    vertical-align: middle; /* Aligns the icons vertically in the middle */
+    line-height: 1; /* Ensures consistent line height */
+}
+
+.ventures h4 {
+    display: inline-flex;
+    align-items: center;
+}
+
+.ventures h4 a {
+    margin-left: 8px; /* Add spacing between icons */
+}
