@@ -109,9 +109,29 @@ const portfolioData = {
     ],
     census: {
         cards: [
-            { key: "populationValue", label: "U.S. population", value: "Loading...", numeric: 0, source: "Census Population Estimates" },
-            { key: "medianAgeValue", label: "Median age", value: "Loading...", numeric: 0, source: "ACS 1-year profile" },
-            { key: "medianIncomeValue", label: "Median household income", value: "Loading...", numeric: 0, source: "ACS 1-year profile" }
+            { key: "populationValue", label: "U.S. population", value: "334.9M", numeric: 334.9, source: "Census Population Estimates, 2023" },
+            { key: "medianAgeValue", label: "Median age", value: "39.2 years", numeric: 39.2, source: "ACS 1-year profile, 2023" },
+            { key: "medianIncomeValue", label: "Median household income", value: "$80,610", numeric: 80.61, source: "ACS 1-year profile, 2023" }
+        ],
+        rows: [
+            {
+                label: "Population",
+                displayValue: "334.9M",
+                ratio: 0.84,
+                note: "A larger country with more infrastructure, housing, and energy pressure."
+            },
+            {
+                label: "Median age",
+                displayValue: "39.2 years",
+                ratio: 0.65,
+                note: "An older population than past generations inherited at the same stage."
+            },
+            {
+                label: "Median household income",
+                displayValue: "$80.6k",
+                ratio: 0.58,
+                note: "Income matters, but purchasing power and housing costs matter just as much."
+            }
         ]
     }
 };
@@ -385,90 +405,22 @@ function renderCensusChart() {
     const container = document.getElementById("census-chart");
     if (!container) return;
 
-    const raw = portfolioData.census.cards;
-    const data = [
-        { label: "Population (M)", value: raw.find((item) => item.key === "populationValue")?.numeric ?? 0 },
-        { label: "Median age", value: raw.find((item) => item.key === "medianAgeValue")?.numeric ?? 0 },
-        { label: "Median income (k)", value: (raw.find((item) => item.key === "medianIncomeValue")?.numeric ?? 0) / 1000 }
-    ];
-
-    const width = 620;
-    const height = 280;
-    const margin = { top: 20, right: 24, bottom: 56, left: 48 };
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-    const maxValue = Math.max(...data.map((item) => item.value), 1);
-    const slotWidth = innerWidth / data.length;
-    const barWidth = Math.min(110, slotWidth * 0.58);
-    const colors = ["#4c2f18", "#8a5a2b", "#b78953"];
-
-    const bars = data.map((item, index) => {
-        const x = margin.left + index * slotWidth + (slotWidth - barWidth) / 2;
-        const barHeight = (item.value / maxValue) * innerHeight;
-        const y = margin.top + (innerHeight - barHeight);
-        const displayValue = item.label.includes("income") ? `${item.value.toFixed(1)}k` : item.value.toFixed(1);
-        return [
-            `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="10" fill="${colors[index % colors.length]}"></rect>`,
-            svgText(x + barWidth / 2, y - 8, displayValue, "chart-value", "middle"),
-            svgText(x + barWidth / 2, height - 22, item.label, "chart-label", "middle")
-        ].join("");
-    }).join("");
-
     container.innerHTML = `
-        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="National backdrop snapshot">
-            <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" class="chart-axis-line"></line>
-            ${bars}
-        </svg>
+        <div class="census-chart-grid" aria-label="National backdrop snapshot">
+            ${portfolioData.census.rows.map((row) => `
+                <div class="census-row">
+                    <div class="census-row-head">
+                        <span>${escapeHtml(row.label)}</span>
+                        <strong>${escapeHtml(row.displayValue)}</strong>
+                    </div>
+                    <div class="census-row-scale">
+                        <div class="census-row-fill" style="width:${Math.max(10, row.ratio * 100)}%"></div>
+                    </div>
+                    <div class="census-row-note">${escapeHtml(row.note)}</div>
+                </div>
+            `).join("")}
+        </div>
     `;
-}
-
-async function loadCensusBackdrop() {
-    try {
-        const [populationRes, profileRes] = await Promise.all([
-            fetch("https://api.census.gov/data/2023/pep/population?get=NAME,POP&for=us:1"),
-            fetch("https://api.census.gov/data/2023/acs/acs1/profile?get=NAME,DP03_0062E,DP05_0018E&for=us:1")
-        ]);
-
-        const populationJson = await populationRes.json();
-        const profileJson = await profileRes.json();
-
-        const population = Number(populationJson[1][1]);
-        const medianIncome = Number(profileJson[1][1]);
-        const medianAge = Number(profileJson[1][2]);
-
-        portfolioData.census.cards = [
-            {
-                key: "populationValue",
-                label: "U.S. population",
-                value: `${(population / 1000000).toFixed(1)}M`,
-                numeric: population / 1000000,
-                source: "Census Population Estimates, 2023"
-            },
-            {
-                key: "medianAgeValue",
-                label: "Median age",
-                value: `${medianAge.toFixed(1)} years`,
-                numeric: medianAge,
-                source: "ACS 1-year profile, 2023"
-            },
-            {
-                key: "medianIncomeValue",
-                label: "Median household income",
-                value: formatCurrency(medianIncome),
-                numeric: medianIncome,
-                source: "ACS 1-year profile, 2023"
-            }
-        ];
-    } catch (error) {
-        portfolioData.census.cards = [
-            { key: "populationValue", label: "U.S. population", value: "Unavailable", numeric: 0, source: "Census API fetch issue" },
-            { key: "medianAgeValue", label: "Median age", value: "Unavailable", numeric: 0, source: "Census API fetch issue" },
-            { key: "medianIncomeValue", label: "Median household income", value: "Unavailable", numeric: 0, source: "Census API fetch issue" }
-        ];
-    }
-
-    renderCensusCards();
-    renderCensusChart();
 }
 
 renderStats();
@@ -480,4 +432,3 @@ renderAccountSplitChart();
 renderThemeAllocationChart();
 renderCensusCards();
 renderCensusChart();
-loadCensusBackdrop();
