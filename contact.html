@@ -3,71 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Felix-August</title>
+    <title>Notes | Felix/August</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand custom-font" href="#">felix/august</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
-                <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-            </ul>
+    <header class="site-header">
+        <div class="shell nav-shell">
+            <a class="brand" href="index.html">felix/august</a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="index.html">Home</a>
+                <a href="about.html">Why This Exists</a>
+                <a href="services.html">Themes</a>
+                <a href="contact.html">Notes</a>
+            </nav>
         </div>
-    </nav>
-    
-    <!-- Contact Section -->
-    <section class="contact-section py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <h1 class="display-4 custom-font">Get in Touch</h1>
-                    <p class="lead">We'd love to hear from you! Whether you have a question about our services, want to explore a collaboration, or simply want to say hello, feel free to reach out.</p>
-                    <p class="lead"><strong>Email us at: <a href="mailto:hello@felixaugust.com">hello@felixaugust.com</a></strong></p>
-                </div>
-            </div>
-        </div>
-    </section>
+    </header>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <div class="container">
-            <p class="mb-0">
-                &copy; <span id="current-year"></span> Felix/August. All rights reserved.
-            </p>
-            <div class="social-links mt-2">
-                <a href="https://github.com/yourusername" class="text-white mr-3">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://linkedin.com/in/yourusername" class="text-white">
-                    <i class="fab fa-linkedin"></i>
-                </a>
+    <main class="shell">
+        <section class="page-hero">
+            <p class="section-kicker">Notes</p>
+            <h1>Future journal entries and data inputs.</h1>
+            <p class="hero-text">This page is a placeholder for the entries, letters, and research notes that will eventually drive the journal.</p>
+        </section>
+
+        <section class="page-body">
+            <article class="card">
+                <h2>Useful recurring entry types</h2>
+                <ul class="note-list">
+                    <li>Why I bought this business.</li>
+                    <li>What changed in the thesis.</li>
+                    <li>What I still do not understand.</li>
+                    <li>Why I kept adding even when the tape looked ugly.</li>
+                    <li>Where options belong and where they do not.</li>
+                </ul>
+            </article>
+
+            <article class="card muted-card">
+                <h2>Data that can feed the site later</h2>
+                <ul class="note-list">
+                    <li>Ticker and account name.</li>
+                    <li>Weekly contribution history.</li>
+                    <li>Total contributed versus current value.</li>
+                    <li>Thesis tags like AI, hardware, index, energy, or options.</li>
+                    <li>Selected quotes or lessons for the boys.</li>
+                </ul>
+            </article>
+
+            <article class="card">
+                <h2>Public-facing caution</h2>
+                <p>This site works best when it stays focused on long-horizon thinking and clear documentation rather than acting like real-time investment advice.</p>
+            </article>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-shell">
+            <p>Felix/August is a personal journal about long-term ownership, family, and learning in public.</p>
+            <div class="footer-links">
+                <a href="https://github.com/justfetz">GitHub</a>
+                <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a>
             </div>
         </div>
     </footer>
-
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        // Set the current year dynamically
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
 </body>
 </html>
