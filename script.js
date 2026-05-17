@@ -1,10 +1,12 @@
 const portfolioData = {
     summary: {
-        account: "thinkorswim",
+        account: "thinkorswim now, Fidelity incoming",
         totalContributed: 4700.21,
         currentValue: 6927.09,
         totalGain: 2226.88,
-        weeklyCadence: "$25-$50",
+        weeklyCadence: "$150/week combined",
+        weeklyThinkorswim: "$50/week",
+        weeklyFidelity: "$100/week",
         positions: 34,
         cash: 81.64
     },
@@ -19,38 +21,37 @@ const portfolioData = {
         { ticker: "ROBT", label: "robotics ETF", account: "thinkorswim", marketValue: 268.4, totalGain: 17.57, gainPct: 7.0 },
         { ticker: "AMZN", label: "cloud + commerce", account: "thinkorswim", marketValue: 262.7, totalGain: 85.96, gainPct: 48.64 },
         { ticker: "XLE", label: "energy ETF", account: "thinkorswim", marketValue: 237.76, totalGain: 55.94, gainPct: 30.77 },
-        { ticker: "WTAI", label: "AI ETF", account: "thinkorswim", marketValue: 121.11, totalGain: 52.73, gainPct: 77.11 },
-        { ticker: "SLV", label: "silver exposure", account: "thinkorswim", marketValue: 137.54, totalGain: 47.09, gainPct: 52.06 },
-        { ticker: "ARTY", label: "AI ETF", account: "thinkorswim", marketValue: 131.6, totalGain: 65.41, gainPct: 98.82 },
-        { ticker: "BTX", label: "speculative biotech", account: "thinkorswim", marketValue: 171.8, totalGain: 23.5, gainPct: 15.85 },
         { ticker: "XT", label: "exponential tech ETF", account: "thinkorswim", marketValue: 158.24, totalGain: 49.06, gainPct: 44.93 },
+        { ticker: "SLV", label: "silver exposure", account: "thinkorswim", marketValue: 137.54, totalGain: 47.09, gainPct: 52.06 },
+        { ticker: "AIO", label: "AI + infrastructure fund", account: "thinkorswim", marketValue: 131.05, totalGain: 8.49, gainPct: 6.93 },
+        { ticker: "ARTY", label: "AI ETF", account: "thinkorswim", marketValue: 131.6, totalGain: 65.41, gainPct: 98.82 },
         { ticker: "DUK", label: "utility", account: "thinkorswim", marketValue: 120.95, totalGain: 9.4, gainPct: 8.43 },
+        { ticker: "WTAI", label: "AI ETF", account: "thinkorswim", marketValue: 121.11, totalGain: 52.73, gainPct: 77.11 },
         { ticker: "LRNZ", label: "AI + innovation ETF", account: "thinkorswim", marketValue: 100.97, totalGain: 32.29, gainPct: 47.02 },
         { ticker: "EXEL", label: "healthcare growth", account: "thinkorswim", marketValue: 100.26, totalGain: 56.53, gainPct: 129.27 },
         { ticker: "SPRX", label: "biotech", account: "thinkorswim", marketValue: 96.3, totalGain: 48.44, gainPct: 101.21 },
         { ticker: "SYM", label: "automation", account: "thinkorswim", marketValue: 94.64, totalGain: 14.66, gainPct: 18.33 },
+        { ticker: "TEM", label: "speculative AI health", account: "thinkorswim", marketValue: 87.5, totalGain: -55.04, gainPct: -38.61 },
+        { ticker: "SOUN", label: "voice AI", account: "thinkorswim", marketValue: 83.7, totalGain: 62.35, gainPct: 292.04 },
         { ticker: "D", label: "utility", account: "thinkorswim", marketValue: 61.73, totalGain: 6.01, gainPct: 10.79 },
+        { ticker: "U", label: "interactive software", account: "thinkorswim", marketValue: 54.32, totalGain: 3.4, gainPct: 6.68 },
+        { ticker: "XLF", label: "financials ETF", account: "thinkorswim", marketValue: 51.05, totalGain: 1.88, gainPct: 3.82 },
         { ticker: "DRAM", label: "memory ETF", account: "thinkorswim", marketValue: 50.35, totalGain: -3.59, gainPct: -6.66 },
         { ticker: "IBIT", label: "bitcoin ETF", account: "thinkorswim", marketValue: 44.81, totalGain: 4.28, gainPct: 10.56 },
-        { ticker: "AIO", label: "AI + infrastructure fund", account: "thinkorswim", marketValue: 131.05, totalGain: 8.49, gainPct: 6.93 },
-        { ticker: "AI", label: "software AI", account: "thinkorswim", marketValue: 25.95, totalGain: -55.4, gainPct: -68.1 },
         { ticker: "BITC", label: "bitcoin income", account: "thinkorswim", marketValue: 40.14, totalGain: -32.73, gainPct: -44.92 },
         { ticker: "HLX", label: "energy services", account: "thinkorswim", marketValue: 40.2, totalGain: -1.32, gainPct: -3.18 },
         { ticker: "LTRX", label: "network hardware", account: "thinkorswim", marketValue: 37.62, totalGain: 8.27, gainPct: 28.18 },
-        { ticker: "PATH", label: "automation software", account: "thinkorswim", marketValue: 20.66, totalGain: -21.01, gainPct: -50.42 },
-        { ticker: "SOUN", label: "voice AI", account: "thinkorswim", marketValue: 83.7, totalGain: 62.35, gainPct: 292.04 },
-        { ticker: "TEM", label: "speculative AI health", account: "thinkorswim", marketValue: 87.5, totalGain: -55.04, gainPct: -38.61 },
-        { ticker: "U", label: "interactive software", account: "thinkorswim", marketValue: 54.32, totalGain: 3.4, gainPct: 6.68 },
         { ticker: "UPST", label: "AI lending", account: "thinkorswim", marketValue: 29.5, totalGain: 4.98, gainPct: 20.31 },
-        { ticker: "XLF", label: "financials ETF", account: "thinkorswim", marketValue: 51.05, totalGain: 1.88, gainPct: 3.82 }
+        { ticker: "AI", label: "software AI", account: "thinkorswim", marketValue: 25.95, totalGain: -55.4, gainPct: -68.1 },
+        { ticker: "PATH", label: "automation software", account: "thinkorswim", marketValue: 20.66, totalGain: -21.01, gainPct: -50.42 }
     ].sort((a, b) => b.marketValue - a.marketValue),
     contributions: [
-        { label: "Week 1", amount: 25 },
-        { label: "Week 2", amount: 50 },
-        { label: "Week 3", amount: 25 },
-        { label: "Week 4", amount: 50 },
-        { label: "Week 5", amount: 25 },
-        { label: "Week 6", amount: 50 }
+        { label: "Week 1", amount: 150 },
+        { label: "Week 2", amount: 150 },
+        { label: "Week 3", amount: 150 },
+        { label: "Week 4", amount: 150 },
+        { label: "Week 5", amount: 150 },
+        { label: "Week 6", amount: 150 }
     ]
 };
 
@@ -69,12 +70,12 @@ function formatSignedCurrency(value) {
 
 function renderStats() {
     const stats = [
-        ["Account sleeve", portfolioData.summary.account],
+        ["Current imported sleeve", portfolioData.summary.account],
         ["Total contributed", formatCurrency(portfolioData.summary.totalContributed)],
         ["Current value", formatCurrency(portfolioData.summary.currentValue)],
         ["Total gain", formatSignedCurrency(portfolioData.summary.totalGain)],
-        ["Weekly cadence", portfolioData.summary.weeklyCadence],
-        ["Positions + cash", `${portfolioData.summary.positions} + cash`]
+        ["Combined weekly cadence", portfolioData.summary.weeklyCadence],
+        ["thinkorswim / Fidelity", `${portfolioData.summary.weeklyThinkorswim} / ${portfolioData.summary.weeklyFidelity}`]
     ];
 
     const container = document.getElementById("portfolio-stats");
