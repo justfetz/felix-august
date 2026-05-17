@@ -3,99 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Felix-August</title>
+    <title>Themes | Felix/August</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand custom-font" href="#">felix/august</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
-                <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-            </ul>
+    <header class="site-header">
+        <div class="shell nav-shell">
+            <a class="brand" href="index.html">felix/august</a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="index.html">Home</a>
+                <a href="about.html">Why This Exists</a>
+                <a href="services.html">Themes</a>
+                <a href="contact.html">Notes</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <!-- Services Section -->
-    <section class="services-section py-5">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col text-center">
-                    <h1>Our Services</h1>
-                    <p class="lead">We provide expert solutions to help your business leverage the power of data, algorithms, and AI.</p>
-                </div>
-            </div>
+    <main class="shell">
+        <section class="page-hero">
+            <p class="section-kicker">Themes</p>
+            <h1>The businesses and systems I want to study well.</h1>
+            <p class="hero-text">These are the broad lanes behind the journal: the parts of the modern economy I believe matter most for long-run ownership and understanding.</p>
+        </section>
 
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h3 class="card-title">Business Intelligence, Digital Transformation & Data Analysis</h3>
-                            <p class="card-text">Transform your data into actionable insights with our comprehensive data analysis and visualization services. We help you make informed decisions by turning complex data into clear, impactful visualizations. Whether you are looking for a Power BI or Tableau implementation, we have you covered!</p>
-                        </div>
-                    </div>
-                </div>
+        <section class="theme-grid page-body">
+            <article class="theme-card">
+                <h3>AI</h3>
+                <p>Model providers, software ecosystems, and infrastructure layers that translate compute into usable products and productivity.</p>
+            </article>
+            <article class="theme-card">
+                <h3>Semiconductors</h3>
+                <p>Design, fabrication, packaging, memory, and the industrial base that makes advanced computing possible.</p>
+            </article>
+            <article class="theme-card">
+                <h3>Index Funds</h3>
+                <p>Broad-market exposure as the base layer of discipline, diversification, and long-horizon compounding.</p>
+            </article>
+            <article class="theme-card">
+                <h3>Options</h3>
+                <p>A smaller and more explicit risk sleeve, used carefully and documented honestly rather than romanticized.</p>
+            </article>
+            <article class="theme-card">
+                <h3>Infrastructure</h3>
+                <p>Logistics, compute, industrial assets, and the connective systems that make scale and resilience possible.</p>
+            </article>
+            <article class="theme-card">
+                <h3>Energy</h3>
+                <p>Generation, transmission, and supply chains that matter more as industry and AI become more power-hungry.</p>
+            </article>
+            <article class="theme-card">
+                <h3>Generational Wealth</h3>
+                <p>Stewardship, patience, education, and the habits needed to make capital useful across time.</p>
+            </article>
+            <article class="theme-card">
+                <h3>Learning in Public</h3>
+                <p>Writing down thesis changes, allocation logic, and mistakes so the process stays visible and accountable.</p>
+            </article>
+        </section>
+    </main>
 
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h3 class="card-title">Algorithm Solutions</h3>
-                            <p class="card-text">Optimize your business processes with custom algorithm solutions. Whether you want a market analysis of your next plant, or whether it's for operations research, predictive modeling, sales forecasting, we design and implement algorithms tailored to your needs.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h3 class="card-title">AI & Machine Learning Solutions</h3>
-                            <p class="card-text">Leverage the power of artificial intelligence and machine learning to drive innovation and efficiency in your business. We develop custom AI/ML chatbots and models that solve complex problems and automate decision-making.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <div class="container">
-            <p class="mb-0">
-                &copy; <span id="current-year"></span> Felix/August. All rights reserved.
-            </p>
-            <div class="social-links mt-2">
-                <a href="https://github.com/yourusername" class="text-white mr-3">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://linkedin.com/in/yourusername" class="text-white">
-                    <i class="fab fa-linkedin"></i>
-                </a>
+    <footer class="site-footer">
+        <div class="shell footer-shell">
+            <p>Felix/August is a personal journal about long-term ownership, family, and learning in public.</p>
+            <div class="footer-links">
+                <a href="https://github.com/justfetz">GitHub</a>
+                <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a>
             </div>
         </div>
     </footer>
-
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        // Set the current year dynamically
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
 </body>
 </html>
