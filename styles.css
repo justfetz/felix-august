@@ -318,8 +318,13 @@ a {
     font-weight: 700;
 }
 
-.holding-gain.loss {
-    color: var(--loss);
+.holding-gain.loss,
+.loss-text {
+    color: var(--loss) !important;
+}
+
+.holding-gain span {
+    color: inherit;
 }
 
 .row-labels {
