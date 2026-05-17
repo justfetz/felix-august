@@ -3,216 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Felix-August</title>
+    <title>Felix/August</title>
+    <meta name="description" content="A long-horizon investment journal for my sons, centered on AI, hardware, infrastructure, energy, index funds, and generational wealth.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand custom-font" href="#">felix/august</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-            </ul>
-        </div>
-    </nav>
-    
-    <!-- Hero Section -->
-    <header class="hero-section text-center text-dark d-flex align-items-center" style="background: #fff; height: 50vh;">
-        <div class="container">
-            <p class="lead">Communicate and extract value from your data using the potential of AI, algorithms, and optimization solutions in manufacturing.</p>
-            <a href="about.html" class="btn btn-primary btn-lg mt-3">Learn More About Us</a>
+    <header class="site-header">
+        <div class="shell nav-shell">
+            <a class="brand" href="index.html">felix/august</a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="index.html">Home</a>
+                <a href="about.html">Why This Exists</a>
+                <a href="services.html">Themes</a>
+                <a href="contact.html">Notes</a>
+            </nav>
         </div>
     </header>
 
-    <!-- Ops Research & Algos Section -->
-    <section class="algos py-5">
-        <div class="container">
-            <h2 class="text-center mb-4"><b>Ops Research & Algos</b></h2>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <h4>Scheduling A Machine
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                    </h4>
-                    <a href="#">An implementation of the Cutting Stock Problem written for paper mill operations.</a>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <h4>Job Sequencing
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                    </h4>
-                    <a href="#">A console brute-force implementation for scheduling multiple orders across multiple plants.</a>
+    <main>
+        <section class="hero shell">
+            <div class="hero-copy">
+                <p class="eyebrow">Long-horizon ownership</p>
+                <h1>A journal for Felix and August.</h1>
+                <p class="hero-text">This is where I write down what I own, why I own it, what I am still learning, and how small, steady contributions can compound into something meaningful over time.</p>
+                <div class="hero-actions">
+                    <a class="button button-solid" href="#snapshot">See the snapshot</a>
+                    <a class="button button-ghost" href="about.html">Read the why</a>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <h4>Truck Cubing
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                    </h4>
-                    <a href="#">A common bin packing technique to maximize truckloads.</a>
+            <aside class="hero-panel">
+                <p class="panel-label">What lives here</p>
+                <ul class="panel-list">
+                    <li>AI and hardware holdings</li>
+                    <li>Index funds and long-term allocation notes</li>
+                    <li>Options thoughts and risk boundaries</li>
+                    <li>Reflections on stewardship and generational wealth</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="section shell intro-grid">
+            <div>
+                <p class="section-kicker">Why it matters</p>
+                <h2>Not a trading dashboard. A durable record of reasoning.</h2>
+                <p>Markets move every day. Conviction usually moves slower. Felix/August is designed to keep the focus on thesis, discipline, and ownership rather than noise.</p>
+            </div>
+            <div class="card muted-card">
+                <p class="small-label">Core idea</p>
+                <p class="card-copy">Put a modest amount to work consistently, study the businesses behind the symbols, and leave behind a readable record of how the thinking evolved.</p>
+            </div>
+        </section>
+
+        <section class="section shell" id="snapshot">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Interactive snapshot</p>
+                    <h2>Illustrative portfolio view</h2>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <h4>Plant/Warehouse Locations for Route Minimization and Network Flow
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                    </h4>
-                    <a href="#">Learn how we use transportation and transshipment algorithms to optimize operations.</a>
+                <p class="section-note">The data below is driven by a small JavaScript object so real tickers, weekly contributions, and gains can be dropped in later.</p>
+            </div>
+
+            <div class="stats-grid" id="portfolio-stats"></div>
+
+            <div class="snapshot-grid">
+                <div class="card">
+                    <div class="card-head">
+                        <h3>Holdings</h3>
+                        <p>Illustrative positions and weights</p>
+                    </div>
+                    <div id="holdings-list" class="holdings-list"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <h3>Contribution cadence</h3>
+                        <p>Weekly deposits over time</p>
+                    </div>
+                    <div id="contribution-chart" class="chart-rows"></div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Ventures Section -->
-  <!-- Ventures Section -->
-<section class="ventures py-5">
-    <div class="container">
-        <h2 class="text-center mb-4"><b>Ventures</b></h2>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <h4>dotnet dodo
-                    <a href="#">
-                        <i class="fas fa-play-circle"></i>
-                    </a>
-                    <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                </h4>
-                <a href="#">Use AI to onboard and train IT talent quickly.</a>
-            </div>
-            <div class="col-md-6 mb-3">
-                <h4>Talk to My Machine
-                    <a href="#">
-                        <i class="fas fa-play-circle"></i>
-                    </a>
-                    <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                </h4>
-                <a href="#">Ask your machine anything about performance, speed, waste, or downtime.</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Custom CSS -->
-<style>
-.ventures h4 a i {
-    vertical-align: middle; /* Aligns the icons vertically in the middle */
-    line-height: 1; /* Ensures consistent line height */
-}
-
-.ventures h4 {
-    display: inline-flex;
-    align-items: center;
-}
-
-.ventures h4 a {
-    margin-left: 8px; /* Add spacing between icons */
-}
-</style>
-
-
-    <!-- Visuals Section -->
-    <section class="ventures py-5">
-        <div class="container">
-            <h2 class="text-center mb-4"><b>Visuals</b></h2>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <h4>Visualizing Downtime
-                        <a href="#">
-                            <i class="fas fa-play-circle"></i>
-                         </a>
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                        <a href="https://www.tableau.com" target="_blank">
-                            <img src="https://cdn.simpleicons.org/tableau/000000" alt="Tableau Icon" width="24" height="24">
-                        </a>
-                    </h4>
-                    <a href="#">Use a heatmap to show your downtime gradient.</a>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <h4>Plant Monitor
-                        <a href="#">
-                            <i class="fas fa-play-circle"></i>
-                         </a>
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                        <a href="https://www.tableau.com" target="_blank">
-                            <img src="https://cdn.simpleicons.org/tableau/000000" alt="Tableau Icon" width="24" height="24">
-                        </a>
-                    </h4>
-                    <a href="#">Visualize bottlenecks in your operations.</a>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <h4>OEE Implementations
-                        <a href="#">
-                            <i class="fas fa-play-circle"></i>
-                         </a>
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                        <a href="https://www.tableau.com" target="_blank">
-                            <img src="https://cdn.simpleicons.org/tableau/000000" alt="Tableau Icon" width="24" height="24">
-                        </a>
-                    </h4>
-                    <a href="#">Measure and manage OEE in your facility.</a>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <h4>Sales and Shipments
-                        <a href="#">
-                            <i class="fas fa-play-circle"></i>
-                         </a>
-                        <a href="#" class="ml-2"><i class="fab fa-github"></i></a>
-                        <a href="https://www.tableau.com" target="#">
-                            <img src="https://cdn.simpleicons.org/tableau/000000" alt="Tableau Icon" width="24" height="24">
-                        </a>
-                    </h4>
-                    <a href="#">Measure and manage OEE in your facility.</a>
+        <section class="section shell">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Research lanes</p>
+                    <h2>The themes I want the boys to understand</h2>
                 </div>
             </div>
-        </div>
-    </section>
+            <div class="theme-grid">
+                <article class="theme-card">
+                    <h3>AI</h3>
+                    <p>The software, platforms, and model ecosystems changing how work gets done.</p>
+                </article>
+                <article class="theme-card">
+                    <h3>Hardware</h3>
+                    <p>The chips, fabs, memory, and manufacturing capacity required to make AI real.</p>
+                </article>
+                <article class="theme-card">
+                    <h3>Infrastructure</h3>
+                    <p>The physical and digital systems that support logistics, compute, and industrial scale.</p>
+                </article>
+                <article class="theme-card">
+                    <h3>Energy</h3>
+                    <p>The power layer behind factories, grids, data centers, and long-run growth.</p>
+                </article>
+            </div>
+        </section>
 
-    <!-- Dialogflow Messenger -->
-    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
-    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
-    <df-messenger
-        project-id="felix-august"
-        agent-id="56c3ce24-09ef-47fb-823a-303b1426b5b0"
-        language-code="en"
-        max-query-length="-1">
-        <df-messenger-chat-bubble chat-title="Agent Aug 12, 2024, 11:03:28 AM"></df-messenger-chat-bubble>
-    </df-messenger>
-    <style>
-        df-messenger {
-            z-index: 999;
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-        }
-    </style>
+        <section class="section shell principle-grid">
+            <div>
+                <p class="section-kicker">Principles</p>
+                <h2>What I want this project to teach</h2>
+            </div>
+            <div class="principle-list">
+                <div class="principle-item">
+                    <span>01</span>
+                    <p>Ownership matters more than prediction.</p>
+                </div>
+                <div class="principle-item">
+                    <span>02</span>
+                    <p>Consistency beats intensity when time is on your side.</p>
+                </div>
+                <div class="principle-item">
+                    <span>03</span>
+                    <p>Data should support judgment, not replace it.</p>
+                </div>
+                <div class="principle-item">
+                    <span>04</span>
+                    <p>Risk belongs in the open, especially with options.</p>
+                </div>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <div class="container">
-            <p class="mb-0">&copy; <span id="current-year"></span> Felix/August. All rights reserved.</p>
-            <div class="social-links mt-2">
-                <a href="https://github.com/justfetz" class="text-white mr-3"><i class="fab fa-github"></i></a>
-                <a href="https://linkedin.com/in/jasonmfetzer" class="text-white"><i class="fab fa-linkedin"></i></a>
+        <section class="section shell data-callout">
+            <div>
+                <p class="section-kicker">Ready for real data</p>
+                <h2>How to send the actual tickers and contributions</h2>
+                <p>The cleanest format is a simple table with ticker, shares, average cost, current value, thesis, and whether it sits in Fidelity, thinkorswim, or an index bucket. Weekly contributions can be a second table with date and amount.</p>
+            </div>
+            <div class="card muted-card">
+                <p class="small-label">Easy input format</p>
+                <pre class="data-snippet">Ticker | Account | Thesis | Shares | Avg Cost | Current Value
+NVDA   | Fidelity | AI compute | 12 | 415.00 | 15360.00
+VOO    | Fidelity | core index | 18 | 420.00 | 9450.00
+
+Week Ending | Amount
+2026-05-02  | 25
+2026-05-09  | 50</pre>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-shell">
+            <p>Felix/August is a personal journal about long-term ownership, family, and learning in public.</p>
+            <div class="footer-links">
+                <a href="https://github.com/justfetz">GitHub</a>
+                <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        // Set the current year dynamically
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
