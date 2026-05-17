@@ -1,103 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Felix-August</title>
+    <title>Why This Exists | Felix/August</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand custom-font" href="#">felix/august</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
-                <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
-            </ul>
+    <header class="site-header">
+        <div class="shell nav-shell">
+            <a class="brand" href="index.html">felix/august</a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="index.html">Home</a>
+                <a href="about.html">Why This Exists</a>
+                <a href="services.html">Themes</a>
+                <a href="contact.html">Notes</a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <!-- About Section -->
-    <section class="about-section mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <img src="rubycuby.png" class="img-fluid rounded" alt="Rubik's Cube">
-                </div>
-                <div class="col-lg-6 d-flex flex-column justify-content-center">
-                    <h2 class="text-dark">Who We Are</h2>
-                    <p class="text-muted">At Felix/August, we are passionate about leveraging the power of Artificial Intelligence to create smarter, more efficient manufacturing solutions. Our team consists of AI nerds and optimization enthusiasts who live and breathe data-driven decision-making. From machine learning algorithms to cutting-edge operational research techniques, we strive to push the boundaries of what's possible in the industrial world.</p>
-                    <h4 class="text-dark">Our Mission</h4>
-                    <p class="text-muted">Our mission is simple: to empower businesses with the tools and insights needed to optimize their operations, reduce waste, and achieve peak performance. We believe that with the right AI-driven solutions, companies can not only improve their bottom line but also create a more sustainable and resilient future.</p>
-                </div>
+    <main class="shell">
+        <section class="page-hero">
+            <p class="section-kicker">Why this exists</p>
+            <h1>To leave behind more than a brokerage statement.</h1>
+            <p class="hero-text">I wanted a place to document the thinking behind ownership: what I bought, what I misunderstood, what changed, and what still felt true after the market moved around.</p>
+        </section>
+
+        <section class="page-body">
+            <article class="card">
+                <h2>A record of reasoning</h2>
+                <p>Felix/August is meant to become a durable journal of conviction, mistakes, patience, and discipline. I want the boys to be able to see not just the outcome of decisions, but the reasoning behind them.</p>
+                <p>That means writing down why a business mattered, why a position was sized a certain way, what risks were visible, and what I hoped time would do for small repeated contributions.</p>
+            </article>
+
+            <article class="card muted-card">
+                <h2>What this is not</h2>
+                <ul class="note-list">
+                    <li>Not day-trading commentary.</li>
+                    <li>Not a promise that every thesis will be right.</li>
+                    <li>Not a substitute for caution around options or risk.</li>
+                    <li>Not a generic finance content site.</li>
+                </ul>
+            </article>
+
+            <article class="card">
+                <h2>What I hope it teaches</h2>
+                <ul class="note-list">
+                    <li>Ownership can be thoughtful and patient.</li>
+                    <li>Small weekly contributions matter when they are sustained.</li>
+                    <li>Generational wealth is built by stewardship, not just returns.</li>
+                    <li>Technology, infrastructure, and energy are deeply connected.</li>
+                </ul>
+            </article>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-shell">
+            <p>Felix/August is a personal journal about long-term ownership, family, and learning in public.</p>
+            <div class="footer-links">
+                <a href="https://github.com/justfetz">GitHub</a>
+                <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a>
             </div>
         </div>
-    </section>
-
-    <!-- Core Values Section -->
-    <section class="core-values-section bg-light py-5">
-        <div class="container">
-            <h3 class="text-center text-dark mb-4">Our Core Values</h3>
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    <i class="fas fa-brain fa-3x text-primary mb-3"></i>
-                    <h5 class="text-dark">Innovation</h5>
-                    <p class="text-muted">We are constantly exploring new technologies and methodologies to stay ahead of the curve and deliver cutting-edge solutions to our clients.</p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
-                    <h5 class="text-dark">Efficiency</h5>
-                    <p class="text-muted">Efficiency is at the heart of everything we do. Our optimization solutions are designed to streamline processes, reduce waste, and maximize productivity.</p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                    <h5 class="text-dark">Clarity</h5>
-                    <p class="text-muted">We believe in the power of clarity. By working closely with our clients, we ensure that our solutions are simple and easy to use.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- AI Solutions Section -->
-    <section class="ai-solutions-section py-5">
-        <div class="container">
-            <h3 class="text-center text-dark mb-4">Our AI Solutions</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="text-dark">Operational Research & Algorithms</h5>
-                    <p class="text-muted">Our expertise in operational research allows us to develop algorithms that solve complex problems in real-time. Whether it’s optimizing production schedules, reducing material waste, or improving supply chain logistics, we have the tools to make it happen.</p>
-                </div>
-                <div class="col-md-6">
-                    <h5 class="text-dark">Machine Learning, AI, NLP & Predictive Analytics</h5>
-                    <p class="text-muted">Harnessing the power of machine learning, we create predictive models that provide actionable insights. From demand forecasting to quality control, our solutions help businesses make data-driven decisions with confidence.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <p class="mb-0">&copy; 2024 Felix/August. All rights reserved.</p>
     </footer>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-
 </html>
