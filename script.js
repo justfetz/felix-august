@@ -106,7 +106,14 @@ const portfolioData = {
         { label: "Week 4", amount: 150 },
         { label: "Week 5", amount: 150 },
         { label: "Week 6", amount: 150 }
-    ]
+    ],
+    census: {
+        cards: [
+            { key: "population", label: "U.S. population", value: "Loading...", source: "Census Population Estimates" },
+            { key: "medianAge", label: "Median age", value: "Loading...", source: "ACS 1-year profile" },
+            { key: "medianIncome", label: "Median household income", value: "Loading...", source: "ACS 1-year profile" }
+        ]
+    }
 };
 
 function formatCurrency(value) {
@@ -120,6 +127,10 @@ function formatCurrency(value) {
 function formatSignedCurrency(value) {
     const prefix = value >= 0 ? "+" : "-";
     return `${prefix}${formatCurrency(Math.abs(value))}`;
+}
+
+function gainClass(value) {
+    return value < 0 ? "holding-gain loss" : "holding-gain";
 }
 
 function renderStats() {
@@ -162,7 +173,7 @@ function renderAccountBreakdown() {
                     <span>${account.positions} imported positions</span>
                 </div>
             </div>
-            <div class="holding-gain">${formatSignedCurrency(account.gain)}<br><span>${formatCurrency(account.weeklyCadence)}/week</span></div>
+            <div class="${gainClass(account.gain)}">${formatSignedCurrency(account.gain)}<br><span>${formatCurrency(account.weeklyCadence)}/week</span></div>
         </article>
     `).join("");
 }
@@ -190,7 +201,7 @@ function renderHoldings() {
                         <span>${formatCurrency(holding.marketValue)}</span>
                     </div>
                 </div>
-                <div class="holding-gain">${formatSignedCurrency(holding.totalGain)}<br><span>${holding.gainPct >= 0 ? "+" : ""}${holding.gainPct}%</span></div>
+                <div class="${gainClass(holding.totalGain)}">${formatSignedCurrency(holding.totalGain)}<br><span>${holding.gainPct >= 0 ? "+" : ""}${holding.gainPct}%</span></div>
             </article>
         `;
     }).join("");
@@ -398,6 +409,130 @@ function renderThemeAllocationChart() {
         .text(d => `${d.theme} · ${formatCurrency(d.value)}`);
 }
 
+function renderCensusCards() {
+    const container = document.getElementById("census-cards");
+    if (!container) return;
+
+    container.innerHTML = portfolioData.census.cards.map((card) => `
+        <article class="census-card">
+            <span class="small-label">${card.label}</span>
+            <strong>${card.value}</strong>
+            <p class="census-source">${card.source}</p>
+        </article>
+    `).join("");
+}
+
+function renderCensusChart() {
+    const container = d3.select("#census-chart");
+    if (container.empty()) return;
+    container.selectAll("*").remove();
+
+    const raw = portfolioData.census.cards;
+    const data = [
+        { label: "Population (M)", value: raw.find(d => d.key === "populationValue")?.numeric ?? 0 },
+        { label: "Median age", value: raw.find(d => d.key === "medianAgeValue")?.numeric ?? 0 },
+        { label: "Median income (k)", value: raw.find(d => d.key === "medianIncomeValue")?.numeric ? raw.find(d => d.key === "medianIncomeValue").numeric / 1000 : 0 }
+    ];
+
+    const width = 520;
+    const height = 260;
+    const margin = { top: 20, right: 20, bottom: 36, left: 54 };
+
+    const svg = container.append("svg")
+        .attr("class", "chart-svg")
+        .attr("viewBox", `0 0 ${width} ${height}`);
+
+    const x = d3.scaleBand()
+        .domain(data.map(d => d.label))
+        .range([margin.left, width - margin.right])
+        .padding(0.34);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value) * 1.08 || 1])
+        .range([height - margin.bottom, margin.top]);
+
+    const colors = ["#4c2f18", "#8a5a2b", "#b78953"];
+
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).ticks(4).tickSize(-(width - margin.left - margin.right)).tickFormat(() => ""));
+
+    svg.selectAll("rect.census-bar")
+        .data(data)
+        .join("rect")
+        .attr("x", d => x(d.label))
+        .attr("y", d => y(d.value))
+        .attr("width", x.bandwidth())
+        .attr("height", d => y(0) - y(d.value))
+        .attr("rx", 10)
+        .attr("fill", (_, i) => colors[i % colors.length]);
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).tickSize(0))
+        .call(g => g.select(".domain").remove());
+
+    svg.selectAll("text.census-value")
+        .data(data)
+        .join("text")
+        .attr("class", "chart-value")
+        .attr("text-anchor", "middle")
+        .attr("x", d => x(d.label) + x.bandwidth() / 2)
+        .attr("y", d => y(d.value) - 8)
+        .text(d => d.label.includes("income") ? `${d.value.toFixed(1)}k` : d.value.toFixed(1));
+}
+
+async function loadCensusBackdrop() {
+    try {
+        const [populationRes, profileRes] = await Promise.all([
+            fetch("https://api.census.gov/data/2023/pep/population?get=NAME,POP&for=us:1"),
+            fetch("https://api.census.gov/data/2023/acs/acs1/profile?get=NAME,DP03_0062E,DP05_0018E&for=us:1")
+        ]);
+
+        const populationJson = await populationRes.json();
+        const profileJson = await profileRes.json();
+
+        const population = Number(populationJson[1][1]);
+        const medianIncome = Number(profileJson[1][1]);
+        const medianAge = Number(profileJson[1][2]);
+
+        portfolioData.census.cards = [
+            {
+                key: "populationValue",
+                label: "U.S. population",
+                value: `${(population / 1000000).toFixed(1)}M`,
+                numeric: population / 1000000,
+                source: "Census Population Estimates, 2023"
+            },
+            {
+                key: "medianAgeValue",
+                label: "Median age",
+                value: `${medianAge.toFixed(1)} years`,
+                numeric: medianAge,
+                source: "ACS 1-year profile, 2023"
+            },
+            {
+                key: "medianIncomeValue",
+                label: "Median household income",
+                value: formatCurrency(medianIncome),
+                numeric: medianIncome,
+                source: "ACS 1-year profile, 2023"
+            }
+        ];
+    } catch (error) {
+        portfolioData.census.cards = [
+            { key: "populationValue", label: "U.S. population", value: "Unavailable", numeric: 0, source: "Census API fetch issue" },
+            { key: "medianAgeValue", label: "Median age", value: "Unavailable", numeric: 0, source: "Census API fetch issue" },
+            { key: "medianIncomeValue", label: "Median household income", value: "Unavailable", numeric: 0, source: "Census API fetch issue" }
+        ];
+    }
+
+    renderCensusCards();
+    renderCensusChart();
+}
+
 renderStats();
 renderAccountBreakdown();
 renderHoldings();
@@ -405,3 +540,5 @@ renderContributionChart();
 renderTopHoldingsChart();
 renderAccountSplitChart();
 renderThemeAllocationChart();
+renderCensusCards();
+loadCensusBackdrop();
