@@ -109,11 +109,20 @@ const portfolioData = {
     ],
     census: {
         cards: [
-            { key: "population", label: "U.S. population", value: "Loading...", source: "Census Population Estimates" },
-            { key: "medianAge", label: "Median age", value: "Loading...", source: "ACS 1-year profile" },
-            { key: "medianIncome", label: "Median household income", value: "Loading...", source: "ACS 1-year profile" }
+            { key: "populationValue", label: "U.S. population", value: "Loading...", numeric: 0, source: "Census Population Estimates" },
+            { key: "medianAgeValue", label: "Median age", value: "Loading...", numeric: 0, source: "ACS 1-year profile" },
+            { key: "medianIncomeValue", label: "Median household income", value: "Loading...", numeric: 0, source: "ACS 1-year profile" }
         ]
     }
+};
+
+const THEME_COLORS = {
+    "AI": "#4c2f18",
+    "Semis": "#8a5a2b",
+    "Energy": "#b78953",
+    "Index / Macro": "#7b8c6f",
+    "Alternative": "#566a7f",
+    "Platform / Other": "#9a6b5f"
 };
 
 function formatCurrency(value) {
@@ -129,8 +138,22 @@ function formatSignedCurrency(value) {
     return `${prefix}${formatCurrency(Math.abs(value))}`;
 }
 
-function gainClass(value) {
-    return value < 0 ? "holding-gain loss" : "holding-gain";
+function formatSignedPercent(value) {
+    const prefix = value >= 0 ? "+" : "";
+    return `${prefix}${value.toFixed(2)}%`;
+}
+
+function valueClass(value) {
+    return value < 0 ? "loss-text" : "gain-text";
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
 
 function renderStats() {
@@ -148,8 +171,8 @@ function renderStats() {
 
     container.innerHTML = stats.map(([label, value]) => `
         <article class="stat-card">
-            <span class="small-label">${label}</span>
-            <strong>${value}</strong>
+            <span class="small-label">${escapeHtml(label)}</span>
+            <strong>${escapeHtml(value)}</strong>
         </article>
     `).join("");
 }
@@ -162,18 +185,21 @@ function renderAccountBreakdown() {
         <article class="holding-item">
             <div>
                 <div class="row-labels">
-                    <strong>${account.name}</strong>
-                    <span>${account.accountType}</span>
+                    <strong>${escapeHtml(account.name)}</strong>
+                    <span>${escapeHtml(account.accountType)}</span>
                 </div>
                 <div class="holding-meta">
-                    <span>${formatCurrency(account.currentValue)} current value</span>
-                    <span>•</span>
-                    <span>${formatCurrency(account.contributed)} contributed</span>
-                    <span>•</span>
+                    <span>${escapeHtml(formatCurrency(account.currentValue))} current value</span>
+                    <span>&bull;</span>
+                    <span>${escapeHtml(formatCurrency(account.contributed))} contributed</span>
+                    <span>&bull;</span>
                     <span>${account.positions} imported positions</span>
                 </div>
             </div>
-            <div class="${gainClass(account.gain)}">${formatSignedCurrency(account.gain)}<br><span>${formatCurrency(account.weeklyCadence)}/week</span></div>
+            <div class="holding-gain">
+                <span class="${valueClass(account.gain)}">${escapeHtml(formatSignedCurrency(account.gain))}</span><br>
+                <span>${escapeHtml(formatCurrency(account.weeklyCadence))}/week</span>
+            </div>
         </article>
     `).join("");
 }
@@ -188,20 +214,23 @@ function renderHoldings() {
             <article class="holding-item">
                 <div>
                     <div class="row-labels">
-                        <strong>${holding.ticker}</strong>
+                        <strong>${escapeHtml(holding.ticker)}</strong>
                         <span>${weight}% household weight</span>
                     </div>
                     <div class="holding-meta">
-                        <span>${holding.label}</span>
-                        <span>•</span>
-                        <span>${holding.account}</span>
-                        <span>•</span>
-                        <span>${holding.theme}</span>
-                        <span>•</span>
-                        <span>${formatCurrency(holding.marketValue)}</span>
+                        <span>${escapeHtml(holding.label)}</span>
+                        <span>&bull;</span>
+                        <span>${escapeHtml(holding.account)}</span>
+                        <span>&bull;</span>
+                        <span>${escapeHtml(holding.theme)}</span>
+                        <span>&bull;</span>
+                        <span>${escapeHtml(formatCurrency(holding.marketValue))}</span>
                     </div>
                 </div>
-                <div class="${gainClass(holding.totalGain)}">${formatSignedCurrency(holding.totalGain)}<br><span>${holding.gainPct >= 0 ? "+" : ""}${holding.gainPct}%</span></div>
+                <div class="holding-gain">
+                    <span class="${valueClass(holding.totalGain)}">${escapeHtml(formatSignedCurrency(holding.totalGain))}</span><br>
+                    <span class="${valueClass(holding.gainPct)}">${escapeHtml(formatSignedPercent(holding.gainPct))}</span>
+                </div>
             </article>
         `;
     }).join("");
@@ -217,8 +246,8 @@ function renderContributionChart() {
         return `
             <div>
                 <div class="row-labels">
-                    <span>${item.label}</span>
-                    <span>${formatCurrency(item.amount)}</span>
+                    <span>${escapeHtml(item.label)}</span>
+                    <span>${escapeHtml(formatCurrency(item.amount))}</span>
                 </div>
                 <div class="bar-track">
                     <div class="bar-fill" style="width: ${width}%"></div>
@@ -228,185 +257,115 @@ function renderContributionChart() {
     }).join("");
 }
 
+function svgText(x, y, text, className, anchor = "start") {
+    return `<text x="${x}" y="${y}" class="${className}" text-anchor="${anchor}">${escapeHtml(text)}</text>`;
+}
+
 function renderTopHoldingsChart() {
-    const container = d3.select("#top-holdings-chart");
-    if (container.empty()) return;
+    const container = document.getElementById("top-holdings-chart");
+    if (!container) return;
 
-    const data = portfolioData.holdings.slice(0, 8).slice().reverse();
-    const width = 520;
-    const barHeight = 34;
-    const height = data.length * barHeight + 40;
-    const margin = { top: 10, right: 24, bottom: 20, left: 84 };
+    const data = portfolioData.holdings.slice(0, 8);
+    const width = 640;
+    const margin = { top: 18, right: 90, bottom: 16, left: 84 };
+    const rowHeight = 44;
+    const innerWidth = width - margin.left - margin.right;
+    const height = margin.top + margin.bottom + rowHeight * data.length;
+    const maxValue = Math.max(...data.map((item) => item.marketValue), 1);
 
-    const svg = container.append("svg")
-        .attr("class", "chart-svg")
-        .attr("viewBox", `0 0 ${width} ${height}`);
+    const bars = data.map((item, index) => {
+        const y = margin.top + index * rowHeight;
+        const barWidth = (item.marketValue / maxValue) * innerWidth;
+        const labelY = y + 24;
+        return [
+            `<rect x="${margin.left}" y="${y + 6}" width="${barWidth}" height="22" rx="8" class="bar-primary"></rect>`,
+            svgText(margin.left - 12, labelY, item.ticker, "chart-label", "end"),
+            svgText(margin.left + barWidth + 10, labelY, formatCurrency(item.marketValue), "chart-value")
+        ].join("");
+    }).join("");
 
-    const x = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.marketValue)])
-        .range([margin.left, width - margin.right]);
-
-    const y = d3.scaleBand()
-        .domain(data.map(d => d.ticker))
-        .range([margin.top, height - margin.bottom])
-        .padding(0.24);
-
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).ticks(4).tickSize(-(height - margin.top - margin.bottom)).tickFormat(() => ""));
-
-    svg.selectAll("rect.bar")
-        .data(data)
-        .join("rect")
-        .attr("class", "bar-primary")
-        .attr("x", margin.left)
-        .attr("y", d => y(d.ticker))
-        .attr("width", d => x(d.marketValue) - margin.left)
-        .attr("height", y.bandwidth())
-        .attr("rx", 8);
-
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y).tickSize(0))
-        .call(g => g.select(".domain").remove());
-
-    svg.selectAll("text.value")
-        .data(data)
-        .join("text")
-        .attr("class", "chart-value")
-        .attr("x", d => x(d.marketValue) + 8)
-        .attr("y", d => y(d.ticker) + y.bandwidth() / 2 + 4)
-        .text(d => formatCurrency(d.marketValue));
+    container.innerHTML = `
+        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Top holdings by market value">
+            ${bars}
+        </svg>
+    `;
 }
 
 function renderAccountSplitChart() {
-    const container = d3.select("#account-split-chart");
-    if (container.empty()) return;
+    const container = document.getElementById("account-split-chart");
+    if (!container) return;
 
     const data = portfolioData.accounts;
-    const width = 420;
-    const height = 260;
-    const margin = { top: 20, right: 20, bottom: 36, left: 42 };
+    const width = 520;
+    const height = 300;
+    const margin = { top: 20, right: 24, bottom: 54, left: 54 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+    const maxValue = Math.max(...data.map((item) => item.currentValue), 1);
+    const slotWidth = innerWidth / data.length;
+    const barWidth = Math.min(120, slotWidth * 0.55);
 
-    const svg = container.append("svg")
-        .attr("class", "chart-svg")
-        .attr("viewBox", `0 0 ${width} ${height}`);
+    const bars = data.map((item, index) => {
+        const x = margin.left + index * slotWidth + (slotWidth - barWidth) / 2;
+        const barHeight = (item.currentValue / maxValue) * innerHeight;
+        const y = margin.top + (innerHeight - barHeight);
+        const fill = index === 0 ? "#4c2f18" : "#8a5a2b";
+        return [
+            `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="10" fill="${fill}"></rect>`,
+            svgText(x + barWidth / 2, y - 8, formatCurrency(item.currentValue), "chart-value", "middle"),
+            svgText(x + barWidth / 2, height - 22, item.name, "chart-label", "middle")
+        ].join("");
+    }).join("");
 
-    const x = d3.scaleBand()
-        .domain(data.map(d => d.name))
-        .range([margin.left, width - margin.right])
-        .padding(0.34);
-
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.currentValue) * 1.1])
-        .range([height - margin.bottom, margin.top]);
-
-    const colors = d3.scaleOrdinal()
-        .domain(data.map(d => d.name))
-        .range(["#4c2f18", "#8a5a2b"]);
-
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y).ticks(4).tickSize(-(width - margin.left - margin.right)).tickFormat(() => ""));
-
-    svg.selectAll("rect.account-bar")
-        .data(data)
-        .join("rect")
-        .attr("x", d => x(d.name))
-        .attr("y", d => y(d.currentValue))
-        .attr("width", x.bandwidth())
-        .attr("height", d => y(0) - y(d.currentValue))
-        .attr("rx", 10)
-        .attr("fill", d => colors(d.name));
-
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).tickSize(0))
-        .call(g => g.select(".domain").remove());
-
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y).ticks(4).tickFormat(d => `$${Math.round(d / 1000)}k`))
-        .call(g => g.select(".domain").remove());
-
-    svg.selectAll("text.account-value")
-        .data(data)
-        .join("text")
-        .attr("class", "chart-value")
-        .attr("text-anchor", "middle")
-        .attr("x", d => x(d.name) + x.bandwidth() / 2)
-        .attr("y", d => y(d.currentValue) - 8)
-        .text(d => formatCurrency(d.currentValue));
+    container.innerHTML = `
+        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Account split by current value">
+            <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" class="chart-axis-line"></line>
+            ${bars}
+        </svg>
+    `;
 }
 
 function renderThemeAllocationChart() {
-    const container = d3.select("#theme-allocation-chart");
-    if (container.empty()) return;
+    const container = document.getElementById("theme-allocation-chart");
+    if (!container) return;
 
-    const rolled = d3.rollups(
-        portfolioData.allHoldings,
-        values => d3.sum(values, d => d.marketValue),
-        d => d.theme
-    ).map(([theme, value]) => ({ theme, value })).sort((a, b) => b.value - a.value);
+    const themeTotals = portfolioData.allHoldings.reduce((accumulator, holding) => {
+        accumulator[holding.theme] = (accumulator[holding.theme] || 0) + holding.marketValue;
+        return accumulator;
+    }, {});
 
-    const width = 520;
-    const height = 320;
-    const radius = 92;
-    const colors = d3.scaleOrdinal()
-        .domain(rolled.map(d => d.theme))
-        .range(["#4c2f18", "#8a5a2b", "#b78953", "#7b8c6f", "#566a7f", "#9a6b5f"]);
+    const data = Object.entries(themeTotals)
+        .map(([theme, value]) => ({ theme, value }))
+        .sort((a, b) => b.value - a.value);
 
-    const svg = container.append("svg")
-        .attr("class", "chart-svg")
-        .attr("viewBox", `0 0 ${width} ${height}`);
+    const total = data.reduce((sum, item) => sum + item.value, 0) || 1;
+    const legendItems = data.map((item) => {
+        const pct = ((item.value / total) * 100).toFixed(1);
+        const color = THEME_COLORS[item.theme] || "#8a5a2b";
+        return `
+            <div class="theme-row">
+                <span class="theme-swatch" style="background:${color}"></span>
+                <span>${escapeHtml(item.theme)}</span>
+                <strong>${escapeHtml(formatCurrency(item.value))}</strong>
+                <span>${pct}%</span>
+            </div>
+        `;
+    }).join("");
 
-    const g = svg.append("g")
-        .attr("transform", `translate(150,160)`);
+    const stackedWidth = data.map((item) => {
+        const pct = (item.value / total) * 100;
+        const color = THEME_COLORS[item.theme] || "#8a5a2b";
+        return `<div class="theme-segment" style="width:${pct}%;background:${color}" title="${escapeHtml(item.theme)}: ${escapeHtml(formatCurrency(item.value))}"></div>`;
+    }).join("");
 
-    const pie = d3.pie().value(d => d.value).sort(null);
-    const arc = d3.arc().innerRadius(48).outerRadius(radius);
-
-    g.selectAll("path")
-        .data(pie(rolled))
-        .join("path")
-        .attr("d", arc)
-        .attr("fill", d => colors(d.data.theme))
-        .attr("class", "slice-stroke");
-
-    g.append("text")
-        .attr("text-anchor", "middle")
-        .attr("y", -4)
-        .attr("class", "chart-label")
-        .text("Theme mix");
-
-    g.append("text")
-        .attr("text-anchor", "middle")
-        .attr("y", 18)
-        .attr("class", "chart-value")
-        .text(formatCurrency(portfolioData.summary.householdValue));
-
-    const legend = svg.append("g").attr("transform", "translate(290,68)");
-    const items = legend.selectAll("g")
-        .data(rolled)
-        .join("g")
-        .attr("transform", (_, i) => `translate(0, ${i * 34})`);
-
-    items.append("circle")
-        .attr("r", 6)
-        .attr("cx", 0)
-        .attr("cy", 0)
-        .attr("fill", d => colors(d.theme));
-
-    items.append("text")
-        .attr("class", "chart-label")
-        .attr("x", 14)
-        .attr("y", 4)
-        .text(d => `${d.theme} · ${formatCurrency(d.value)}`);
+    container.innerHTML = `
+        <div class="theme-stack" aria-label="Theme allocation stacked bar">
+            ${stackedWidth}
+        </div>
+        <div class="theme-legend">
+            ${legendItems}
+        </div>
+    `;
 }
 
 function renderCensusCards() {
@@ -415,73 +374,52 @@ function renderCensusCards() {
 
     container.innerHTML = portfolioData.census.cards.map((card) => `
         <article class="census-card">
-            <span class="small-label">${card.label}</span>
-            <strong>${card.value}</strong>
-            <p class="census-source">${card.source}</p>
+            <span class="small-label">${escapeHtml(card.label)}</span>
+            <strong>${escapeHtml(card.value)}</strong>
+            <p class="census-source">${escapeHtml(card.source)}</p>
         </article>
     `).join("");
 }
 
 function renderCensusChart() {
-    const container = d3.select("#census-chart");
-    if (container.empty()) return;
-    container.selectAll("*").remove();
+    const container = document.getElementById("census-chart");
+    if (!container) return;
 
     const raw = portfolioData.census.cards;
     const data = [
-        { label: "Population (M)", value: raw.find(d => d.key === "populationValue")?.numeric ?? 0 },
-        { label: "Median age", value: raw.find(d => d.key === "medianAgeValue")?.numeric ?? 0 },
-        { label: "Median income (k)", value: raw.find(d => d.key === "medianIncomeValue")?.numeric ? raw.find(d => d.key === "medianIncomeValue").numeric / 1000 : 0 }
+        { label: "Population (M)", value: raw.find((item) => item.key === "populationValue")?.numeric ?? 0 },
+        { label: "Median age", value: raw.find((item) => item.key === "medianAgeValue")?.numeric ?? 0 },
+        { label: "Median income (k)", value: (raw.find((item) => item.key === "medianIncomeValue")?.numeric ?? 0) / 1000 }
     ];
 
-    const width = 520;
-    const height = 260;
-    const margin = { top: 20, right: 20, bottom: 36, left: 54 };
-
-    const svg = container.append("svg")
-        .attr("class", "chart-svg")
-        .attr("viewBox", `0 0 ${width} ${height}`);
-
-    const x = d3.scaleBand()
-        .domain(data.map(d => d.label))
-        .range([margin.left, width - margin.right])
-        .padding(0.34);
-
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.value) * 1.08 || 1])
-        .range([height - margin.bottom, margin.top]);
-
+    const width = 620;
+    const height = 280;
+    const margin = { top: 20, right: 24, bottom: 56, left: 48 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+    const maxValue = Math.max(...data.map((item) => item.value), 1);
+    const slotWidth = innerWidth / data.length;
+    const barWidth = Math.min(110, slotWidth * 0.58);
     const colors = ["#4c2f18", "#8a5a2b", "#b78953"];
 
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(y).ticks(4).tickSize(-(width - margin.left - margin.right)).tickFormat(() => ""));
+    const bars = data.map((item, index) => {
+        const x = margin.left + index * slotWidth + (slotWidth - barWidth) / 2;
+        const barHeight = (item.value / maxValue) * innerHeight;
+        const y = margin.top + (innerHeight - barHeight);
+        const displayValue = item.label.includes("income") ? `${item.value.toFixed(1)}k` : item.value.toFixed(1);
+        return [
+            `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="10" fill="${colors[index % colors.length]}"></rect>`,
+            svgText(x + barWidth / 2, y - 8, displayValue, "chart-value", "middle"),
+            svgText(x + barWidth / 2, height - 22, item.label, "chart-label", "middle")
+        ].join("");
+    }).join("");
 
-    svg.selectAll("rect.census-bar")
-        .data(data)
-        .join("rect")
-        .attr("x", d => x(d.label))
-        .attr("y", d => y(d.value))
-        .attr("width", x.bandwidth())
-        .attr("height", d => y(0) - y(d.value))
-        .attr("rx", 10)
-        .attr("fill", (_, i) => colors[i % colors.length]);
-
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).tickSize(0))
-        .call(g => g.select(".domain").remove());
-
-    svg.selectAll("text.census-value")
-        .data(data)
-        .join("text")
-        .attr("class", "chart-value")
-        .attr("text-anchor", "middle")
-        .attr("x", d => x(d.label) + x.bandwidth() / 2)
-        .attr("y", d => y(d.value) - 8)
-        .text(d => d.label.includes("income") ? `${d.value.toFixed(1)}k` : d.value.toFixed(1));
+    container.innerHTML = `
+        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="National backdrop snapshot">
+            <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" class="chart-axis-line"></line>
+            ${bars}
+        </svg>
+    `;
 }
 
 async function loadCensusBackdrop() {
@@ -541,4 +479,5 @@ renderTopHoldingsChart();
 renderAccountSplitChart();
 renderThemeAllocationChart();
 renderCensusCards();
+renderCensusChart();
 loadCensusBackdrop();

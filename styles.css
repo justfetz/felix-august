@@ -318,6 +318,10 @@ a {
     font-weight: 700;
 }
 
+.gain-text {
+    color: var(--gain) !important;
+}
+
 .holding-gain.loss,
 .loss-text {
     color: var(--loss) !important;
@@ -389,9 +393,53 @@ a {
     fill: #b78953;
 }
 
+.chart-axis-line {
+    stroke: rgba(90, 84, 75, 0.24);
+    stroke-width: 1;
+}
+
 .slice-stroke {
     stroke: var(--paper);
     stroke-width: 2px;
+}
+
+.theme-stack {
+    display: flex;
+    height: 18px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(90, 84, 75, 0.12);
+    margin-bottom: 1.25rem;
+}
+
+.theme-segment {
+    height: 100%;
+}
+
+.theme-legend {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.theme-row {
+    display: grid;
+    grid-template-columns: 14px 1fr auto auto;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.theme-row strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.theme-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
 }
 
 .census-card strong {
