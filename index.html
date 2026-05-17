@@ -63,7 +63,7 @@
                     <p class="section-kicker">Interactive snapshot</p>
                     <h2>Current thinkorswim sleeve</h2>
                 </div>
-                <p class="section-note">This pass now reflects the current thinkorswim holdings. The weekly contribution bars remain a simple cadence placeholder until the full Fidelity and deposit history is added.</p>
+                <p class="section-note">This pass reflects the imported thinkorswim positions, while the cadence now matches the full routine: $50 a week to thinkorswim and $100 a week to Fidelity. The Fidelity sleeve will be added cleanly from a CSV or cleaner export.</p>
             </div>
 
             <div class="stats-grid" id="portfolio-stats"></div>
@@ -72,7 +72,7 @@
                 <div class="card">
                     <div class="card-head">
                         <h3>Holdings</h3>
-                        <p>Current positions, weight, and cumulative gain</p>
+                        <p>Current imported positions, weight, and cumulative gain</p>
                     </div>
                     <div id="holdings-list" class="holdings-list"></div>
                 </div>
@@ -80,7 +80,7 @@
                 <div class="card">
                     <div class="card-head">
                         <h3>Contribution cadence</h3>
-                        <p>Illustrative weekly rhythm until the full ledger is added</p>
+                        <p>Combined weekly rhythm across both accounts</p>
                     </div>
                     <div id="contribution-chart" class="chart-rows"></div>
                 </div>
@@ -146,14 +146,18 @@
                 <p>The next layer is the Fidelity side, real weekly contribution history, and cleaner thesis tags for each holding. Once that is in place, this snapshot can become a stronger multi-account view instead of a single-sleeve picture.</p>
             </div>
             <div class="card muted-card">
-                <p class="small-label">Easy input format</p>
-                <pre class="data-snippet">Ticker | Account | Thesis | Shares | Avg Cost | Current Value
-NVDA   | Fidelity | AI compute | 12 | 415.00 | 15360.00
-VOO    | Fidelity | core index | 18 | 420.00 | 9450.00
+                <p class="small-label">Best next input</p>
+                <pre class="data-snippet">CSV export preferred
+- ticker
+- quantity
+- current value
+- total gain
+- cost basis
+- account
 
-Week Ending | Amount
-2026-05-02  | 25
-2026-05-09  | 50</pre>
+Weekly cadence
+- thinkorswim: $50/week
+- Fidelity: $100/week</pre>
             </div>
         </section>
     </main>
