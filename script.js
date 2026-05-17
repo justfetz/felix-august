@@ -71,10 +71,21 @@ const fidelityAccount = {
 };
 
 const allAccounts = [thinkorswimAccount, fidelityAccount];
+
+function inferTheme(holding) {
+    const text = `${holding.ticker} ${holding.label}`.toLowerCase();
+    if (text.includes("ai") || text.includes("robot") || text.includes("automation") || text.includes("voice")) return "AI";
+    if (text.includes("semi") || text.includes("chip") || text.includes("memory") || ["NVDA", "AMD", "MU", "INTC", "MXL", "TSM", "AVGO", "ASML", "MRVL", "SMCI", "LITE"].includes(holding.ticker)) return "Semis";
+    if (text.includes("energy") || ["XLE", "DUK", "D", "SO", "NEE", "EQNR", "HLX", "LNG", "KMI", "XEL"].includes(holding.ticker)) return "Energy";
+    if (text.includes("market etf") || text.includes("index") || ["VTI", "XLF", "SLV"].includes(holding.ticker)) return "Index / Macro";
+    if (text.includes("bitcoin") || ["IBIT", "BITC"].includes(holding.ticker)) return "Alternative";
+    return "Platform / Other";
+}
+
 const combinedHoldings = allAccounts
     .flatMap((account) => account.holdings)
-    .sort((a, b) => b.marketValue - a.marketValue)
-    .slice(0, 18);
+    .map((holding) => ({ ...holding, theme: inferTheme(holding) }))
+    .sort((a, b) => b.marketValue - a.marketValue);
 
 const portfolioData = {
     summary: {
@@ -86,7 +97,8 @@ const portfolioData = {
         importedPositions: thinkorswimAccount.positions + fidelityAccount.positions
     },
     accounts: allAccounts,
-    holdings: combinedHoldings,
+    holdings: combinedHoldings.slice(0, 18),
+    allHoldings: combinedHoldings,
     contributions: [
         { label: "Week 1", amount: 150 },
         { label: "Week 2", amount: 150 },
@@ -123,69 +135,65 @@ function renderStats() {
     const container = document.getElementById("portfolio-stats");
     if (!container) return;
 
-    container.innerHTML = stats
-        .map(([label, value]) => `
-            <article class="stat-card">
-                <span class="small-label">${label}</span>
-                <strong>${value}</strong>
-            </article>
-        `)
-        .join("");
+    container.innerHTML = stats.map(([label, value]) => `
+        <article class="stat-card">
+            <span class="small-label">${label}</span>
+            <strong>${value}</strong>
+        </article>
+    `).join("");
 }
 
 function renderAccountBreakdown() {
     const container = document.getElementById("account-breakdown");
     if (!container) return;
 
-    container.innerHTML = portfolioData.accounts
-        .map((account) => `
-            <article class="holding-item">
-                <div>
-                    <div class="row-labels">
-                        <strong>${account.name}</strong>
-                        <span>${account.accountType}</span>
-                    </div>
-                    <div class="holding-meta">
-                        <span>${formatCurrency(account.currentValue)} current value</span>
-                        <span>•</span>
-                        <span>${formatCurrency(account.contributed)} contributed</span>
-                        <span>•</span>
-                        <span>${account.positions} imported positions</span>
-                    </div>
+    container.innerHTML = portfolioData.accounts.map((account) => `
+        <article class="holding-item">
+            <div>
+                <div class="row-labels">
+                    <strong>${account.name}</strong>
+                    <span>${account.accountType}</span>
                 </div>
-                <div class="holding-gain">${formatSignedCurrency(account.gain)}<br><span>${formatCurrency(account.weeklyCadence)}/week</span></div>
-            </article>
-        `)
-        .join("");
+                <div class="holding-meta">
+                    <span>${formatCurrency(account.currentValue)} current value</span>
+                    <span>•</span>
+                    <span>${formatCurrency(account.contributed)} contributed</span>
+                    <span>•</span>
+                    <span>${account.positions} imported positions</span>
+                </div>
+            </div>
+            <div class="holding-gain">${formatSignedCurrency(account.gain)}<br><span>${formatCurrency(account.weeklyCadence)}/week</span></div>
+        </article>
+    `).join("");
 }
 
 function renderHoldings() {
     const container = document.getElementById("holdings-list");
     if (!container) return;
 
-    container.innerHTML = portfolioData.holdings
-        .map((holding) => {
-            const weight = ((holding.marketValue / portfolioData.summary.householdValue) * 100).toFixed(1);
-            return `
-                <article class="holding-item">
-                    <div>
-                        <div class="row-labels">
-                            <strong>${holding.ticker}</strong>
-                            <span>${weight}% household weight</span>
-                        </div>
-                        <div class="holding-meta">
-                            <span>${holding.label}</span>
-                            <span>•</span>
-                            <span>${holding.account}</span>
-                            <span>•</span>
-                            <span>${formatCurrency(holding.marketValue)}</span>
-                        </div>
+    container.innerHTML = portfolioData.holdings.map((holding) => {
+        const weight = ((holding.marketValue / portfolioData.summary.householdValue) * 100).toFixed(1);
+        return `
+            <article class="holding-item">
+                <div>
+                    <div class="row-labels">
+                        <strong>${holding.ticker}</strong>
+                        <span>${weight}% household weight</span>
                     </div>
-                    <div class="holding-gain">${formatSignedCurrency(holding.totalGain)}<br><span>${holding.gainPct >= 0 ? "+" : ""}${holding.gainPct}%</span></div>
-                </article>
-            `;
-        })
-        .join("");
+                    <div class="holding-meta">
+                        <span>${holding.label}</span>
+                        <span>•</span>
+                        <span>${holding.account}</span>
+                        <span>•</span>
+                        <span>${holding.theme}</span>
+                        <span>•</span>
+                        <span>${formatCurrency(holding.marketValue)}</span>
+                    </div>
+                </div>
+                <div class="holding-gain">${formatSignedCurrency(holding.totalGain)}<br><span>${holding.gainPct >= 0 ? "+" : ""}${holding.gainPct}%</span></div>
+            </article>
+        `;
+    }).join("");
 }
 
 function renderContributionChart() {
@@ -193,25 +201,207 @@ function renderContributionChart() {
     if (!container) return;
 
     const max = Math.max(...portfolioData.contributions.map((item) => item.amount));
-    container.innerHTML = portfolioData.contributions
-        .map((item) => {
-            const width = Math.round((item.amount / max) * 100);
-            return `
-                <div>
-                    <div class="row-labels">
-                        <span>${item.label}</span>
-                        <span>${formatCurrency(item.amount)}</span>
-                    </div>
-                    <div class="bar-track">
-                        <div class="bar-fill" style="width: ${width}%"></div>
-                    </div>
+    container.innerHTML = portfolioData.contributions.map((item) => {
+        const width = Math.round((item.amount / max) * 100);
+        return `
+            <div>
+                <div class="row-labels">
+                    <span>${item.label}</span>
+                    <span>${formatCurrency(item.amount)}</span>
                 </div>
-            `;
-        })
-        .join("");
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: ${width}%"></div>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function renderTopHoldingsChart() {
+    const container = d3.select("#top-holdings-chart");
+    if (container.empty()) return;
+
+    const data = portfolioData.holdings.slice(0, 8).slice().reverse();
+    const width = 520;
+    const barHeight = 34;
+    const height = data.length * barHeight + 40;
+    const margin = { top: 10, right: 24, bottom: 20, left: 84 };
+
+    const svg = container.append("svg")
+        .attr("class", "chart-svg")
+        .attr("viewBox", `0 0 ${width} ${height}`);
+
+    const x = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.marketValue)])
+        .range([margin.left, width - margin.right]);
+
+    const y = d3.scaleBand()
+        .domain(data.map(d => d.ticker))
+        .range([margin.top, height - margin.bottom])
+        .padding(0.24);
+
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(4).tickSize(-(height - margin.top - margin.bottom)).tickFormat(() => ""));
+
+    svg.selectAll("rect.bar")
+        .data(data)
+        .join("rect")
+        .attr("class", "bar-primary")
+        .attr("x", margin.left)
+        .attr("y", d => y(d.ticker))
+        .attr("width", d => x(d.marketValue) - margin.left)
+        .attr("height", y.bandwidth())
+        .attr("rx", 8);
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).tickSize(0))
+        .call(g => g.select(".domain").remove());
+
+    svg.selectAll("text.value")
+        .data(data)
+        .join("text")
+        .attr("class", "chart-value")
+        .attr("x", d => x(d.marketValue) + 8)
+        .attr("y", d => y(d.ticker) + y.bandwidth() / 2 + 4)
+        .text(d => formatCurrency(d.marketValue));
+}
+
+function renderAccountSplitChart() {
+    const container = d3.select("#account-split-chart");
+    if (container.empty()) return;
+
+    const data = portfolioData.accounts;
+    const width = 420;
+    const height = 260;
+    const margin = { top: 20, right: 20, bottom: 36, left: 42 };
+
+    const svg = container.append("svg")
+        .attr("class", "chart-svg")
+        .attr("viewBox", `0 0 ${width} ${height}`);
+
+    const x = d3.scaleBand()
+        .domain(data.map(d => d.name))
+        .range([margin.left, width - margin.right])
+        .padding(0.34);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.currentValue) * 1.1])
+        .range([height - margin.bottom, margin.top]);
+
+    const colors = d3.scaleOrdinal()
+        .domain(data.map(d => d.name))
+        .range(["#4c2f18", "#8a5a2b"]);
+
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).ticks(4).tickSize(-(width - margin.left - margin.right)).tickFormat(() => ""));
+
+    svg.selectAll("rect.account-bar")
+        .data(data)
+        .join("rect")
+        .attr("x", d => x(d.name))
+        .attr("y", d => y(d.currentValue))
+        .attr("width", x.bandwidth())
+        .attr("height", d => y(0) - y(d.currentValue))
+        .attr("rx", 10)
+        .attr("fill", d => colors(d.name));
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).tickSize(0))
+        .call(g => g.select(".domain").remove());
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).ticks(4).tickFormat(d => `$${Math.round(d / 1000)}k`))
+        .call(g => g.select(".domain").remove());
+
+    svg.selectAll("text.account-value")
+        .data(data)
+        .join("text")
+        .attr("class", "chart-value")
+        .attr("text-anchor", "middle")
+        .attr("x", d => x(d.name) + x.bandwidth() / 2)
+        .attr("y", d => y(d.currentValue) - 8)
+        .text(d => formatCurrency(d.currentValue));
+}
+
+function renderThemeAllocationChart() {
+    const container = d3.select("#theme-allocation-chart");
+    if (container.empty()) return;
+
+    const rolled = d3.rollups(
+        portfolioData.allHoldings,
+        values => d3.sum(values, d => d.marketValue),
+        d => d.theme
+    ).map(([theme, value]) => ({ theme, value })).sort((a, b) => b.value - a.value);
+
+    const width = 520;
+    const height = 320;
+    const radius = 92;
+    const colors = d3.scaleOrdinal()
+        .domain(rolled.map(d => d.theme))
+        .range(["#4c2f18", "#8a5a2b", "#b78953", "#7b8c6f", "#566a7f", "#9a6b5f"]);
+
+    const svg = container.append("svg")
+        .attr("class", "chart-svg")
+        .attr("viewBox", `0 0 ${width} ${height}`);
+
+    const g = svg.append("g")
+        .attr("transform", `translate(150,160)`);
+
+    const pie = d3.pie().value(d => d.value).sort(null);
+    const arc = d3.arc().innerRadius(48).outerRadius(radius);
+
+    g.selectAll("path")
+        .data(pie(rolled))
+        .join("path")
+        .attr("d", arc)
+        .attr("fill", d => colors(d.data.theme))
+        .attr("class", "slice-stroke");
+
+    g.append("text")
+        .attr("text-anchor", "middle")
+        .attr("y", -4)
+        .attr("class", "chart-label")
+        .text("Theme mix");
+
+    g.append("text")
+        .attr("text-anchor", "middle")
+        .attr("y", 18)
+        .attr("class", "chart-value")
+        .text(formatCurrency(portfolioData.summary.householdValue));
+
+    const legend = svg.append("g").attr("transform", "translate(290,68)");
+    const items = legend.selectAll("g")
+        .data(rolled)
+        .join("g")
+        .attr("transform", (_, i) => `translate(0, ${i * 34})`);
+
+    items.append("circle")
+        .attr("r", 6)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("fill", d => colors(d.theme));
+
+    items.append("text")
+        .attr("class", "chart-label")
+        .attr("x", 14)
+        .attr("y", 4)
+        .text(d => `${d.theme} · ${formatCurrency(d.value)}`);
 }
 
 renderStats();
 renderAccountBreakdown();
 renderHoldings();
 renderContributionChart();
+renderTopHoldingsChart();
+renderAccountSplitChart();
+renderThemeAllocationChart();
