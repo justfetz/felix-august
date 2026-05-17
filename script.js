@@ -1,15 +1,12 @@
-const portfolioData = {
-    summary: {
-        account: "thinkorswim now, Fidelity incoming",
-        totalContributed: 4700.21,
-        currentValue: 6927.09,
-        totalGain: 2226.88,
-        weeklyCadence: "$150/week combined",
-        weeklyThinkorswim: "$50/week",
-        weeklyFidelity: "$100/week",
-        positions: 34,
-        cash: 81.64
-    },
+const thinkorswimAccount = {
+    name: "thinkorswim",
+    accountType: "AI + tactical sleeve",
+    contributed: 4700.21,
+    currentValue: 6927.09,
+    gain: 2226.88,
+    weeklyCadence: 50,
+    positions: 34,
+    cash: 81.64,
     holdings: [
         { ticker: "CHAT", label: "AI basket", account: "thinkorswim", marketValue: 1709.8, totalGain: 580.27, gainPct: 51.37 },
         { ticker: "NVDA", label: "AI compute", account: "thinkorswim", marketValue: 448.9, totalGain: 200.38, gainPct: 80.63 },
@@ -44,7 +41,52 @@ const portfolioData = {
         { ticker: "UPST", label: "AI lending", account: "thinkorswim", marketValue: 29.5, totalGain: 4.98, gainPct: 20.31 },
         { ticker: "AI", label: "software AI", account: "thinkorswim", marketValue: 25.95, totalGain: -55.4, gainPct: -68.1 },
         { ticker: "PATH", label: "automation software", account: "thinkorswim", marketValue: 20.66, totalGain: -21.01, gainPct: -50.42 }
-    ].sort((a, b) => b.marketValue - a.marketValue),
+    ]
+};
+
+const fidelityAccount = {
+    name: "Fidelity",
+    accountType: "Core accumulation sleeve",
+    contributed: 2707.89,
+    currentValue: 3127.81,
+    gain: 419.92,
+    weeklyCadence: 100,
+    positions: 53,
+    cash: 3.33,
+    pending: 100,
+    holdings: [
+        { ticker: "MU", label: "memory + semis", account: "Fidelity", marketValue: 724.66, totalGain: 333.35, gainPct: 85.18 },
+        { ticker: "SMCI", label: "AI infrastructure", account: "Fidelity", marketValue: 531.21, totalGain: 31.22, gainPct: 6.24 },
+        { ticker: "PLTR", label: "AI software", account: "Fidelity", marketValue: 401.97, totalGain: -54.74, gainPct: -11.99 },
+        { ticker: "AAPL", label: "platform", account: "Fidelity", marketValue: 300.23, totalGain: 19.75, gainPct: 7.04 },
+        { ticker: "DRAM", label: "memory ETF", account: "Fidelity", marketValue: 264.49, totalGain: -15.51, gainPct: -5.54 },
+        { ticker: "GOOGL", label: "AI + search", account: "Fidelity", marketValue: 246.79, totalGain: 40.72, gainPct: 19.76 },
+        { ticker: "VTI", label: "total market ETF", account: "Fidelity", marketValue: 197.69, totalGain: 17.74, gainPct: 9.86 },
+        { ticker: "GOOG", label: "AI + search", account: "Fidelity", marketValue: 145.92, totalGain: 30.97, gainPct: 26.94 },
+        { ticker: "UBER", label: "platform mobility", account: "Fidelity", marketValue: 75.09, totalGain: -9.67, gainPct: -11.41 },
+        { ticker: "FIGR", label: "fintech", account: "Fidelity", marketValue: 21.64, totalGain: 4.53, gainPct: 26.47 },
+        { ticker: "LITE", label: "optics + infrastructure", account: "Fidelity", marketValue: 7.76, totalGain: 5.82, gainPct: 300.28 },
+        { ticker: "NVDA", label: "AI compute", account: "Fidelity", marketValue: 7.21, totalGain: 1.39, gainPct: 23.88 }
+    ]
+};
+
+const allAccounts = [thinkorswimAccount, fidelityAccount];
+const combinedHoldings = allAccounts
+    .flatMap((account) => account.holdings)
+    .sort((a, b) => b.marketValue - a.marketValue)
+    .slice(0, 18);
+
+const portfolioData = {
+    summary: {
+        householdContributed: 7408.1,
+        householdValue: 10054.9,
+        householdGain: 2646.8,
+        weeklyCadence: 150,
+        accounts: 2,
+        importedPositions: thinkorswimAccount.positions + fidelityAccount.positions
+    },
+    accounts: allAccounts,
+    holdings: combinedHoldings,
     contributions: [
         { label: "Week 1", amount: 150 },
         { label: "Week 2", amount: 150 },
@@ -70,12 +112,12 @@ function formatSignedCurrency(value) {
 
 function renderStats() {
     const stats = [
-        ["Current imported sleeve", portfolioData.summary.account],
-        ["Total contributed", formatCurrency(portfolioData.summary.totalContributed)],
-        ["Current value", formatCurrency(portfolioData.summary.currentValue)],
-        ["Total gain", formatSignedCurrency(portfolioData.summary.totalGain)],
-        ["Combined weekly cadence", portfolioData.summary.weeklyCadence],
-        ["thinkorswim / Fidelity", `${portfolioData.summary.weeklyThinkorswim} / ${portfolioData.summary.weeklyFidelity}`]
+        ["Household contributed", formatCurrency(portfolioData.summary.householdContributed)],
+        ["Household value", formatCurrency(portfolioData.summary.householdValue)],
+        ["Household gain", formatSignedCurrency(portfolioData.summary.householdGain)],
+        ["Weekly cadence", formatCurrency(portfolioData.summary.weeklyCadence)],
+        ["Imported accounts", `${portfolioData.summary.accounts}`],
+        ["Imported positions", `${portfolioData.summary.importedPositions}`]
     ];
 
     const container = document.getElementById("portfolio-stats");
@@ -91,19 +133,45 @@ function renderStats() {
         .join("");
 }
 
+function renderAccountBreakdown() {
+    const container = document.getElementById("account-breakdown");
+    if (!container) return;
+
+    container.innerHTML = portfolioData.accounts
+        .map((account) => `
+            <article class="holding-item">
+                <div>
+                    <div class="row-labels">
+                        <strong>${account.name}</strong>
+                        <span>${account.accountType}</span>
+                    </div>
+                    <div class="holding-meta">
+                        <span>${formatCurrency(account.currentValue)} current value</span>
+                        <span>•</span>
+                        <span>${formatCurrency(account.contributed)} contributed</span>
+                        <span>•</span>
+                        <span>${account.positions} imported positions</span>
+                    </div>
+                </div>
+                <div class="holding-gain">${formatSignedCurrency(account.gain)}<br><span>${formatCurrency(account.weeklyCadence)}/week</span></div>
+            </article>
+        `)
+        .join("");
+}
+
 function renderHoldings() {
     const container = document.getElementById("holdings-list");
     if (!container) return;
 
     container.innerHTML = portfolioData.holdings
         .map((holding) => {
-            const weight = ((holding.marketValue / portfolioData.summary.currentValue) * 100).toFixed(1);
+            const weight = ((holding.marketValue / portfolioData.summary.householdValue) * 100).toFixed(1);
             return `
                 <article class="holding-item">
                     <div>
                         <div class="row-labels">
                             <strong>${holding.ticker}</strong>
-                            <span>${weight}% weight</span>
+                            <span>${weight}% household weight</span>
                         </div>
                         <div class="holding-meta">
                             <span>${holding.label}</span>
@@ -144,5 +212,6 @@ function renderContributionChart() {
 }
 
 renderStats();
+renderAccountBreakdown();
 renderHoldings();
 renderContributionChart();
