@@ -61,9 +61,9 @@
             <div class="section-heading">
                 <div>
                     <p class="section-kicker">Interactive snapshot</p>
-                    <h2>Current thinkorswim sleeve</h2>
+                    <h2>Combined household view</h2>
                 </div>
-                <p class="section-note">This pass reflects the imported thinkorswim positions, while the cadence now matches the full routine: $50 a week to thinkorswim and $100 a week to Fidelity. The Fidelity sleeve will be added cleanly from a CSV or cleaner export.</p>
+                <p class="section-note">This pass now combines the imported thinkorswim sleeve with the Fidelity CSV. The contribution cadence reflects the real routine: $50 a week to thinkorswim and $100 a week to Fidelity.</p>
             </div>
 
             <div class="stats-grid" id="portfolio-stats"></div>
@@ -71,10 +71,10 @@
             <div class="snapshot-grid">
                 <div class="card">
                     <div class="card-head">
-                        <h3>Holdings</h3>
-                        <p>Current imported positions, weight, and cumulative gain</p>
+                        <h3>Account breakdown</h3>
+                        <p>Imported sleeve totals across both accounts</p>
                     </div>
-                    <div id="holdings-list" class="holdings-list"></div>
+                    <div id="account-breakdown" class="holdings-list"></div>
                 </div>
 
                 <div class="card">
@@ -84,6 +84,14 @@
                     </div>
                     <div id="contribution-chart" class="chart-rows"></div>
                 </div>
+            </div>
+
+            <div class="card section-top-card">
+                <div class="card-head">
+                    <h3>Largest imported positions</h3>
+                    <p>The biggest positions currently visible from the two imported sleeves</p>
+                </div>
+                <div id="holdings-list" class="holdings-list"></div>
             </div>
         </section>
 
@@ -143,21 +151,23 @@
             <div>
                 <p class="section-kicker">Next data pass</p>
                 <h2>What I still need to add</h2>
-                <p>The next layer is the Fidelity side, real weekly contribution history, and cleaner thesis tags for each holding. Once that is in place, this snapshot can become a stronger multi-account view instead of a single-sleeve picture.</p>
+                <p>The next layer is the full dated contribution ledger, more precise thesis tags for each holding, and eventually account and theme filters so the site can toggle between total household view and individual sleeves.</p>
             </div>
             <div class="card muted-card">
-                <p class="small-label">Best next input</p>
-                <pre class="data-snippet">CSV export preferred
-- ticker
-- quantity
-- current value
-- total gain
-- cost basis
-- account
-
-Weekly cadence
+                <p class="small-label">Known routine</p>
+                <pre class="data-snippet">Weekly cadence
 - thinkorswim: $50/week
-- Fidelity: $100/week</pre>
+- Fidelity: $100/week
+- combined: $150/week
+
+Imported now
+- thinkorswim sleeve
+- Fidelity CSV
+
+Planned next
+- account filters
+- theme filters
+- richer contribution timeline</pre>
             </div>
         </section>
     </main>
