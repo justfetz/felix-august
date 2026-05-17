@@ -220,6 +220,10 @@ a {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.holdings-summary-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .principle-grid {
     grid-template-columns: 0.95fr 1.05fr;
     align-items: start;
@@ -259,6 +263,14 @@ a {
 
 .section-top-card {
     margin-top: 1.5rem;
+}
+
+.holdings-cta-card,
+.holdings-filter-card {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 .stats-grid {
@@ -530,6 +542,105 @@ a {
     color: var(--ink);
 }
 
+.filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.filter-pill {
+    border: 1px solid rgba(76, 47, 24, 0.18);
+    background: rgba(250, 247, 240, 0.92);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 0.65rem 0.95rem;
+    font: inherit;
+    cursor: pointer;
+}
+
+.filter-pill.is-active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+}
+
+.holdings-table-card {
+    gap: 1rem;
+}
+
+.holdings-table-wrap {
+    overflow-x: auto;
+    border-radius: 18px;
+    border: 1px solid rgba(76, 47, 24, 0.1);
+}
+
+.holdings-table {
+    width: 100%;
+    min-width: 1120px;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: rgba(250, 247, 240, 0.86);
+}
+
+.holdings-table th,
+.holdings-table td {
+    padding: 0.85rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(76, 47, 24, 0.08);
+}
+
+.holdings-table th {
+    position: sticky;
+    top: 0;
+    background: rgba(234, 227, 213, 0.96);
+    color: var(--accent-dark);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.holdings-table td {
+    color: var(--muted);
+}
+
+.holdings-table td strong {
+    color: var(--ink);
+}
+
+.holdings-mobile-list {
+    display: none;
+    gap: 1rem;
+}
+
+.holding-record-card {
+    padding: 1rem 0;
+    border-top: 1px solid rgba(76, 47, 24, 0.12);
+}
+
+.holding-record-card:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.holding-record-title {
+    margin-bottom: 0.9rem;
+    color: var(--ink);
+}
+
+.holding-record-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.45rem 1rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.holding-record-grid strong {
+    color: var(--ink);
+    text-align: right;
+}
+
 .page-hero {
     padding: 4rem 0 2rem;
 }
@@ -570,7 +681,8 @@ a {
     .data-callout,
     .theme-grid,
     .chart-grid,
-    .census-grid {
+    .census-grid,
+    .holdings-summary-grid {
         grid-template-columns: 1fr;
     }
 
@@ -580,7 +692,9 @@ a {
 
     .section-heading,
     .nav-shell,
-    .footer-shell {
+    .footer-shell,
+    .holdings-cta-card,
+    .holdings-filter-card {
         flex-direction: column;
         align-items: flex-start;
     }
@@ -597,6 +711,14 @@ a {
 
     .hero {
         padding-top: 3.5rem;
+    }
+
+    .holdings-table-wrap {
+        display: none;
+    }
+
+    .holdings-mobile-list {
+        display: grid;
     }
 
     .holding-item,

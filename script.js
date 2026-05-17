@@ -423,6 +423,126 @@ function renderCensusChart() {
     `;
 }
 
+function normalizeMaybeNumber(value) {
+    if (value === null || value === undefined || value === "") return null;
+    if (typeof value === "number") return Number.isNaN(value) ? null : value;
+    const cleaned = String(value).replace(/[$,% ,]/g, "").trim();
+    if (!cleaned || cleaned === "--" || cleaned === "N/A") return null;
+    const parsed = Number(cleaned);
+    return Number.isNaN(parsed) ? null : parsed;
+}
+
+function sortByMarketValue(items) {
+    return items.slice().sort((left, right) => (right.marketValueNumber ?? -1) - (left.marketValueNumber ?? -1));
+}
+
+function renderAllHoldingsArchive() {
+    const tableBody = document.getElementById("all-holdings-table-body");
+    const mobileList = document.getElementById("all-holdings-mobile-list");
+    const summary = document.getElementById("holdings-summary");
+    const filter = document.getElementById("holdings-filter");
+
+    if (!tableBody || !mobileList || !summary || !filter) return;
+
+    const allRows = sortByMarketValue((window.allHoldingsDetail || []).map((row) => ({
+        ...row,
+        marketValueNumber: normalizeMaybeNumber(row.marketValueNumber ?? row.marketValue),
+        gainNumber: normalizeMaybeNumber(row.gainNumber ?? row.gain)
+    })));
+
+    const brokerages = ["All", ...new Set(allRows.map((row) => row.brokerage))];
+    let activeBrokerage = "All";
+
+    const renderSummary = (rows) => {
+        const totalValue = rows.reduce((sum, row) => sum + (row.marketValueNumber || 0), 0);
+        const totalGain = rows.reduce((sum, row) => sum + (row.gainNumber || 0), 0);
+        const assetTypes = new Set(rows.map((row) => row.assetType).filter(Boolean)).size;
+
+        summary.innerHTML = [
+            ["Visible rows", `${rows.length}`],
+            ["Brokerage filter", activeBrokerage],
+            ["Visible market value", formatCurrency(totalValue)],
+            ["Visible gain", formatSignedCurrency(totalGain)],
+            ["Asset types", `${assetTypes}`]
+        ].map(([label, value]) => `
+            <article class="stat-card">
+                <span class="small-label">${escapeHtml(label)}</span>
+                <strong class="${label === "Visible gain" ? valueClass(totalGain) : ""}">${escapeHtml(value)}</strong>
+            </article>
+        `).join("");
+    };
+
+    const renderRows = (rows) => {
+        tableBody.innerHTML = rows.map((row) => `
+            <tr>
+                <td>${escapeHtml(row.brokerage || "")}</td>
+                <td><strong>${escapeHtml(row.symbol || "")}</strong></td>
+                <td>${escapeHtml(row.description || "")}</td>
+                <td>${escapeHtml(row.quantity || "")}</td>
+                <td>${escapeHtml(row.price || "")}</td>
+                <td>${escapeHtml(row.marketValue || "")}</td>
+                <td class="${valueClass(normalizeMaybeNumber(row.dayChange))}">${escapeHtml(row.dayChange || "")}</td>
+                <td class="${valueClass(normalizeMaybeNumber(row.dayChangePct))}">${escapeHtml(row.dayChangePct || "")}</td>
+                <td>${escapeHtml(row.costBasis || "")}</td>
+                <td class="${valueClass(row.gainNumber)}">${escapeHtml(row.gain || "")}</td>
+                <td class="${valueClass(normalizeMaybeNumber(row.gainPct))}">${escapeHtml(row.gainPct || "")}</td>
+                <td>${escapeHtml(row.accountWeight || "")}</td>
+                <td>${escapeHtml(row.averageCostBasis || "")}</td>
+                <td>${escapeHtml(row.assetType || "")}</td>
+            </tr>
+        `).join("");
+
+        mobileList.innerHTML = rows.map((row) => `
+            <article class="holding-record-card">
+                <div class="row-labels">
+                    <strong>${escapeHtml(row.symbol || "—")}</strong>
+                    <span>${escapeHtml(row.brokerage || "")}</span>
+                </div>
+                <p class="holding-record-title">${escapeHtml(row.description || "")}</p>
+                <div class="holding-record-grid">
+                    <span>Qty</span><strong>${escapeHtml(row.quantity || "")}</strong>
+                    <span>Price</span><strong>${escapeHtml(row.price || "")}</strong>
+                    <span>Market value</span><strong>${escapeHtml(row.marketValue || "")}</strong>
+                    <span>Day change</span><strong class="${valueClass(normalizeMaybeNumber(row.dayChange))}">${escapeHtml(row.dayChange || "")}</strong>
+                    <span>Day %</span><strong class="${valueClass(normalizeMaybeNumber(row.dayChangePct))}">${escapeHtml(row.dayChangePct || "")}</strong>
+                    <span>Cost basis</span><strong>${escapeHtml(row.costBasis || "")}</strong>
+                    <span>Total gain</span><strong class="${valueClass(row.gainNumber)}">${escapeHtml(row.gain || "")}</strong>
+                    <span>Gain %</span><strong class="${valueClass(normalizeMaybeNumber(row.gainPct))}">${escapeHtml(row.gainPct || "")}</strong>
+                    <span>Account %</span><strong>${escapeHtml(row.accountWeight || "")}</strong>
+                    <span>Avg cost</span><strong>${escapeHtml(row.averageCostBasis || "")}</strong>
+                    <span>Asset type</span><strong>${escapeHtml(row.assetType || "")}</strong>
+                </div>
+            </article>
+        `).join("");
+    };
+
+    const renderFilter = () => {
+        filter.innerHTML = brokerages.map((brokerage) => `
+            <button class="filter-pill${brokerage === activeBrokerage ? " is-active" : ""}" data-brokerage="${escapeHtml(brokerage)}" type="button">
+                ${escapeHtml(brokerage)}
+            </button>
+        `).join("");
+
+        filter.querySelectorAll("button").forEach((button) => {
+            button.addEventListener("click", () => {
+                activeBrokerage = button.dataset.brokerage || "All";
+                applyRender();
+            });
+        });
+    };
+
+    const applyRender = () => {
+        const rows = activeBrokerage === "All"
+            ? allRows
+            : allRows.filter((row) => row.brokerage === activeBrokerage);
+        renderSummary(rows);
+        renderRows(rows);
+        renderFilter();
+    };
+
+    applyRender();
+}
+
 renderStats();
 renderAccountBreakdown();
 renderHoldings();
@@ -432,3 +552,4 @@ renderAccountSplitChart();
 renderThemeAllocationChart();
 renderCensusCards();
 renderCensusChart();
+renderAllHoldingsArchive();

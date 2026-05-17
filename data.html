@@ -3,97 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Heatmap</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Felix/August Holdings</title>
+    <meta name="description" content="A complete holdings archive across imported brokerage exports for Felix/August.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260517e">
 </head>
 <body>
-    <script>
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const margin = { top: 50, right: 30, bottom: 30, left: 60 };
-        const width = 450 - margin.left - margin.right;
-        const height = 450 - margin.top - margin.bottom;
+    <header class="site-header">
+        <div class="shell nav-shell">
+            <a class="brand" href="index.html">felix/august</a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="index.html">Home</a>
+                <a href="about.html">Why This Exists</a>
+                <a href="services.html">Themes</a>
+                <a href="data.html">All Holdings</a>
+                <a href="contact.html">Notes</a>
+            </nav>
+        </div>
+    </header>
 
-        const svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+    <main>
+        <section class="page-hero shell">
+            <p class="section-kicker">Full archive</p>
+            <h1>All imported holdings</h1>
+            <p class="hero-text">This page keeps the full imported record readable: brokerage source, ticker, quantity, market value, cost basis, gain, day move, and the other fields currently available from the brokerage exports.</p>
+        </section>
 
-        // Function to get the current week's Monday date
-        function getMonday(d) {
-            d = new Date(d);
-            let day = d.getDay(),
-                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-            return new Date(d.setDate(diff));
-        }
+        <section class="shell page-body">
+            <div class="stats-grid holdings-summary-grid" id="holdings-summary"></div>
 
-        // Function to get all days for the current week until yesterday
-        function getAllDays() {
-            const today = new Date();
-            const monday = getMonday(today);
-            const daysData = [];
-            const oneDay = 24 * 60 * 60 * 1000;
+            <div class="card holdings-filter-card">
+                <div class="card-head">
+                    <h3>Brokerage sources</h3>
+                    <p>These filters only change the view. The source export data stays untouched.</p>
+                </div>
+                <div class="filter-pills" id="holdings-filter"></div>
+            </div>
 
-            for (let i = 0; i < 7; i++) {
-                let currentDay = new Date(monday.getTime() + i * oneDay);
-                if (currentDay >= today) break;
-                daysData.push({
-                    week: `${currentDay.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`,
-                    day: days[currentDay.getDay() - 1],
-                    value: Math.floor(Math.random() * 101) // Random value for example purposes
-                });
-            }
-            return daysData;
-        }
+            <div class="card holdings-table-card">
+                <div class="card-head">
+                    <h3>Complete holdings archive</h3>
+                    <p>Sorted by current market value, with source brokerage attached to every row.</p>
+                </div>
 
-        const data = getAllDays();
-        const weeks = [...new Set(data.map(d => d.week))];
+                <div class="holdings-table-wrap">
+                    <table class="holdings-table">
+                        <thead>
+                            <tr>
+                                <th>Brokerage</th>
+                                <th>Symbol</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Market value</th>
+                                <th>Day change</th>
+                                <th>Day %</th>
+                                <th>Cost basis</th>
+                                <th>Total gain</th>
+                                <th>Gain %</th>
+                                <th>Account %</th>
+                                <th>Avg cost</th>
+                                <th>Asset type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-holdings-table-body"></tbody>
+                    </table>
+                </div>
 
-        const xScale = d3.scaleBand()
-            .range([0, width])
-            .domain(days)
-            .padding(0.05);
+                <div class="holdings-mobile-list" id="all-holdings-mobile-list"></div>
+            </div>
+        </section>
+    </main>
 
-        const yScale = d3.scaleBand()
-            .range([height, 0])
-            .domain(weeks)
-            .padding(0.05);
+    <footer class="site-footer">
+        <div class="shell footer-shell">
+            <p>Felix/August is a personal journal about long-term ownership, family, and learning in public.</p>
+            <div class="footer-links">
+                <a href="https://github.com/justfetz">GitHub</a>
+                <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
 
-        const colorScale = d3.scaleLinear()
-            .range(['red', 'green'])
-            .domain([0, 100]);
-
-        svg.append("g")
-            .attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(xScale));
-
-        svg.append("g")
-            .call(d3.axisLeft(yScale));
-
-        svg.selectAll()
-            .data(data, function(d) { return d.day + ':' + d.week; })
-            .enter()
-            .append("rect")
-            .attr("x", function(d) { return xScale(d.day); })
-            .attr("y", function(d) { return yScale(d.week); })
-            .attr("width", xScale.bandwidth())
-            .attr("height", yScale.bandwidth())
-            .style("fill", function(d) { return colorScale(d.value); })
-            .style("stroke-width", 4)
-            .style("stroke", "none")
-            .style("opacity", 0.8);
-
-        svg.selectAll("text")
-            .data(data)
-            .enter()
-            .append("text")
-            .attr("x", function(d) { return xScale(d.day) + xScale.bandwidth() / 2; })
-            .attr("y", function(d) { return yScale(d.week) + yScale.bandwidth() / 2; })
-            .attr("dy", ".35em")
-            .attr("text-anchor", "middle")
-            .text(function(d) { return d.value + '%'; })
-            .style("fill", "#fff");
-
-    </script>
+    <script src="holdings-data.js?v=20260517e"></script>
+    <script src="script.js?v=20260517e"></script>
 </body>
 </html>
