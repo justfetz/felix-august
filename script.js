@@ -199,6 +199,37 @@ function renderStats() {
     `).join("");
 }
 
+function renderSignalBand() {
+    const container = document.getElementById("signal-band");
+    if (!container) return;
+
+    const items = [
+        {
+            label: "Documented transfers",
+            value: formatCurrency(portfolioData.summary.documentedTransferTotal),
+            note: "Imported transfer history across both accounts"
+        },
+        {
+            label: "Household value",
+            value: formatCurrency(portfolioData.summary.householdValue),
+            note: "Current combined sleeve value from imported holdings"
+        },
+        {
+            label: "Imported positions",
+            value: `${portfolioData.summary.importedPositions}`,
+            note: "Visible positions across the current exports"
+        }
+    ];
+
+    container.innerHTML = items.map((item) => `
+        <article class="signal-card">
+            <span class="small-label">${escapeHtml(item.label)}</span>
+            <strong>${escapeHtml(item.value)}</strong>
+            <p>${escapeHtml(item.note)}</p>
+        </article>
+    `).join("");
+}
+
 function renderAccountBreakdown() {
     const container = document.getElementById("account-breakdown");
     if (!container) return;
@@ -546,6 +577,7 @@ function renderAllHoldingsArchive() {
 }
 
 renderStats();
+renderSignalBand();
 renderAccountBreakdown();
 renderHoldings();
 renderContributionChart();
