@@ -661,6 +661,13 @@ a {
     margin-top: 0.6rem;
 }
 
+.letter-signoff {
+    margin-top: 1.25rem;
+    font-family: "Newsreader", serif;
+    font-size: 1.3rem;
+    color: var(--accent-dark);
+}
+
 .site-footer {
     border-top: 1px solid rgba(90, 84, 75, 0.12);
     margin-top: 3rem;
