@@ -93,6 +93,7 @@ const portfolioData = {
         householdValue: 10054.9,
         householdGain: 2646.8,
         weeklyCadence: 150,
+        documentedTransferTotal: 4000,
         accounts: 2,
         importedPositions: thinkorswimAccount.positions + fidelityAccount.positions
     },
@@ -100,12 +101,13 @@ const portfolioData = {
     holdings: combinedHoldings.slice(0, 18),
     allHoldings: combinedHoldings,
     contributions: [
-        { label: "Week 1", amount: 150 },
-        { label: "Week 2", amount: 150 },
-        { label: "Week 3", amount: 150 },
-        { label: "Week 4", amount: 150 },
-        { label: "Week 5", amount: 150 },
-        { label: "Week 6", amount: 150 }
+        { label: "Nov 2025", amount: 250 },
+        { label: "Dec 2025", amount: 750 },
+        { label: "Jan 2026", amount: 600 },
+        { label: "Feb 2026", amount: 600 },
+        { label: "Mar 2026", amount: 750 },
+        { label: "Apr 2026", amount: 600 },
+        { label: "May 2026", amount: 450 }
     ],
     census: {
         cards: [
@@ -181,7 +183,7 @@ function renderStats() {
         ["Household contributed", formatCurrency(portfolioData.summary.householdContributed)],
         ["Household value", formatCurrency(portfolioData.summary.householdValue)],
         ["Household gain", formatSignedCurrency(portfolioData.summary.householdGain)],
-        ["Weekly cadence", formatCurrency(portfolioData.summary.weeklyCadence)],
+        ["Documented transfers", formatCurrency(portfolioData.summary.documentedTransferTotal)],
         ["Imported accounts", `${portfolioData.summary.accounts}`],
         ["Imported positions", `${portfolioData.summary.importedPositions}`]
     ];
