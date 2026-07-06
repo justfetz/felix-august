@@ -67,3 +67,10 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+
+# Raw brokerage exports (contain account names) — commit deliberately if desired
+data/imports/*.csv
+
+# Python
+__pycache__/
+*.pyc

@@ -1,0 +1,11 @@
+Account Number,Account Name,Symbol,Description,Quantity,Last Price,Last Price Change,Current Value,Today's Gain/Loss Dollar,Today's Gain/Loss Percent,Total Gain/Loss Dollar,Total Gain/Loss Percent,Percent Of Account,Cost Basis Total,Average Cost Basis,Type
+X12345678,Individual,MU,MICRON TECHNOLOGY INC,6.104,$118.72,-$1.13,$724.66,-$6.90,-0.94%,+$333.35,+85.18%,23.17%,$391.31,$64.11,Cash
+X12345678,Individual,SMCI,SUPER MICRO COMPUTER INC,10.583,$50.20,+$0.55,$531.21,+$5.82,+1.11%,+$31.22,+6.24%,16.98%,$499.99,$47.25,Cash
+X12345678,Individual,PLTR,PALANTIR TECHNOLOGIES INC CL A,2.79,$144.08,-$2.12,$401.97,-$5.91,-1.45%,-$54.74,-11.99%,12.85%,$456.71,$163.69,Cash
+X12345678,Individual,VTI,VANGUARD TOTAL STOCK MARKET ETF,0.657,$300.90,+$1.20,$197.69,+$0.79,+0.40%,+$17.74,+9.86%,6.32%,$179.95,$273.89,Cash
+X12345678,Individual,Pending Activity,,,,,$100.00,,,,,,,,
+X12345678,Individual,SPAXX**,FIDELITY GOVERNMENT MONEY MARKET,3.33,$1.00,$0.00,$3.33,$0.00,0.00%,--,--,0.11%,--,--,Cash
+
+"The data and information in this spreadsheet is provided to you solely for your use, is not intended for redistribution."
+"Brokerage services are provided by Fidelity Brokerage Services LLC (FBS)"
+"Date downloaded 07/06/2026 4:15 PM ET"

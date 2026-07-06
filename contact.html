@@ -5,20 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes | Felix/August</title>
     <meta name="description" content="A notes page for Felix/August with research prompts, writing directions, and the ideas shaping a long-horizon family journal.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27 font-family=%27Georgia,serif%27 fill=%27%23412816%27%3Ef/a%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20260706a">
 </head>
 <body>
     <header class="site-header">
         <div class="shell nav-shell">
             <a class="brand" href="index.html">felix/august</a>
-            <nav class="site-nav" aria-label="Primary">
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="site-nav" id="primary-nav" aria-label="Primary">
                 <a href="index.html">Home</a>
                 <a href="about.html">Why This Exists</a>
                 <a href="services.html">Themes</a>
                 <a href="data.html">All Holdings</a>
+                <a href="markets.html">Markets</a>
+                <a href="reading.html">Reading</a>
                 <a href="contact.html">Notes</a>
             </nav>
         </div>
@@ -57,6 +63,19 @@
                     <li>Reading deeply is often more valuable than reacting quickly.</li>
                     <li>Technology changes the world, but character still matters most.</li>
                 </ul>
+            </article>
+
+            <article class="card letter-card">
+                <p class="small-label">Note four</p>
+                <h2>The order of money.</h2>
+                <p>One day you will have a bad month. The car will need brakes, the dog will need surgery, rent will go up — sometimes all at once. When that happens, there is an order to where the money comes from, and the order matters more than the amount.</p>
+                <ul class="note-list">
+                    <li><strong>Spend from income first.</strong> Life's expenses come out of what you earn this month. If they don't fit, the first move is trimming expenses, not raiding accounts.</li>
+                    <li><strong>Then the emergency fund.</strong> Keep three to six months of expenses in boring cash. Its job is not to grow — its job is to stand between a bad month and your investments. Refill it when the storm passes.</li>
+                    <li><strong>Investments come last, and almost never.</strong> The accounts on this site are the engine, and the engine only works if it stays running. Selling early doesn't just cost you the shares — it costs you every year of compounding those shares had left, plus taxes on the way out.</li>
+                </ul>
+                <p>The discipline is not about being cheap. It is about protecting the machine that buys your future freedom. Savings touched first is savings that never compounds. Let the buffer take the hit; that is what it is for.</p>
+                <p class="letter-signoff">Dad</p>
             </article>
 
             <article class="card ledger-note">
@@ -115,5 +134,6 @@
             </div>
         </div>
     </footer>
+    <script src="script.js?v=20260706a"></script>
 </body>
 </html>

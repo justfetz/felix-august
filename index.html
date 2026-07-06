@@ -5,20 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Felix/August</title>
     <meta name="description" content="A long-horizon investment journal for my sons, centered on AI, hardware, infrastructure, energy, index funds, and generational wealth.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27 font-family=%27Georgia,serif%27 fill=%27%23412816%27%3Ef/a%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260517e">
+    <link rel="stylesheet" href="styles.css?v=20260706a">
 </head>
 <body>
     <header class="site-header">
         <div class="shell nav-shell">
             <a class="brand" href="index.html">felix/august</a>
-            <nav class="site-nav" aria-label="Primary">
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="site-nav" id="primary-nav" aria-label="Primary">
                 <a href="index.html">Home</a>
                 <a href="about.html">Why This Exists</a>
                 <a href="services.html">Themes</a>
                 <a href="data.html">All Holdings</a>
+                <a href="markets.html">Markets</a>
+                <a href="reading.html">Reading</a>
                 <a href="contact.html">Notes</a>
             </nav>
         </div>
@@ -133,13 +139,18 @@
                 <div id="theme-allocation-chart" class="d3-chart"></div>
             </div>
 
-            <div class="card section-top-card">
-                <div class="card-head">
-                    <h3>Largest imported positions</h3>
-                    <p>The biggest positions currently visible from the two imported sleeves</p>
+            <details class="card section-top-card collapsible" open>
+                <summary class="card-head collapsible-summary">
+                    <div>
+                        <h3>Largest imported positions</h3>
+                        <p>The biggest positions currently visible from the two imported sleeves</p>
+                    </div>
+                    <span class="collapse-chevron" aria-hidden="true"></span>
+                </summary>
+                <div class="collapsible-body">
+                    <div id="holdings-list" class="holdings-list"></div>
                 </div>
-                <div id="holdings-list" class="holdings-list"></div>
-            </div>
+            </details>
 
             <div class="card holdings-cta-card section-top-card">
                 <div>
@@ -162,13 +173,18 @@
 
             <div class="census-grid" id="census-cards"></div>
 
-            <div class="card chart-card section-top-card">
-                    <div class="card-head">
+            <details class="card chart-card section-top-card collapsible">
+                <summary class="card-head collapsible-summary">
+                    <div>
                         <h3>National backdrop snapshot</h3>
                         <p>Simple, visible indicators for population, age, and household income</p>
                     </div>
+                    <span class="collapse-chevron" aria-hidden="true"></span>
+                </summary>
+                <div class="collapsible-body">
                     <div id="census-chart" class="d3-chart"></div>
                 </div>
+            </details>
         </section>
 
         <section class="section shell">
@@ -287,6 +303,6 @@ Planned next
         </div>
     </footer>
 
-    <script src="script.js?v=20260517e"></script>
+    <script src="script.js?v=20260706a"></script>
 </body>
 </html>
