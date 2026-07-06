@@ -1,0 +1,21 @@
+{
+  "note": "Tickers tracked by tools/fetch_market_data.py. 'stooq' overrides the default '<symbol>.us' mapping.",
+  "tickers": [
+    { "symbol": "SPY", "label": "S&P 500 benchmark" },
+    { "symbol": "QQQ", "label": "Nasdaq 100 benchmark" },
+    { "symbol": "NVDA", "label": "AI compute" },
+    { "symbol": "AMD", "label": "Semis" },
+    { "symbol": "MU", "label": "Memory" },
+    { "symbol": "SMCI", "label": "AI infrastructure" },
+    { "symbol": "INTC", "label": "Domestic chips" },
+    { "symbol": "MSFT", "label": "Platform + cloud" },
+    { "symbol": "GOOGL", "label": "AI + search" },
+    { "symbol": "AMZN", "label": "Cloud + commerce" },
+    { "symbol": "AAPL", "label": "Platform" },
+    { "symbol": "PLTR", "label": "AI software" },
+    { "symbol": "VTI", "label": "Total market" },
+    { "symbol": "XLE", "label": "Energy" },
+    { "symbol": "DUK", "label": "Utilities" },
+    { "symbol": "SLV", "label": "Silver" }
+  ]
+}

@@ -587,3 +587,252 @@ renderThemeAllocationChart();
 renderCensusCards();
 renderCensusChart();
 renderAllHoldingsArchive();
+
+/* ---------------------------------------------------------------------------
+ * Site chrome: mobile nav + active link
+ * ------------------------------------------------------------------------ */
+
+function initNav() {
+    const toggle = document.querySelector(".nav-toggle");
+    const nav = document.getElementById("primary-nav") || document.querySelector(".site-nav");
+    if (!nav) return;
+
+    const current = (location.pathname.split("/").pop() || "index.html");
+    nav.querySelectorAll("a").forEach((link) => {
+        const target = link.getAttribute("href");
+        if (target === current) link.setAttribute("aria-current", "page");
+    });
+
+    if (!toggle) return;
+    toggle.addEventListener("click", () => {
+        const isOpen = nav.classList.toggle("is-open");
+        toggle.setAttribute("aria-expanded", String(isOpen));
+    });
+    nav.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+            nav.classList.remove("is-open");
+            toggle.setAttribute("aria-expanded", "false");
+        });
+    });
+}
+
+/* ---------------------------------------------------------------------------
+ * Market backdrop: data/market.json (built by tools/fetch_market_data.py)
+ * ------------------------------------------------------------------------ */
+
+function formatYield(value) {
+    return value === null || value === undefined ? "—" : `${value.toFixed(2)}%`;
+}
+
+function renderRatesStats(market) {
+    const container = document.getElementById("rates-stats");
+    if (!container) return;
+    const latest = market.treasury.latest;
+    const stats = [
+        ["10-yr Treasury", formatYield(latest.y10)],
+        ["2-yr Treasury", formatYield(latest.y2)],
+        ["30-yr Treasury", formatYield(latest.y30)],
+        ["2s10s spread", market.treasury.spread2s10s === null ? "—" : `${market.treasury.spread2s10s > 0 ? "+" : ""}${market.treasury.spread2s10s.toFixed(2)}%`]
+    ];
+    container.innerHTML = stats.map(([label, value]) => `
+        <article class="stat-card">
+            <span class="small-label">${escapeHtml(label)}</span>
+            <strong>${escapeHtml(value)}</strong>
+        </article>
+    `).join("");
+}
+
+function renderYieldChart(market) {
+    const container = document.getElementById("yield-chart");
+    if (!container) return;
+
+    const series = market.treasury.series.filter((row) => row.y10 !== null && row.y10 !== undefined);
+    if (series.length < 2) {
+        container.innerHTML = "<p>Not enough yield history yet. The scheduled refresh will fill this in.</p>";
+        return;
+    }
+
+    const width = 720;
+    const height = 320;
+    const margin = { top: 18, right: 20, bottom: 40, left: 52 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    const values = series.map((row) => row.y10);
+    const minY = Math.floor(Math.min(...values) * 10) / 10 - 0.1;
+    const maxY = Math.ceil(Math.max(...values) * 10) / 10 + 0.1;
+
+    const x = (index) => margin.left + (index / (series.length - 1)) * innerWidth;
+    const y = (value) => margin.top + (1 - (value - minY) / (maxY - minY)) * innerHeight;
+
+    const path = series.map((row, index) => `${index === 0 ? "M" : "L"}${x(index).toFixed(1)},${y(row.y10).toFixed(1)}`).join(" ");
+    const areaPath = `${path} L${x(series.length - 1).toFixed(1)},${(margin.top + innerHeight).toFixed(1)} L${margin.left},${(margin.top + innerHeight).toFixed(1)} Z`;
+
+    const gridLines = [];
+    const step = (maxY - minY) / 4;
+    for (let tick = 0; tick <= 4; tick += 1) {
+        const value = minY + tick * step;
+        const yPos = y(value);
+        gridLines.push(`<line x1="${margin.left}" y1="${yPos.toFixed(1)}" x2="${width - margin.right}" y2="${yPos.toFixed(1)}" class="chart-axis-line"></line>`);
+        gridLines.push(svgText(margin.left - 10, yPos + 4, `${value.toFixed(2)}%`, "chart-label", "end"));
+    }
+
+    const labelEvery = Math.max(1, Math.floor(series.length / 6));
+    const dateLabels = series.map((row, index) => {
+        const isLast = index === series.length - 1;
+        if (!isLast && index % labelEvery !== 0) return "";
+        if (!isLast && series.length - 1 - index < labelEvery * 0.6) return "";
+        return svgText(x(index), height - 14, row.date.slice(5), "chart-label", "middle");
+    }).join("");
+
+    const last = series[series.length - 1];
+    container.innerHTML = `
+        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="10-year Treasury yield over time">
+            ${gridLines.join("")}
+            <path d="${areaPath}" class="yield-area"></path>
+            <path d="${path}" class="yield-line" fill="none"></path>
+            <circle cx="${x(series.length - 1).toFixed(1)}" cy="${y(last.y10).toFixed(1)}" r="4" class="yield-dot"></circle>
+            ${svgText(x(series.length - 1) - 8, y(last.y10) - 10, formatYield(last.y10), "chart-value", "end")}
+            ${dateLabels}
+        </svg>
+    `;
+}
+
+function formatSignedCurrencyCents(value) {
+    const prefix = value >= 0 ? "+" : "-";
+    return `${prefix}$${Math.abs(value).toFixed(2)}`;
+}
+
+function renderQuoteBoard(market) {
+    const tableBody = document.getElementById("quotes-table-body");
+    const mobileList = document.getElementById("quotes-mobile-list");
+    if (!tableBody || !mobileList) return;
+
+    const quotes = market.quotes.slice().sort((left, right) => left.symbol.localeCompare(right.symbol));
+
+    tableBody.innerHTML = quotes.map((quote) => `
+        <tr>
+            <td><strong>${escapeHtml(quote.symbol)}</strong></td>
+            <td>${escapeHtml(quote.label || "")}</td>
+            <td>${escapeHtml(quote.close === null ? "—" : `$${quote.close.toFixed(2)}`)}</td>
+            <td class="${valueClass(quote.dayChange ?? 0)}">${quote.dayChange === null || quote.dayChange === undefined ? "—" : escapeHtml(formatSignedCurrencyCents(quote.dayChange))}</td>
+            <td class="${valueClass(quote.dayChangePct ?? 0)}">${quote.dayChangePct === null || quote.dayChangePct === undefined ? "—" : escapeHtml(formatSignedPercent(quote.dayChangePct))}</td>
+            <td>${escapeHtml(quote.date || "")}</td>
+        </tr>
+    `).join("");
+
+    mobileList.innerHTML = quotes.map((quote) => `
+        <article class="holding-record-card">
+            <div class="row-labels">
+                <strong>${escapeHtml(quote.symbol)}</strong>
+                <span>${escapeHtml(quote.label || "")}</span>
+            </div>
+            <div class="holding-record-grid">
+                <span>Close</span><strong>${escapeHtml(quote.close === null ? "—" : `$${quote.close.toFixed(2)}`)}</strong>
+                <span>Day change</span><strong class="${valueClass(quote.dayChange ?? 0)}">${quote.dayChange === null || quote.dayChange === undefined ? "—" : escapeHtml(formatSignedCurrencyCents(quote.dayChange))}</strong>
+                <span>Day %</span><strong class="${valueClass(quote.dayChangePct ?? 0)}">${quote.dayChangePct === null || quote.dayChangePct === undefined ? "—" : escapeHtml(formatSignedPercent(quote.dayChangePct))}</strong>
+                <span>As of</span><strong>${escapeHtml(quote.date || "")}</strong>
+            </div>
+        </article>
+    `).join("");
+}
+
+function renderMarketFreshness(market) {
+    const note = document.getElementById("market-freshness");
+    if (!note) return;
+    const generated = market.generatedAt ? market.generatedAt.replace("T", " ").replace(/\+.*$/, " UTC") : "unknown";
+    note.textContent = market.sample
+        ? "Sample data — real Treasury and quote data arrives with the first scheduled refresh."
+        : `Data refreshed ${generated} · Treasury par yield curve + Stooq end-of-day closes.`;
+}
+
+function renderSignalBandYield(market) {
+    const container = document.getElementById("signal-band");
+    if (!container || !market.treasury || !market.treasury.latest) return;
+    const latest = market.treasury.latest;
+    const card = document.createElement("article");
+    card.className = "signal-card";
+    card.innerHTML = `
+        <span class="small-label">10-yr Treasury${market.sample ? " (sample)" : ""}</span>
+        <strong>${escapeHtml(formatYield(latest.y10))}</strong>
+        <p>The discount rate behind every long-duration holding here. <a class="text-link" href="markets.html">See the backdrop</a></p>
+    `;
+    container.appendChild(card);
+}
+
+function loadMarketData() {
+    const wantsMarkets = document.getElementById("rates-stats") || document.getElementById("signal-band");
+    if (!wantsMarkets) return;
+
+    fetch("data/market.json", { cache: "no-store" })
+        .then((response) => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.json();
+        })
+        .then((market) => {
+            renderRatesStats(market);
+            renderYieldChart(market);
+            renderQuoteBoard(market);
+            renderMarketFreshness(market);
+            renderSignalBandYield(market);
+        })
+        .catch(() => {
+            const note = document.getElementById("market-freshness");
+            if (note) note.textContent = "Market data unavailable (offline view). Serve the site over HTTP or wait for the scheduled refresh.";
+        });
+}
+
+/* ---------------------------------------------------------------------------
+ * Reading shelf: books-data.js (generated by tools/build_books.py)
+ * ------------------------------------------------------------------------ */
+
+function renderReadingShelf() {
+    const container = document.getElementById("reading-shelf");
+    if (!container) return;
+
+    const shelf = window.readingShelf || [];
+    if (!shelf.length) {
+        container.innerHTML = "<div class=\"card\"><p>No books yet — add rows to books/books.csv and run tools/build_books.py.</p></div>";
+        return;
+    }
+
+    const groups = [
+        ["reading", "Currently reading", "The lens being ground right now"],
+        ["finished", "Finished", "Takeaways I want the boys to keep"],
+        ["queued", "On the shelf", "Queued up next"]
+    ];
+
+    container.innerHTML = groups.map(([status, heading, note]) => {
+        const books = shelf.filter((book) => book.status === status);
+        if (!books.length) return "";
+        return `
+            <div class="section-heading shelf-heading">
+                <div>
+                    <p class="section-kicker">${escapeHtml(heading)}</p>
+                </div>
+                <p class="section-note">${escapeHtml(note)}</p>
+            </div>
+            <div class="shelf-grid">
+                ${books.map((book) => `
+                    <details class="card book-card collapsible">
+                        <summary class="collapsible-summary">
+                            <div>
+                                <p class="small-label">${escapeHtml(book.theme || "")}${book.year ? ` · ${escapeHtml(book.year)}` : ""}</p>
+                                <h3>${escapeHtml(book.title)}</h3>
+                                <p class="book-author">${escapeHtml(book.author)}</p>
+                            </div>
+                            <span class="collapse-chevron" aria-hidden="true"></span>
+                        </summary>
+                        <div class="collapsible-body">
+                            <blockquote class="book-takeaway">${escapeHtml(book.takeaway || "No takeaway written yet.")}</blockquote>
+                        </div>
+                    </details>
+                `).join("")}
+            </div>
+        `;
+    }).join("");
+}
+
+initNav();
+loadMarketData();
+renderReadingShelf();

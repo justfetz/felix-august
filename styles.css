@@ -862,3 +862,218 @@ a {
         text-align: left;
     }
 }
+
+/* ---------------------------------------------------------------------------
+ * Site chrome: mobile nav + active link
+ * ------------------------------------------------------------------------ */
+
+.site-nav a[aria-current="page"] {
+    color: var(--ink);
+    font-weight: 700;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 2px;
+}
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid rgba(76, 47, 24, 0.18);
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.nav-toggle span {
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 960px) {
+    .nav-shell {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-toggle {
+        display: flex;
+        margin-left: auto;
+    }
+
+    .site-nav {
+        display: none;
+        flex-direction: column;
+        gap: 0.9rem;
+        width: 100%;
+        padding: 0.75rem 0 1rem;
+    }
+
+    .site-nav.is-open {
+        display: flex;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+ * Collapsible cards (details/summary)
+ * ------------------------------------------------------------------------ */
+
+details.collapsible {
+    padding: 0;
+    overflow: hidden;
+}
+
+.collapsible-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.collapsible-summary::-webkit-details-marker {
+    display: none;
+}
+
+.collapsible-summary h3 {
+    margin-bottom: 0.35rem;
+}
+
+.collapsible-summary p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.collapse-chevron {
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    border-right: 2px solid var(--accent-dark);
+    border-bottom: 2px solid var(--accent-dark);
+    transform: rotate(45deg);
+    transition: transform 0.25s ease;
+    margin-right: 0.35rem;
+}
+
+details[open] > .collapsible-summary .collapse-chevron {
+    transform: rotate(225deg);
+}
+
+.collapsible-body {
+    padding: 0 1.35rem 1.35rem;
+    animation: collapsible-reveal 0.3s ease;
+}
+
+@keyframes collapsible-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------------------------------------------------------------------------
+ * Markets page
+ * ------------------------------------------------------------------------ */
+
+.data-freshness {
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.yield-line {
+    stroke: var(--accent-dark);
+    stroke-width: 2.5;
+}
+
+.yield-area {
+    fill: rgba(146, 98, 53, 0.14);
+    stroke: none;
+}
+
+.yield-dot {
+    fill: var(--accent-dark);
+}
+
+.quotes-table {
+    min-width: 640px;
+}
+
+code {
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
+    background: rgba(76, 47, 24, 0.08);
+    padding: 0.1em 0.35em;
+    border-radius: 6px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Reading shelf
+ * ------------------------------------------------------------------------ */
+
+.shelf-heading {
+    margin-top: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.shelf-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.book-card .collapsible-summary {
+    align-items: flex-start;
+}
+
+.book-card h3 {
+    font-size: 1.45rem;
+}
+
+.book-author {
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.book-takeaway {
+    margin: 0;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent);
+    font-family: "Newsreader", serif;
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--ink);
+}
+
+@media (max-width: 960px) {
+    .shelf-grid {
+        grid-template-columns: 1fr;
+    }
+}

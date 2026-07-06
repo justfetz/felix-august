@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install test dependencies
+        run: pip install pytest pyyaml
+
+      - name: Run test suite
+        run: pytest tests/ -v
+
+      - name: Syntax-check site JavaScript
+        run: |
+          for js in *.js; do
+            node --check "$js"
+          done
+
+      - name: Verify generated book artifacts are current
+        run: |
+          python3 tools/build_books.py
+          git diff --exit-code books/books.md books-data.js
