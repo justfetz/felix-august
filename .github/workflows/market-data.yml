@@ -21,6 +21,8 @@ jobs:
 
       - name: Fetch Treasury yields and ticker quotes
         id: fetch
+        env:
+          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
         run: |
           set +e
           python3 tools/fetch_market_data.py 2> fetch.err
@@ -37,16 +39,6 @@ jobs:
           cat fetch.err >&2
           echo "$CODE" > fetch.code
           exit $CODE
-      - name: Record fetch diagnostics on the branch (diagnostic branch only)
-        if: always() && github.ref_name == 'fix/market-data'
-        run: |
-          mkdir -p .diag
-          { echo "exit code: $(cat fetch.code)"; echo; cat fetch.err; } > .diag/fetch.txt
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .diag/fetch.txt
-          git commit -m "diag: market-data fetch stderr" || true
-          git push || true
 
       - name: Commit refreshed data
         run: |

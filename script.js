@@ -788,9 +788,15 @@ function renderMarketFreshness(market) {
     const note = document.getElementById("market-freshness");
     if (!note) return;
     const generated = market.generatedAt ? market.generatedAt.replace("T", " ").replace(/\+.*$/, " UTC") : "unknown";
-    note.textContent = market.sample
-        ? "Sample data — real Treasury and quote data arrives with the first scheduled refresh."
-        : `Data refreshed ${generated} · Treasury par yield curve + Stooq end-of-day closes.`;
+    if (market.sample) {
+        note.textContent = "Sample data — real Treasury and quote data arrives with the first scheduled refresh.";
+        return;
+    }
+    const quoteSource = market.sources && market.sources.quotes ? market.sources.quotes : "end-of-day closes";
+    const quotesNote = market.quotesStale
+        ? ` Quotes are from ${market.quotesAsOf || "an earlier run"} and have not refreshed since; the curve is current.`
+        : (market.quotes && market.quotes.length ? ` · ${quoteSource}.` : " · quote board unavailable this run.");
+    note.textContent = `Data refreshed ${generated} · Treasury par yield curve.${quotesNote}`;
 }
 
 function renderSignalBandYield(market) {
