@@ -20,7 +20,22 @@ jobs:
           python-version: "3.12"
 
       - name: Fetch Treasury yields and ticker quotes
-        run: python3 tools/fetch_market_data.py
+        id: fetch
+        run: |
+          set +e
+          python3 tools/fetch_market_data.py 2> fetch.err
+          CODE=$?
+          {
+            echo "### Market data fetch"
+            echo
+            echo "exit code: $CODE"
+            echo
+            echo '```'
+            tail -c 4000 fetch.err
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat fetch.err >&2
+          exit $CODE
 
       - name: Commit refreshed data
         run: |
