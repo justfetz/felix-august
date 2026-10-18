@@ -81,3 +81,38 @@ def test_round_trip_preserves_real_holdings_file():
 def test_missing_file_is_a_clean_error(tmp_path):
     with pytest.raises(imp.ImportError_, match="could not read"):
         imp.parse_fidelity(tmp_path / "nope.csv", "Fidelity")
+
+
+def test_parse_fidelity_accepts_recapitalized_headers():
+    """Fidelity changed 'Last Price' to 'Last price' (etc.) in late 2026; columns match case-insensitively."""
+    holdings, _ = imp.parse_fidelity(FIXTURES / "fidelity_sample_2026_10.csv", "Fidelity")
+    mu = next(row for row in holdings if row["symbol"] == "MU")
+    assert mu["marketValueNumber"] == pytest.approx(724.66)
+    assert mu["price"] == "$118.72"
+    assert mu["costBasis"] == "$391.31"
+
+
+def test_parse_schwab_skips_banner_cash_and_total():
+    holdings, skipped = imp.parse_schwab(FIXTURES / "schwab_sample.csv", "thinkorswim")
+    assert [row["symbol"] for row in holdings] == ["AMD", "SLV"]
+    amd = holdings[0]
+    assert amd["marketValueNumber"] == pytest.approx(1057.50)
+    assert amd["gainNumber"] == pytest.approx(482.67)
+    assert amd["dayChange"] == "-$66.96"
+    assert amd["gainPct"] == "+83.97%"
+    assert amd["assetType"] == "Equity"
+    assert amd["brokerage"] == "thinkorswim"
+    # positions + cash reconcile to the export's own total
+    assert sum(r["marketValueNumber"] for r in holdings) + 359.14 == pytest.approx(1519.66)
+    assert any("Cash" in note for note in skipped) and any("Positions Total" in note for note in skipped)
+
+
+def test_parse_schwab_rejects_wrong_format(tmp_path):
+    bad = tmp_path / "bad.csv"
+    bad.write_text("Symbol,Foo\nAMD,1\n")
+    with pytest.raises(imp.ImportError_, match="missing columns"):
+        imp.parse_schwab(bad, "thinkorswim")
+    nohdr = tmp_path / "nohdr.csv"
+    nohdr.write_text("just a banner\n\nno header here\n")
+    with pytest.raises(imp.ImportError_, match="no 'Symbol' header"):
+        imp.parse_schwab(nohdr, "thinkorswim")

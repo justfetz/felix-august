@@ -61,3 +61,37 @@ def test_tickers_config_is_valid():
     assert isinstance(config["tickers"], list) and config["tickers"]
     for entry in config["tickers"]:
         assert entry.get("symbol"), f"ticker entry missing symbol: {entry}"
+
+
+def test_parse_alphavantage_json():
+    payload = {"Meta Data": {}, "Time Series (Daily)": {
+        "2026-10-16": {"1. open": "1", "2. high": "1", "3. low": "1", "4. close": "655.10", "5. volume": "1"},
+        "2026-10-15": {"1. open": "1", "2. high": "1", "3. low": "1", "4. close": "660.00", "5. volume": "1"},
+    }}
+    rows = fmd.parse_alphavantage_json(json.dumps(payload))
+    assert [r["date"] for r in rows] == ["2026-10-15", "2026-10-16"]
+    quote = fmd.quote_from_history("SPY", "benchmark", rows)
+    assert quote["close"] == 655.10 and quote["dayChange"] == -4.9
+
+
+def test_parse_alphavantage_reports_limit_message():
+    with pytest.raises(fmd.FetchError, match="demo API key"):
+        fmd.parse_alphavantage_json(json.dumps({"Information": "The demo API key is for demo purposes only."}))
+
+
+def test_quotes_never_block_the_curve(tmp_path, monkeypatch):
+    """Every quote source failing must still write the Treasury curve, carrying prior quotes as stale."""
+    out = tmp_path / "market.json"
+    out.write_text(json.dumps({"generatedAt": "2026-08-01T00:00:00+00:00", "sample": False,
+                               "quotes": [{"symbol": "SPY", "close": 1.0}], "quotesAsOf": "2026-08-01"}))
+    treasury = fmd.parse_treasury_csv((FIXTURES / "treasury_sample.csv").read_text())
+    monkeypatch.setattr(fmd, "fetch_treasury", lambda year: treasury)
+    monkeypatch.setattr(fmd, "fetch_quotes", lambda tickers, api_key=None: ([], ["SPY: could not fetch"]))
+    tickers = tmp_path / "tickers.json"
+    tickers.write_text(json.dumps({"tickers": [{"symbol": "SPY"}]}))
+    assert fmd.main(["--output", str(out), "--tickers-file", str(tickers), "--year", "2026"]) == 0
+    written = json.loads(out.read_text())
+    assert written["sample"] is False
+    assert written["treasury"]["latest"]["y10"] is not None
+    assert written["quotesStale"] is True and written["quotesAsOf"] == "2026-08-01"
+    assert written["quotes"][0]["symbol"] == "SPY"

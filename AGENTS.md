@@ -25,7 +25,7 @@ unless explicitly asked otherwise.
   This Exists, Themes, All Holdings, Markets, Reading, Notes), nav-toggle
   button, footer. `tests/test_site.py::test_nav_is_consistent` enforces it.
 - **Asset URLs carry a `?v=` cache-bust version.** Bump the version on
-  every CSS/JS change (currently `20260706a`) across all pages at once.
+  every CSS/JS change (currently `20261018a`) across all pages at once.
 - **Raw brokerage CSVs stay out of git by default** (`data/imports/*.csv`
   is gitignored — they carry account names). Committing one is a
   deliberate act, not a side effect.

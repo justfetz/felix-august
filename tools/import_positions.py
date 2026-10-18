@@ -6,14 +6,19 @@ for that brokerage inside holdings-data.js while leaving the other brokerage's
 rows untouched, so the two sleeves can be refreshed independently.
 
 Supported inputs:
-  - Fidelity "Portfolio_Positions_MMM-DD-YYYY.csv" exports (--format fidelity)
+  - Fidelity "Portfolio_Positions_MMM-DD-YYYY.csv" exports (--format fidelity);
+    header capitalization changed in late 2026, so columns match case-insensitively
+  - Schwab / thinkorswim "Individual-Positions-YYYY-MM-DD-HHMMSS.csv" exports
+    (--format schwab): the account banner line, the Cash row and the Positions
+    Total row are skipped
   - The canonical Felix/August schema documented in data/imports/README.md
-    (--format canonical), for thinkorswim or anything else you massage by hand
+    (--format canonical), for anything else you massage by hand
 
 Usage:
   python3 tools/import_positions.py --csv data/imports/Portfolio_Positions_Jul-06-2026.csv \
       --format fidelity --brokerage Fidelity
-  python3 tools/import_positions.py --csv tos.csv --format canonical --brokerage thinkorswim
+  python3 tools/import_positions.py --csv data/imports/Individual-Positions-2026-10-18-115328.csv \
+      --format schwab --brokerage thinkorswim
   python3 tools/import_positions.py --csv file.csv --format fidelity --brokerage Fidelity --dry-run
 """
 
@@ -37,7 +42,14 @@ CANONICAL_FIELDS = [
     "reinvestCapitalGains",
 ]
 
-FIDELITY_REQUIRED = ["Symbol", "Description", "Quantity", "Last Price", "Current Value"]
+FIDELITY_REQUIRED = ["symbol", "description", "quantity", "last price", "current value"]
+SCHWAB_REQUIRED = ["symbol", "description", "qty (quantity)", "price", "mkt val (market value)"]
+SCHWAB_SKIP_SYMBOLS = {"cash & cash investments", "positions total", "account total"}
+
+
+def fold(row: dict) -> dict:
+    """Lower-case and trim a CSV row's keys so header capitalization changes don't break imports."""
+    return {(key or "").strip().lower(): value for key, value in row.items()}
 
 
 class ImportError_(ValueError):
@@ -111,6 +123,7 @@ def parse_fidelity(path: Path, brokerage: str) -> tuple[list[dict], list[str]]:
     if not rows:
         raise ImportError_(f"{path}: no data rows found")
 
+    rows = [fold(row) for row in rows]
     header = list(rows[0].keys())
     missing = [column for column in FIDELITY_REQUIRED if column not in header]
     if missing:
@@ -122,41 +135,108 @@ def parse_fidelity(path: Path, brokerage: str) -> tuple[list[dict], list[str]]:
     holdings = []
     skipped = []
     for index, row in enumerate(rows, start=2):
-        symbol = (row.get("Symbol") or "").strip()
+        symbol = (row.get("symbol") or "").strip()
         if not symbol or symbol.lower().startswith("pending"):
-            skipped.append(f"line {index}: no symbol ({row.get('Description', '')!r})")
+            skipped.append(f"line {index}: no symbol ({row.get('description', '')!r})")
             continue
 
-        value_number = to_number(row.get("Current Value"))
-        gain_number = to_number(row.get("Total Gain/Loss Dollar"))
-        day_change = to_number(row.get("Today's Gain/Loss Dollar"))
-        day_pct = to_number(row.get("Today's Gain/Loss Percent"))
-        gain_pct = to_number(row.get("Total Gain/Loss Percent"))
-        price_change = to_number(row.get("Last Price Change"))
+        value_number = to_number(row.get("current value"))
+        gain_number = to_number(row.get("total gain/loss dollar"))
+        day_change = to_number(row.get("today's gain/loss dollar"))
+        day_pct = to_number(row.get("today's gain/loss percent"))
+        gain_pct = to_number(row.get("total gain/loss percent"))
+        price_change = to_number(row.get("last price change"))
 
         holdings.append({
             "brokerage": brokerage,
-            "accountName": (row.get("Account Name") or "Individual").strip(),
+            "accountName": (row.get("account name") or "Individual").strip(),
             "symbol": symbol,
-            "description": (row.get("Description") or "").strip(),
-            "quantity": (row.get("Quantity") or "").strip(),
-            "price": (row.get("Last Price") or "").strip(),
+            "description": (row.get("description") or "").strip(),
+            "quantity": (row.get("quantity") or "").strip(),
+            "price": (row.get("last price") or "").strip(),
             "priceChange": signed_currency(price_change) if price_change is not None else "",
             "marketValue": currency(value_number),
             "marketValueNumber": value_number,
             "dayChange": signed_currency(day_change) if day_change is not None else "",
             "dayChangePct": signed_percent(day_pct),
-            "costBasis": (row.get("Cost Basis Total") or "").strip(),
+            "costBasis": (row.get("cost basis total") or "").strip(),
             "gain": signed_currency(gain_number) if gain_number is not None else "",
             "gainNumber": gain_number,
             "gainPct": signed_percent(gain_pct),
-            "accountWeight": (row.get("Percent Of Account") or "").strip(),
-            "averageCostBasis": (row.get("Average Cost Basis") or "").strip(),
-            "assetType": (row.get("Type") or "").strip(),
+            "accountWeight": (row.get("percent of account") or "").strip(),
+            "averageCostBasis": (row.get("average cost basis") or "").strip(),
+            "assetType": (row.get("type") or "").strip(),
             "reinvest": "",
             "reinvestCapitalGains": "",
         })
 
+    if not holdings:
+        raise ImportError_(f"{path}: every row was skipped — is this the right export?")
+    return holdings, skipped
+
+
+def read_schwab_rows(path: Path) -> list[dict]:
+    """Schwab's export opens with a one-cell banner ('Positions for account ... as of ...')
+    and a blank line before the header. Drop everything up to the header row."""
+    try:
+        text = path.read_text(encoding="utf-8-sig")
+    except OSError as error:
+        raise ImportError_(f"could not read {path}: {error}") from error
+    except UnicodeDecodeError:
+        text = path.read_text(encoding="latin-1")
+    lines = [line for line in text.splitlines() if line.strip()]
+    start = next((i for i, line in enumerate(lines) if line.lower().startswith('"symbol"') or line.lower().startswith("symbol,")), None)
+    if start is None:
+        raise ImportError_(f"{path} has no 'Symbol' header row; is this a Schwab/thinkorswim positions export?")
+    reader = csv.DictReader(io_lines(lines[start:]))
+    return [fold(row) for row in reader if any((v or "").strip() for v in row.values())]
+
+
+def parse_schwab(path: Path, brokerage: str) -> tuple[list[dict], list[str]]:
+    rows = read_schwab_rows(path)
+    if not rows:
+        raise ImportError_(f"{path}: no data rows found")
+    header = list(rows[0].keys())
+    missing = [column for column in SCHWAB_REQUIRED if column not in header]
+    if missing:
+        raise ImportError_(
+            f"{path} does not look like a Schwab/thinkorswim positions export; "
+            f"missing columns: {', '.join(missing)}. Found: {', '.join(h for h in header if h)}"
+        )
+    holdings, skipped = [], []
+    for index, row in enumerate(rows, start=2):
+        symbol = (row.get("symbol") or "").strip()
+        if not symbol or symbol.lower() in SCHWAB_SKIP_SYMBOLS:
+            skipped.append(f"line {index}: {symbol or 'no symbol'} ({row.get('mkt val (market value)', '')})")
+            continue
+        value_number = to_number(row.get("mkt val (market value)"))
+        gain_number = to_number(row.get("gain $ (gain/loss $)"))
+        day_change = to_number(row.get("day chng $ (day change $)"))
+        day_pct = to_number(row.get("day chng % (day change %)"))
+        gain_pct = to_number(row.get("gain % (gain/loss %)"))
+        price_change = to_number(row.get("price chng $ (price change $)"))
+        holdings.append({
+            "brokerage": brokerage,
+            "accountName": "Individual",
+            "symbol": symbol,
+            "description": (row.get("description") or "").strip(),
+            "quantity": (row.get("qty (quantity)") or "").strip(),
+            "price": (row.get("price") or "").strip(),
+            "priceChange": signed_currency(price_change) if price_change is not None else "",
+            "marketValue": currency(value_number),
+            "marketValueNumber": value_number,
+            "dayChange": signed_currency(day_change) if day_change is not None else "",
+            "dayChangePct": signed_percent(day_pct),
+            "costBasis": (row.get("cost basis") or "").strip(),
+            "gain": signed_currency(gain_number) if gain_number is not None else "",
+            "gainNumber": gain_number,
+            "gainPct": signed_percent(gain_pct),
+            "accountWeight": "",
+            "averageCostBasis": "",
+            "assetType": (row.get("asset type") or "").strip(),
+            "reinvest": (row.get("reinvest?") or "").strip(),
+            "reinvestCapitalGains": (row.get("reinvest capital gains?") or "").strip(),
+        })
     if not holdings:
         raise ImportError_(f"{path}: every row was skipped — is this the right export?")
     return holdings, skipped
@@ -212,7 +292,7 @@ def render_holdings_js(holdings: list[dict]) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--csv", type=Path, required=True, help="brokerage export to import")
-    parser.add_argument("--format", choices=["fidelity", "canonical"], required=True)
+    parser.add_argument("--format", choices=["fidelity", "schwab", "canonical"], required=True)
     parser.add_argument("--brokerage", required=True, help="brokerage label, e.g. Fidelity or thinkorswim")
     parser.add_argument("--holdings-js", type=Path, default=HOLDINGS_JS)
     parser.add_argument("--dry-run", action="store_true", help="report what would change without writing")
@@ -221,6 +301,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.format == "fidelity":
             new_rows, skipped = parse_fidelity(args.csv, args.brokerage)
+        elif args.format == "schwab":
+            new_rows, skipped = parse_schwab(args.csv, args.brokerage)
         else:
             new_rows, skipped = parse_canonical(args.csv, args.brokerage)
         existing = load_existing_holdings(args.holdings_js)

@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Fetch the market backdrop for Felix/August: Treasury yields and ticker quotes.
 
-Sources (both keyless):
-  - U.S. Treasury daily par yield curve CSV (home.treasury.gov)
-  - Stooq daily history CSV per ticker (stooq.com)
+Sources:
+  - U.S. Treasury daily par yield curve CSV (home.treasury.gov), keyless
+  - Ticker quotes from Alpha Vantage when ALPHAVANTAGE_API_KEY is set (an Action
+    secret, never the browser); Stooq's keyless CSV is tried as a fallback but
+    has refused automated requests since August 2026
+
+The Treasury curve is the backdrop every page leans on, so it is written even
+when every quote source fails; the quote board then carries the previous run's
+quotes and an explicit "stale" flag.
 
 Writes data/market.json, which the site renders on markets.html and in the
 signal band. Designed to run inside the scheduled GitHub Action
@@ -20,6 +26,7 @@ import argparse
 import csv
 import io
 import json
+import os
 import sys
 import urllib.error
 import urllib.request
@@ -36,6 +43,7 @@ TREASURY_URL = (
     "&field_tdr_date_value={year}&page&_format=csv"
 )
 STOOQ_HISTORY_URL = "https://stooq.com/q/d/l/?s={symbol}&i=d"
+ALPHAVANTAGE_URL = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=compact&apikey={key}"
 
 USER_AGENT = "felix-august-market-data/1.0 (+https://github.com/justfetz/felix-august)"
 
@@ -109,6 +117,28 @@ def parse_stooq_history_csv(text: str) -> list[dict]:
     return rows
 
 
+def parse_alphavantage_json(text: str) -> list[dict]:
+    """Parse an Alpha Vantage TIME_SERIES_DAILY response into ascending {"date", "close"} rows."""
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise FetchError(f"Alpha Vantage returned non-JSON: {error}") from error
+    series = payload.get("Time Series (Daily)")
+    if not series:
+        note = payload.get("Note") or payload.get("Information") or payload.get("Error Message") or "no series in response"
+        raise FetchError(f"Alpha Vantage: {str(note)[:160]}")
+    rows = []
+    for date_text, fields in series.items():
+        try:
+            rows.append({"date": date_text, "close": float(fields["4. close"])})
+        except (KeyError, ValueError, TypeError):
+            continue
+    if not rows:
+        raise FetchError("Alpha Vantage series parsed to zero usable rows")
+    rows.sort(key=lambda item: item["date"])
+    return rows
+
+
 def quote_from_history(symbol: str, label: str, history: list[dict]) -> dict:
     latest = history[-1]
     previous = history[-2] if len(history) > 1 else None
@@ -140,20 +170,30 @@ def fetch_treasury(year: int) -> list[dict]:
     return rows
 
 
-def fetch_quotes(tickers: list[dict]) -> tuple[list[dict], list[str]]:
+def fetch_quotes(tickers: list[dict], api_key: str | None = None) -> tuple[list[dict], list[str]]:
+    """Alpha Vantage with a key, else Stooq. One failure never stops the next ticker."""
     quotes, errors = [], []
     for entry in tickers:
         symbol = entry["symbol"]
-        stooq_symbol = entry.get("stooq", f"{symbol.lower()}.us")
-        try:
-            history = parse_stooq_history_csv(http_get(STOOQ_HISTORY_URL.format(symbol=stooq_symbol)))
+        history = None
+        if api_key:
+            try:
+                history = parse_alphavantage_json(http_get(ALPHAVANTAGE_URL.format(symbol=symbol, key=api_key)))
+            except FetchError as error:
+                errors.append(f"{symbol}: {error}")
+        if history is None:
+            stooq_symbol = entry.get("stooq", f"{symbol.lower()}.us")
+            try:
+                history = parse_stooq_history_csv(http_get(STOOQ_HISTORY_URL.format(symbol=stooq_symbol)))
+            except FetchError as error:
+                errors.append(f"{symbol}: {error}")
+        if history:
             quotes.append(quote_from_history(symbol, entry.get("label", ""), history[-10:]))
-        except FetchError as error:
-            errors.append(f"{symbol}: {error}")
     return quotes, errors
 
 
-def build_payload(treasury_rows: list[dict], quotes: list[dict], errors: list[str], now: datetime) -> dict:
+def build_payload(treasury_rows: list[dict], quotes: list[dict], errors: list[str], now: datetime,
+                  quotes_stale: bool = False, quotes_as_of: str | None = None) -> dict:
     latest = treasury_rows[-1]
     spread_2s10s = None
     if latest.get("y10") is not None and latest.get("y2") is not None:
@@ -163,7 +203,7 @@ def build_payload(treasury_rows: list[dict], quotes: list[dict], errors: list[st
         "sample": False,
         "sources": {
             "treasury": "U.S. Treasury daily par yield curve (home.treasury.gov)",
-            "quotes": "Stooq end-of-day history (stooq.com)",
+            "quotes": "Alpha Vantage daily closes" if os.environ.get("ALPHAVANTAGE_API_KEY") else "Stooq end-of-day history (stooq.com)",
         },
         "treasury": {
             "latest": latest,
@@ -171,6 +211,8 @@ def build_payload(treasury_rows: list[dict], quotes: list[dict], errors: list[st
             "series": treasury_rows[-260:],
         },
         "quotes": quotes,
+        "quotesStale": quotes_stale,
+        "quotesAsOf": quotes_as_of,
         "errors": errors,
     }
 
@@ -197,20 +239,37 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: treasury fetch failed: {error}", file=sys.stderr)
         return 1
 
-    quotes, errors = fetch_quotes(tickers)
+    api_key = os.environ.get("ALPHAVANTAGE_API_KEY") or None
+    quotes, errors = fetch_quotes(tickers, api_key)
     if errors:
         print("warning: some quotes failed:", file=sys.stderr)
         for line in errors:
             print(f"  {line}", file=sys.stderr)
-    if not quotes:
-        print("error: every quote fetch failed; refusing to write an empty board", file=sys.stderr)
-        return 1
 
-    payload = build_payload(treasury_rows, quotes, errors, now)
+    # The Treasury curve is the backdrop; never let the quote board block it.
+    quotes_stale, quotes_as_of = False, now.date().isoformat()
+    if not quotes:
+        previous = load_previous(args.output)
+        if previous and previous.get("quotes") and not previous.get("sample"):
+            quotes = previous["quotes"]
+            quotes_stale, quotes_as_of = True, previous.get("quotesAsOf") or previous.get("generatedAt", "")[:10]
+            print(f"warning: every quote fetch failed; carrying {len(quotes)} quotes from {quotes_as_of} flagged stale", file=sys.stderr)
+        else:
+            print("warning: every quote fetch failed and no prior quotes to carry; writing the curve with an empty board", file=sys.stderr)
+
+    payload = build_payload(treasury_rows, quotes, errors, now, quotes_stale, quotes_as_of)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2) + "\n")
-    print(f"wrote {args.output} — 10-yr {payload['treasury']['latest'].get('y10')}%, {len(quotes)} quotes")
+    print(f"wrote {args.output} — 10-yr {payload['treasury']['latest'].get('y10')}%, {len(quotes)} quotes"
+          + (" (stale)" if quotes_stale else ""))
     return 0
+
+
+def load_previous(path: Path) -> dict | None:
+    try:
+        return json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
 
 
 if __name__ == "__main__":
