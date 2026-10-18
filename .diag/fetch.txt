@@ -1,0 +1,20 @@
+exit code: 1
+
+warning: some quotes failed:
+  SPY: Stooq CSV is missing the 'Close' column
+  QQQ: Stooq CSV is missing the 'Close' column
+  NVDA: Stooq CSV is missing the 'Close' column
+  AMD: Stooq CSV is missing the 'Close' column
+  MU: Stooq CSV is missing the 'Close' column
+  SMCI: Stooq CSV is missing the 'Close' column
+  INTC: Stooq CSV is missing the 'Close' column
+  MSFT: Stooq CSV is missing the 'Close' column
+  GOOGL: Stooq CSV is missing the 'Close' column
+  AMZN: Stooq CSV is missing the 'Close' column
+  AAPL: Stooq CSV is missing the 'Close' column
+  PLTR: Stooq CSV is missing the 'Close' column
+  VTI: Stooq CSV is missing the 'Close' column
+  XLE: Stooq CSV is missing the 'Close' column
+  DUK: Stooq CSV is missing the 'Close' column
+  SLV: Stooq CSV is missing the 'Close' column
+error: every quote fetch failed; refusing to write an empty board
