@@ -1,123 +1,85 @@
-const thinkorswimAccount = {
-    name: "thinkorswim",
-    accountType: "AI + tactical sleeve",
-    contributed: 4700.21,
-    currentValue: 7567.32,
-    gain: 2507.38,
-    weeklyCadence: 50,
-    positions: 37,
-    cash: 81.64,
-    holdings: [
-        { ticker: "CHAT", label: "AI basket", account: "thinkorswim", marketValue: 1826.0, totalGain: 696.47, gainPct: 61.66 },
-        { ticker: "AMD", label: "semis", account: "thinkorswim", marketValue: 557.68, totalGain: 436.15, gainPct: 358.88 },
-        { ticker: "MXL", label: "chip infrastructure", account: "thinkorswim", marketValue: 399.6, totalGain: 225.09, gainPct: 128.98 },
-        { ticker: "NVDA", label: "AI compute", account: "thinkorswim", marketValue: 392.99, totalGain: 144.47, gainPct: 58.13 },
-        { ticker: "MSFT", label: "platform + cloud", account: "thinkorswim", marketValue: 386.08, totalGain: -21.94, gainPct: -5.38 },
-        { ticker: "INTC", label: "domestic chip exposure", account: "thinkorswim", marketValue: 372.17, totalGain: 270.74, gainPct: 266.92 },
-        { ticker: "GOOGL", label: "AI + search", account: "thinkorswim", marketValue: 364.23, totalGain: 200.9, gainPct: 123.0 },
-        { ticker: "ROBT", label: "robotics ETF", account: "thinkorswim", marketValue: 287.15, totalGain: 36.32, gainPct: 14.48 },
-        { ticker: "DRAM", label: "memory ETF", account: "thinkorswim", marketValue: 259.84, totalGain: 36.97, gainPct: 16.59 },
-        { ticker: "AMZN", label: "cloud + commerce", account: "thinkorswim", marketValue: 244.92, totalGain: 68.18, gainPct: 38.58 },
-        { ticker: "XLE", label: "energy ETF", account: "thinkorswim", marketValue: 212.9, totalGain: 31.08, gainPct: 17.09 },
-        { ticker: "BTX", label: "Blackrock Tech And Priva", account: "thinkorswim", marketValue: 174.6, totalGain: 26.3, gainPct: 17.73 },
-        { ticker: "XT", label: "exponential tech ETF", account: "thinkorswim", marketValue: 166.7, totalGain: 57.52, gainPct: 52.68 },
-        { ticker: "FLNC", label: "Flnc", account: "thinkorswim", marketValue: 162.27, totalGain: -33.51, gainPct: -17.12 },
-        { ticker: "ARTY", label: "AI ETF", account: "thinkorswim", marketValue: 145.44, totalGain: 79.25, gainPct: 119.73 },
-        { ticker: "AIO", label: "AI + infrastructure fund", account: "thinkorswim", marketValue: 134.95, totalGain: 12.39, gainPct: 10.11 },
-        { ticker: "WTAI", label: "AI ETF", account: "thinkorswim", marketValue: 132.33, totalGain: 63.95, gainPct: 93.52 },
-        { ticker: "LRNZ", label: "AI + innovation ETF", account: "thinkorswim", marketValue: 127.04, totalGain: 58.36, gainPct: 84.97 },
-        { ticker: "DUK", label: "utility", account: "thinkorswim", marketValue: 126.68, totalGain: 15.13, gainPct: 13.56 },
-        { ticker: "TEM", label: "speculative AI health", account: "thinkorswim", marketValue: 122.03, totalGain: -20.51, gainPct: -14.39 },
-        { ticker: "SLV", label: "silver exposure", account: "thinkorswim", marketValue: 111.78, totalGain: 21.33, gainPct: 23.58 },
-        { ticker: "EXEL", label: "healthcare growth", account: "thinkorswim", marketValue: 111.17, totalGain: 67.44, gainPct: 154.22 },
-        { ticker: "SPRX", label: "biotech", account: "thinkorswim", marketValue: 104.4, totalGain: 56.54, gainPct: 118.14 },
-        { ticker: "SYM", label: "automation", account: "thinkorswim", marketValue: 87.9, totalGain: 7.92, gainPct: 9.9 },
-        { ticker: "SOUN", label: "voice AI", account: "thinkorswim", marketValue: 69.35, totalGain: 48.0, gainPct: 224.82 },
-        { ticker: "D", label: "utility", account: "thinkorswim", marketValue: 69.21, totalGain: 13.49, gainPct: 24.21 },
-        { ticker: "U", label: "interactive software", account: "thinkorswim", marketValue: 59.69, totalGain: 8.77, gainPct: 17.22 },
-        { ticker: "XLF", label: "financials ETF", account: "thinkorswim", marketValue: 55.96, totalGain: 6.78, gainPct: 13.79 },
-        { ticker: "CASH", label: "Cash", account: "thinkorswim", marketValue: 51.48, totalGain: 0.0, gainPct: 0.0 },
-        { ticker: "BITC", label: "bitcoin income", account: "thinkorswim", marketValue: 36.25, totalGain: -36.62, gainPct: -50.25 },
-        { ticker: "IBIT", label: "bitcoin ETF", account: "thinkorswim", marketValue: 36.06, totalGain: -4.47, gainPct: -11.03 },
-        { ticker: "HLX", label: "energy services", account: "thinkorswim", marketValue: 34.42, totalGain: -7.1, gainPct: -17.1 },
-        { ticker: "UPST", label: "AI lending", account: "thinkorswim", marketValue: 34.13, totalGain: 9.61, gainPct: 39.19 },
-        { ticker: "LTRX", label: "network hardware", account: "thinkorswim", marketValue: 33.93, totalGain: 4.58, gainPct: 15.6 },
-        { ticker: "AI", label: "software AI", account: "thinkorswim", marketValue: 28.29, totalGain: -53.06, gainPct: -65.22 },
-        { ticker: "PATH", label: "automation software", account: "thinkorswim", marketValue: 24.46, totalGain: -17.21, gainPct: -41.3 },
-        { ticker: "WULF", label: "Wulf", account: "thinkorswim", marketValue: 23.24, totalGain: -1.93, gainPct: -7.67 }
+// ---------------------------------------------------------------------------------
+// Live numbers come from holdings-data.js, which tools/import_positions.py regenerates
+// from the brokerage exports. Nothing below is typed in by hand except the ledger of
+// what the household put in, which no export carries.
+// ---------------------------------------------------------------------------------
+
+// Hand-maintained: contributions and documented transfers (from account history,
+// which the positions export does not include). Update when you add money.
+const CONTRIBUTION_LEDGER = {
+    accounts: {
+        thinkorswim: { accountType: "AI + tactical sleeve", contributed: 4700.21, weeklyCadence: 50 },
+        Fidelity: { accountType: "Core accumulation sleeve", contributed: 2707.89, weeklyCadence: 100 }
+    },
+    documentedTransferTotal: 4000,
+    monthly: [
+        { label: "Nov 2025", amount: 250 },
+        { label: "Dec 2025", amount: 750 },
+        { label: "Jan 2026", amount: 600 },
+        { label: "Feb 2026", amount: 600 },
+        { label: "Mar 2026", amount: 750 },
+        { label: "Apr 2026", amount: 600 },
+        { label: "May 2026", amount: 450 }
     ]
 };
 
-const fidelityAccount = {
-    name: "Fidelity",
-    accountType: "Core accumulation sleeve",
-    contributed: 2707.89,
-    currentValue: 4166.95,
-    gain: 757.36,
-    weeklyCadence: 100,
-    positions: 56,
-    cash: 206.64,
-    pending: 100,
-    holdings: [
-        { ticker: "MU", label: "memory + semis", account: "Fidelity", marketValue: 989.49, totalGain: 598.18, gainPct: 152.87 },
-        { ticker: "SMCI", label: "AI infrastructure", account: "Fidelity", marketValue: 459.68, totalGain: -40.31, gainPct: -8.06 },
-        { ticker: "PLTR", label: "AI software", account: "Fidelity", marketValue: 397.62, totalGain: -59.09, gainPct: -12.94 },
-        { ticker: "DRAM", label: "memory ETF", account: "Fidelity", marketValue: 334.62, totalGain: 54.62, gainPct: 19.51 },
-        { ticker: "AAPL", label: "platform", account: "Fidelity", marketValue: 313.37, totalGain: 32.89, gainPct: 11.73 },
-        { ticker: "CRWD", label: "Crowdstrike Hldgs Inc Cl A", account: "Fidelity", marketValue: 233.55, totalGain: 32.2, gainPct: 15.99 },
-        { ticker: "ASML", label: "Asml Holding Nv Eur0.09 Ny Registry Shs 2012", account: "Fidelity", marketValue: 231.8, totalGain: 31.93, gainPct: 15.98 },
-        { ticker: "GOOGL", label: "AI + search", account: "Fidelity", marketValue: 227.18, totalGain: 21.11, gainPct: 10.24 },
-        { ticker: "VTI", label: "total market ETF", account: "Fidelity", marketValue: 202.64, totalGain: 22.69, gainPct: 12.61 },
-        { ticker: "GOOG", label: "AI + search", account: "Fidelity", marketValue: 134.55, totalGain: 19.6, gainPct: 17.05 },
-        { ticker: "GEV", label: "Ge Vernova Inc Com", account: "Fidelity", marketValue: 122.63, totalGain: 22.86, gainPct: 22.91 },
-        { ticker: "WDC", label: "Western Digital Corp. Com", account: "Fidelity", marketValue: 108.92, totalGain: 8.96, gainPct: 8.96 },
-        { ticker: "UBER", label: "platform mobility", account: "Fidelity", marketValue: 73.45, totalGain: -11.31, gainPct: -13.34 },
-        { ticker: "FIGR", label: "fintech", account: "Fidelity", marketValue: 16.95, totalGain: -0.16, gainPct: -0.94 },
-        { ticker: "NVDA", label: "AI compute", account: "Fidelity", marketValue: 6.28, totalGain: 0.46, gainPct: 7.9 },
-        { ticker: "MRVL", label: "Marvell Technology Inc Com", account: "Fidelity", marketValue: 6.03, totalGain: 4.1, gainPct: 212.44 },
-        { ticker: "LITE", label: "optics + infrastructure", account: "Fidelity", marketValue: 5.83, totalGain: 3.89, gainPct: 200.52 },
-        { ticker: "SCCO", label: "Southern Copper Corp", account: "Fidelity", marketValue: 5.38, totalGain: 1.48, gainPct: 37.95 },
-        { ticker: "MSFT", label: "platform + cloud", account: "Fidelity", marketValue: 4.63, totalGain: -1.29, gainPct: -21.79 },
-        { ticker: "AMD", label: "semis", account: "Fidelity", marketValue: 4.41, totalGain: 2.59, gainPct: 142.31 },
-        { ticker: "AMZN", label: "cloud + commerce", account: "Fidelity", marketValue: 4.41, totalGain: 0.44, gainPct: 11.08 },
-        { ticker: "CIEN", label: "Ciena Corp", account: "Fidelity", marketValue: 4.33, totalGain: 2.45, gainPct: 130.32 },
-        { ticker: "FTNT", label: "Fortinet Inc Com Usd0.001", account: "Fidelity", marketValue: 3.89, totalGain: 1.95, gainPct: 100.52 },
-        { ticker: "VRT", label: "Vertiv Holdings Co Com Cl A", account: "Fidelity", marketValue: 3.84, totalGain: 1.91, gainPct: 98.96 },
-        { ticker: "PANW", label: "Palo Alto Networks Inc Com Usd0.0001", account: "Fidelity", marketValue: 3.18, totalGain: 1.37, gainPct: 75.69 },
-        { ticker: "TSM", label: "Taiwan Semiconductor Manufacturing Spon Ads Each Rep 5 Ord Twd10", account: "Fidelity", marketValue: 3.17, totalGain: 1.24, gainPct: 64.25 },
-        { ticker: "FCX", label: "Freeport-Mcmoran Inc Com Usd0.10", account: "Fidelity", marketValue: 2.97, totalGain: 0.98, gainPct: 49.25 },
-        { ticker: "ANET", label: "Arista Networks Inc Com Shs", account: "Fidelity", marketValue: 2.75, totalGain: 0.76, gainPct: 38.19 },
-        { ticker: "EQNR", label: "Equinor Asa Spon Adr Each Rep 1 Ord Shs", account: "Fidelity", marketValue: 2.65, totalGain: 0.67, gainPct: 33.84 },
-        { ticker: "ROK", label: "Rockwell Automation Inc Com Usd1", account: "Fidelity", marketValue: 2.4, totalGain: 0.56, gainPct: 30.43 },
-        { ticker: "KMI", label: "Kinder Morgan Inc Com Usd0.01", account: "Fidelity", marketValue: 2.31, totalGain: 0.34, gainPct: 17.26 },
-        { ticker: "D", label: "utility", account: "Fidelity", marketValue: 2.21, totalGain: 0.24, gainPct: 12.18 },
-        { ticker: "LNG", label: "Cheniere Energy Inc Com Usd0.003", account: "Fidelity", marketValue: 2.21, totalGain: 0.28, gainPct: 14.51 },
-        { ticker: "BWXT", label: "Bwx Technologies Inc Com", account: "Fidelity", marketValue: 2.16, totalGain: 0.25, gainPct: 13.09 },
-        { ticker: "NOW", label: "Servicenow Inc Com Usd0.001", account: "Fidelity", marketValue: 2.16, totalGain: -1.12, gainPct: -34.15 },
-        { ticker: "VMC", label: "Vulcan Materials Co", account: "Fidelity", marketValue: 2.12, totalGain: 0.15, gainPct: 7.61 },
-        { ticker: "SO", label: "Southern Co", account: "Fidelity", marketValue: 2.11, totalGain: 0.11, gainPct: 5.5 },
-        { ticker: "DLR", label: "Digital Realty Trust Inc", account: "Fidelity", marketValue: 2.07, totalGain: 0.18, gainPct: 9.52 },
-        { ticker: "ETN", label: "Eaton Corporation Plc", account: "Fidelity", marketValue: 2.06, totalGain: 0.37, gainPct: 21.89 },
-        { ticker: "ABBV", label: "Abbvie Inc Com Usd0.01", account: "Fidelity", marketValue: 2.04, totalGain: 0.17, gainPct: 9.09 },
-        { ticker: "DUK", label: "utility", account: "Fidelity", marketValue: 2.02, totalGain: 0.04, gainPct: 2.02 },
-        { ticker: "NEE", label: "Nextera Energy Inc Com Usd0.01", account: "Fidelity", marketValue: 2.01, totalGain: 0.03, gainPct: 1.52 },
-        { ticker: "AWK", label: "American Water Works Company Inc Com Usd0.01", account: "Fidelity", marketValue: 1.99, totalGain: 0.0, gainPct: 0.0 },
-        { ticker: "EQIX", label: "Equinix Inc Com", account: "Fidelity", marketValue: 1.99, totalGain: 0.44, gainPct: 28.39 },
-        { ticker: "TT", label: "Trane Technologies Plc Com Usd1", account: "Fidelity", marketValue: 1.94, totalGain: 0.3, gainPct: 18.29 },
-        { ticker: "XEL", label: "Xcel Energy Inc Com Usd2.5", account: "Fidelity", marketValue: 1.93, totalGain: -0.01, gainPct: -0.52 },
-        { ticker: "AVGO", label: "Broadcom Inc Com", account: "Fidelity", marketValue: 1.87, totalGain: 0.18, gainPct: 10.65 },
-        { ticker: "SNOW", label: "Snowflake Inc. Common Stock", account: "Fidelity", marketValue: 1.82, totalGain: 0.06, gainPct: 3.41 },
-        { ticker: "MLM", label: "Martin Marietta Materials Inc Com Usd0.01", account: "Fidelity", marketValue: 1.81, totalGain: 0.03, gainPct: 1.69 },
-        { ticker: "IBM", label: "International Bus Mach Corp Com Usd0.20", account: "Fidelity", marketValue: 1.79, totalGain: 0.04, gainPct: 2.29 },
-        { ticker: "MDB", label: "Mongodb Inc Cl A", account: "Fidelity", marketValue: 1.76, totalGain: 0.08, gainPct: 4.76 },
-        { ticker: "XYL", label: "Xylem Inc Com Usd0.01", account: "Fidelity", marketValue: 1.66, totalGain: -0.29, gainPct: -14.87 },
-        { ticker: "GTLB", label: "Gitlab Inc Class A Com", account: "Fidelity", marketValue: 1.53, totalGain: -0.47, gainPct: -23.5 },
-        { ticker: "ESTC", label: "Elastic N V Com Eur0.01", account: "Fidelity", marketValue: 1.27, totalGain: -0.66, gainPct: -34.2 },
-        { ticker: "SMR", label: "Nuscale Pwr Corp Cl A Com", account: "Fidelity", marketValue: 0.87, totalGain: -1.11, gainPct: -56.06 }
-    ]
-};
+const CASH_SYMBOLS = new Set(["SPAXX**", "FDRXX**", "CASH", "CASH & CASH INVESTMENTS"]);
 
-const allAccounts = [thinkorswimAccount, fidelityAccount];
+function parseMoney(value) {
+    if (typeof value === "number") return value;
+    if (!value) return 0;
+    const cleaned = String(value).replace(/[$,%+\s]/g, "").replace(/\((.*)\)/, "-$1");
+    const n = parseFloat(cleaned);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function shortLabel(row) {
+    const d = (row.description || "").toLowerCase().replace(/\b(inc|corp|co|plc|ltd|nv|sa|com|class|cl|a|shs|usd[\d.]*|ny registry|spon adr|each rep.*)\b/g, "").replace(/\s+/g, " ").trim();
+    return d ? d.split(" ").slice(0, 3).join(" ") : row.symbol;
+}
+
+function buildAccountsFromHoldings(rows) {
+    const byBrokerage = new Map();
+    for (const row of rows) {
+        const symbol = (row.symbol || "").trim();
+        if (!symbol) continue;
+        // Fidelity's "Type" column is the ACCOUNT type ("Cash" = cash account, "Margin"), not the asset;
+        // cash positions are identified by symbol (SPAXX**) or by Schwab's "Cash and Money Market" asset type.
+        const isCash = CASH_SYMBOLS.has(symbol.toUpperCase()) || /money market/i.test(row.assetType || "") || /held in money market/i.test(row.description || "");
+        const name = row.brokerage;
+        if (!byBrokerage.has(name)) byBrokerage.set(name, { name, holdings: [], cash: 0 });
+        const acct = byBrokerage.get(name);
+        const marketValue = typeof row.marketValueNumber === "number" ? row.marketValueNumber : parseMoney(row.marketValue);
+        if (isCash) { acct.cash += marketValue; continue; }
+        const totalGain = typeof row.gainNumber === "number" ? row.gainNumber : parseMoney(row.gain);
+        acct.holdings.push({
+            ticker: symbol,
+            label: shortLabel(row),
+            account: name,
+            marketValue,
+            totalGain,
+            gainPct: parseMoney(row.gainPct)
+        });
+    }
+    return [...byBrokerage.values()].map((acct) => {
+        const ledger = CONTRIBUTION_LEDGER.accounts[acct.name] || { accountType: "", contributed: 0, weeklyCadence: 0 };
+        const positionsValue = acct.holdings.reduce((sum, h) => sum + h.marketValue, 0);
+        const gain = acct.holdings.reduce((sum, h) => sum + h.totalGain, 0);
+        acct.holdings.sort((a, b) => b.marketValue - a.marketValue);
+        return {
+            ...acct,
+            accountType: ledger.accountType,
+            contributed: ledger.contributed,
+            weeklyCadence: ledger.weeklyCadence,
+            currentValue: positionsValue + acct.cash,
+            positionsValue,
+            gain,
+            positions: acct.holdings.length
+        };
+    }).sort((a, b) => b.currentValue - a.currentValue);
+}
+
+const allAccounts = buildAccountsFromHoldings(window.allHoldingsDetail || []);
 
 function inferTheme(holding) {
     const text = `${holding.ticker} ${holding.label}`.toLowerCase();
@@ -134,28 +96,26 @@ const combinedHoldings = allAccounts
     .map((holding) => ({ ...holding, theme: inferTheme(holding) }))
     .sort((a, b) => b.marketValue - a.marketValue);
 
+const householdValue = allAccounts.reduce((sum, a) => sum + a.currentValue, 0);
+const householdCash = allAccounts.reduce((sum, a) => sum + a.cash, 0);
+const householdGain = allAccounts.reduce((sum, a) => sum + a.gain, 0);
+const householdContributed = allAccounts.reduce((sum, a) => sum + a.contributed, 0);
+
 const portfolioData = {
     summary: {
-        householdContributed: 7408.1,
-        householdValue: 11734.27,
-        householdGain: 3264.74,
-        weeklyCadence: 150,
-        documentedTransferTotal: 4000,
-        accounts: 2,
-        importedPositions: thinkorswimAccount.positions + fidelityAccount.positions
+        householdContributed,
+        householdValue,
+        householdCash,
+        householdGain,
+        weeklyCadence: allAccounts.reduce((sum, a) => sum + a.weeklyCadence, 0),
+        documentedTransferTotal: CONTRIBUTION_LEDGER.documentedTransferTotal,
+        accounts: allAccounts.length,
+        importedPositions: allAccounts.reduce((sum, a) => sum + a.positions, 0)
     },
     accounts: allAccounts,
     holdings: combinedHoldings.slice(0, 18),
     allHoldings: combinedHoldings,
-    contributions: [
-        { label: "Nov 2025", amount: 250 },
-        { label: "Dec 2025", amount: 750 },
-        { label: "Jan 2026", amount: 600 },
-        { label: "Feb 2026", amount: 600 },
-        { label: "Mar 2026", amount: 750 },
-        { label: "Apr 2026", amount: 600 },
-        { label: "May 2026", amount: 450 }
-    ],
+    contributions: CONTRIBUTION_LEDGER.monthly,
     census: {
         cards: [
             { key: "populationValue", label: "U.S. population", value: "334.9M", numeric: 334.9, source: "Census Population Estimates, 2023" },
@@ -237,7 +197,7 @@ function renderStats() {
 
     const container = document.getElementById("portfolio-stats");
     if (!container) return;
-
+    container.hidden = true;  // the signal band carries these now; kept for the archive page's summary
     container.innerHTML = stats.map(([label, value]) => `
         <article class="stat-card">
             <span class="small-label">${escapeHtml(label)}</span>
@@ -250,21 +210,17 @@ function renderSignalBand() {
     const container = document.getElementById("signal-band");
     if (!container) return;
 
+    const s = portfolioData.summary;
     const items = [
         {
-            label: "Documented transfers",
-            value: formatCurrency(portfolioData.summary.documentedTransferTotal),
-            note: "Imported transfer history across both accounts"
-        },
-        {
             label: "Household value",
-            value: formatCurrency(portfolioData.summary.householdValue),
-            note: "Current combined sleeve value from imported holdings"
+            value: formatCurrency(s.householdValue),
+            note: `${formatCurrency(s.householdValue - s.householdCash)} in positions · ${formatCurrency(s.householdCash)} cash`
         },
         {
-            label: "Imported positions",
-            value: `${portfolioData.summary.importedPositions}`,
-            note: "Visible positions across the current exports"
+            label: "Put in",
+            value: formatCurrency(s.householdContributed),
+            note: `${formatSignedCurrency(s.householdGain)} unrealized across ${s.importedPositions} positions`
         }
     ];
 
