@@ -28,6 +28,7 @@ import io
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -173,10 +174,12 @@ def fetch_treasury(year: int) -> list[dict]:
 def fetch_quotes(tickers: list[dict], api_key: str | None = None) -> tuple[list[dict], list[str]]:
     """Alpha Vantage with a key, else Stooq. One failure never stops the next ticker."""
     quotes, errors = [], []
-    for entry in tickers:
+    for i, entry in enumerate(tickers):
         symbol = entry["symbol"]
         history = None
         if api_key:
+            if i:
+                time.sleep(1.2)  # the free tier asks for one request per second; 16 tickers is ~20 s
             try:
                 history = parse_alphavantage_json(http_get(ALPHAVANTAGE_URL.format(symbol=symbol, key=api_key)))
             except FetchError as error:
