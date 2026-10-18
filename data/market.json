@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-18T16:02:20+00:00",
+  "generatedAt": "2026-10-18T16:27:14+00:00",
   "sample": false,
   "sources": {
     "treasury": "U.S. Treasury daily par yield curve (home.treasury.gov)",
-    "quotes": "Stooq end-of-day history (stooq.com)"
+    "quotes": "Alpha Vantage daily closes"
   },
   "treasury": {
     "latest": {
@@ -1410,25 +1410,72 @@
       }
     ]
   },
-  "quotes": [],
+  "quotes": [
+    {
+      "symbol": "SPY",
+      "label": "S&P 500 benchmark",
+      "date": "2026-10-16",
+      "close": 763.25,
+      "dayChange": -8.54,
+      "dayChangePct": -1.11
+    },
+    {
+      "symbol": "MU",
+      "label": "Memory",
+      "date": "2026-10-16",
+      "close": 878.84,
+      "dayChange": -52.4,
+      "dayChangePct": -5.63
+    },
+    {
+      "symbol": "GOOGL",
+      "label": "AI + search",
+      "date": "2026-10-16",
+      "close": 340.59,
+      "dayChange": -8.63,
+      "dayChangePct": -2.47
+    },
+    {
+      "symbol": "VTI",
+      "label": "Total market",
+      "date": "2026-10-16",
+      "close": 374.07,
+      "dayChange": -4.35,
+      "dayChangePct": -1.15
+    },
+    {
+      "symbol": "SLV",
+      "label": "Silver",
+      "date": "2026-10-16",
+      "close": 51.51,
+      "dayChange": -0.41,
+      "dayChangePct": -0.79
+    }
+  ],
   "quotesStale": false,
   "quotesAsOf": "2026-10-18",
   "errors": [
-    "SPY: Stooq CSV is missing the 'Close' column",
+    "QQQ: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "QQQ: Stooq CSV is missing the 'Close' column",
+    "NVDA: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "NVDA: Stooq CSV is missing the 'Close' column",
+    "AMD: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "AMD: Stooq CSV is missing the 'Close' column",
-    "MU: Stooq CSV is missing the 'Close' column",
+    "SMCI: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "SMCI: Stooq CSV is missing the 'Close' column",
+    "INTC: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "INTC: Stooq CSV is missing the 'Close' column",
+    "MSFT: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "MSFT: Stooq CSV is missing the 'Close' column",
-    "GOOGL: Stooq CSV is missing the 'Close' column",
+    "AMZN: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "AMZN: Stooq CSV is missing the 'Close' column",
+    "AAPL: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "AAPL: Stooq CSV is missing the 'Close' column",
+    "PLTR: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "PLTR: Stooq CSV is missing the 'Close' column",
-    "VTI: Stooq CSV is missing the 'Close' column",
+    "XLE: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
     "XLE: Stooq CSV is missing the 'Close' column",
-    "DUK: Stooq CSV is missing the 'Close' column",
-    "SLV: Stooq CSV is missing the 'Close' column"
+    "DUK: Alpha Vantage: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the p",
+    "DUK: Stooq CSV is missing the 'Close' column"
   ]
 }
