@@ -269,13 +269,22 @@ def parse_canonical(path: Path, brokerage: str) -> tuple[list[dict], list[str]]:
     return holdings, skipped
 
 
-def load_existing_holdings(js_path: Path) -> list[dict]:
-    """Parse window.allHoldingsDetail = [...] out of holdings-data.js."""
+HOLDINGS_RE = re.compile(r"window\.allHoldingsDetail\s*=\s*(\[.*?\])\s*;\s*(?:\n|$)", re.DOTALL)
+IMPORTS_RE = re.compile(r"window\.holdingsImports\s*=\s*(\{.*?\})\s*;", re.DOTALL)
+MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+
+
+def _read_js(js_path: Path) -> str:
     try:
-        text = js_path.read_text()
+        return js_path.read_text()
     except OSError as error:
         raise ImportError_(f"could not read {js_path}: {error}") from error
-    match = re.search(r"window\.allHoldingsDetail\s*=\s*(\[.*\])\s*;", text, re.DOTALL)
+
+
+def load_existing_holdings(js_path: Path) -> list[dict]:
+    """Parse window.allHoldingsDetail = [...] out of holdings-data.js."""
+    text = _read_js(js_path)
+    match = HOLDINGS_RE.search(text)
     if not match:
         raise ImportError_(f"{js_path} does not contain 'window.allHoldingsDetail = [...];'")
     try:
@@ -284,9 +293,39 @@ def load_existing_holdings(js_path: Path) -> list[dict]:
         raise ImportError_(f"could not parse the holdings array in {js_path}: {error}") from error
 
 
-def render_holdings_js(holdings: list[dict]) -> str:
-    body = json.dumps(holdings, indent=4)
-    return f"window.allHoldingsDetail = {body};\n"
+def load_import_dates(js_path: Path) -> dict:
+    """Parse window.holdingsImports = {brokerage: 'YYYY-MM-DD'} if the file has one; {} otherwise."""
+    if not js_path.exists():
+        return {}
+    match = IMPORTS_RE.search(_read_js(js_path))
+    if not match:
+        return {}
+    try:
+        return json.loads(match.group(1))
+    except json.JSONDecodeError as error:
+        raise ImportError_(f"could not parse holdingsImports in {js_path}: {error}") from error
+
+
+def export_date_from_name(path: Path) -> str | None:
+    """Brokerages date their export file names: Fidelity 'Portfolio_Positions_Oct-18-2026.csv',
+    Schwab 'Individual-Positions-2026-10-18-115328.csv'. Return YYYY-MM-DD, or None if neither pattern is there."""
+    name = path.name
+    iso = re.search(r"(20\d\d)-(\d\d)-(\d\d)", name)
+    if iso:
+        return f"{iso.group(1)}-{iso.group(2)}-{iso.group(3)}"
+    mdy = re.search(r"([A-Za-z]{3})-(\d\d)-(20\d\d)", name)
+    if mdy and mdy.group(1).lower() in MONTHS:
+        return f"{mdy.group(3)}-{MONTHS[mdy.group(1).lower()]:02d}-{mdy.group(2)}"
+    return None
+
+
+def render_holdings_js(holdings: list[dict], imports: dict | None = None) -> str:
+    """The generated file: the holdings array, then (when known) the export date per brokerage,
+    so the site can say 'positions from the exports of ...' without anyone typing a date."""
+    out = f"window.allHoldingsDetail = {json.dumps(holdings, indent=4)};\n"
+    if imports:
+        out += f"window.holdingsImports = {json.dumps(dict(sorted(imports.items())), indent=4)};\n"
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -295,6 +334,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--format", choices=["fidelity", "schwab", "canonical"], required=True)
     parser.add_argument("--brokerage", required=True, help="brokerage label, e.g. Fidelity or thinkorswim")
     parser.add_argument("--holdings-js", type=Path, default=HOLDINGS_JS)
+    parser.add_argument("--as-of", help="export date YYYY-MM-DD; defaults to the date in the file name, else the file's mtime")
     parser.add_argument("--dry-run", action="store_true", help="report what would change without writing")
     args = parser.parse_args(argv)
 
@@ -306,9 +346,19 @@ def main(argv: list[str] | None = None) -> int:
         else:
             new_rows, skipped = parse_canonical(args.csv, args.brokerage)
         existing = load_existing_holdings(args.holdings_js)
+        imports = load_import_dates(args.holdings_js)
     except ImportError_ as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
+
+    as_of = args.as_of or export_date_from_name(args.csv)
+    if not as_of:
+        from datetime import datetime
+        as_of = datetime.fromtimestamp(args.csv.stat().st_mtime).strftime("%Y-%m-%d")
+    if not re.fullmatch(r"20\d\d-\d\d-\d\d", as_of):
+        print(f"error: --as-of must be YYYY-MM-DD, got {as_of!r}", file=sys.stderr)
+        return 1
+    imports[args.brokerage] = as_of
 
     kept = [row for row in existing if row.get("brokerage") != args.brokerage]
     replaced = len(existing) - len(kept)
@@ -316,7 +366,7 @@ def main(argv: list[str] | None = None) -> int:
 
     total_value = sum(row.get("marketValueNumber") or 0 for row in new_rows)
     print(f"{args.csv.name}: parsed {len(new_rows)} {args.brokerage} positions "
-          f"(${total_value:,.2f} market value), replacing {replaced} existing rows")
+          f"(${total_value:,.2f} market value) as of {as_of}, replacing {replaced} existing rows")
     for line in skipped:
         print(f"  skipped {line}")
 
@@ -324,7 +374,7 @@ def main(argv: list[str] | None = None) -> int:
         print("dry run — holdings-data.js not modified")
         return 0
 
-    args.holdings_js.write_text(render_holdings_js(merged))
+    args.holdings_js.write_text(render_holdings_js(merged, imports))
     print(f"wrote {args.holdings_js} with {len(merged)} total rows")
     return 0
 

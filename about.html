@@ -3,79 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Why This Exists | Felix/August</title>
-    <meta name="description" content="Why Felix/August exists: a long-horizon investment journal for my sons focused on ownership, discipline, and generational wealth.">
+    <title>About | Felix/August</title>
+    <meta name="description" content="Why Felix/August exists, what it is not, how it is kept, and who writes it.">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27 font-family=%27Georgia,serif%27 fill=%27%23412816%27%3Ef/a%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20261018b">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261019">
 </head>
 <body>
     <header class="site-header">
         <div class="shell nav-shell">
             <a class="brand" href="index.html">felix/august</a>
-            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
-                <span></span><span></span><span></span>
-            </button>
             <nav class="site-nav" id="primary-nav" aria-label="Primary">
-                <a href="index.html">Home</a>
-                <a href="about.html">Why This Exists</a>
-                <a href="services.html">Themes</a>
-                <a href="data.html">All Holdings</a>
+                <a href="index.html">Ledger</a>
                 <a href="markets.html">Markets</a>
+                <a href="tools.html">Tools</a>
+                <a href="letters.html">Letters</a>
                 <a href="reading.html">Reading</a>
-                <a href="contact.html">Notes</a>
+                <a href="about.html">About</a>
             </nav>
         </div>
     </header>
 
-    <main class="shell">
-        <section class="page-hero">
-            <p class="section-kicker">Why this exists</p>
+    <main>
+        <article class="entry shell">
             <h1>To leave behind more than a brokerage statement.</h1>
-            <p class="hero-text">I wanted a place to document the thinking behind ownership: what I bought, what I misunderstood, what changed, and what still felt true after the market moved around.</p>
+            <p>I wanted a place to document the thinking behind ownership: what I bought, what I misunderstood, what changed, and what still felt true after the market moved around.</p>
+            <p>Felix/August is meant to become a durable record of conviction, mistakes, patience, and discipline. I want the boys to be able to see not just the outcome of decisions but the reasoning behind them: why a business mattered, why a position was sized a certain way, what risks were visible, and what I hoped time would do for small repeated contributions.</p>
+        </article>
+
+        <section class="section shell">
+            <h2>What this is not</h2>
+            <ul>
+                <li>Not day-trading commentary.</li>
+                <li>Not a promise that every thesis will be right.</li>
+                <li>Not a substitute for caution around options or risk.</li>
+                <li>Not advice. The index fund is easy, and for most people it is the whole answer.</li>
+            </ul>
         </section>
 
-        <section class="page-body">
-            <article class="card">
-                <h2>A record of reasoning</h2>
-                <p>Felix/August is meant to become a durable journal of conviction, mistakes, patience, and discipline. I want the boys to be able to see not just the outcome of decisions, but the reasoning behind them.</p>
-                <p>That means writing down why a business mattered, why a position was sized a certain way, what risks were visible, and what I hoped time would do for small repeated contributions.</p>
-            </article>
-
-            <article class="card muted-card">
-                <h2>What this is not</h2>
-                <ul class="note-list">
-                    <li>Not day-trading commentary.</li>
-                    <li>Not a promise that every thesis will be right.</li>
-                    <li>Not a substitute for caution around options or risk.</li>
-                    <li>Not a generic finance content site.</li>
-                </ul>
-            </article>
-
-            <article class="card">
-                <h2>What I hope it teaches</h2>
-                <ul class="note-list">
-                    <li>Ownership can be thoughtful and patient.</li>
-                    <li>Small weekly contributions matter when they are sustained.</li>
-                    <li>Generational wealth is built by stewardship, not just returns.</li>
-                    <li>Technology, infrastructure, and energy are deeply connected.</li>
-                </ul>
-            </article>
+        <section class="section shell">
+            <h2>How it is kept</h2>
+            <p>The numbers are never typed. Positions come from the brokerage exports through <code>tools/import_positions.py</code>, which also records the export date you see under the ledger. The Treasury curve and the quotes arrive on weekday evenings through a scheduled job. The reading list is a CSV. Contributions are the one list kept by hand, because no export carries them. The whole site is plain HTML, one stylesheet and one script, and the <a href="https://github.com/justfetz/felix-august">source is public</a>.</p>
         </section>
+
+        <section class="section shell">
+            <h2>Who writes it</h2>
+            <p>Jason Fetzer, their father. I write software and optimization models for corrugated box plants, and I keep a separate site for that work at <a href="https://justfetz.github.io">justfetz.github.io</a>. The tools here are the finance side of the same habit: build the model yourself at least once, so you know which number it depends on.</p>
+        </section>
+
     </main>
 
     <footer class="site-footer">
         <div class="shell footer-shell">
-            <p>Felix/August is a personal journal about long-term ownership, family, and learning in public.</p>
-            <div class="footer-links">
-                <a href="https://github.com/justfetz">GitHub</a>
-                <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a>
-            </div>
+            <span>Jason Fetzer, for Felix and August.</span>
+            <span><a href="https://github.com/justfetz/felix-august">Source</a> · <a href="https://github.com/justfetz">GitHub</a> · <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a></span>
         </div>
     </footer>
-    <script src="holdings-data.js?v=20261018b"></script>
-    <script src="script.js?v=20261018b"></script>
+
+    <script src="script.js?v=20261019"></script>
 </body>
 </html>

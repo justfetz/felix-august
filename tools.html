@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools | Felix/August</title>
+    <meta name="description" content="The finance tools behind Felix/August: a valuation model, the rate backdrop, the ledger pipeline, and an options trainer in progress.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27 font-family=%27Georgia,serif%27 fill=%27%23412816%27%3Ef/a%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261019">
+</head>
+<body>
+    <header class="site-header">
+        <div class="shell nav-shell">
+            <a class="brand" href="index.html">felix/august</a>
+            <nav class="site-nav" id="primary-nav" aria-label="Primary">
+                <a href="index.html">Ledger</a>
+                <a href="markets.html">Markets</a>
+                <a href="tools.html">Tools</a>
+                <a href="letters.html">Letters</a>
+                <a href="reading.html">Reading</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <article class="entry shell">
+            <h1>Tools</h1>
+            <p>Each of these is code you can read, with every number computed and none typed. The point is rarely the answer. It is seeing which assumption the answer depends on, and then changing that assumption yourself.</p>
+        </article>
+
+        <section class="section shell">
+            <ul class="list">
+                <li>
+                    <a href="https://justfetz.github.io/posts/valuing-international-paper.html">A corrugator engineer values International Paper</a><span class="when">October 2026</span>
+                    <p>A discounted cash flow, a sum of the parts, and a Monte Carlo that collapse the whole bet into one question about the containerboard cycle. Set what you believe and the page prices it, then sizes the position with Kelly. Built from the public filings and twenty-one tie-out checks against them.</p>
+                </li>
+                <li>
+                    <a href="markets.html">The rate backdrop</a><span class="when">refreshed weekday evenings</span>
+                    <p>The Treasury par curve, the ten-year over time, and the household's tickers, written to <code>data/market.json</code> by a scheduled job. The page you open first when the portfolio has had a big week in either direction.</p>
+                </li>
+                <li>
+                    <a href="index.html#ledger">The ledger</a><span class="when">this site</span>
+                    <p>Two brokerage exports go through <code>tools/import_positions.py</code> and become <code>holdings-data.js</code>; every number on the ledger page is derived from that file at load. Contributions are the one hand-kept list, because no export carries them.</p>
+                </li>
+                <li>
+                    <a href="https://github.com/justfetz/options-trainer">Options trainer</a><span class="when">in progress</span>
+                    <p>A Black-Scholes engine with Greeks, implied volatility and a binomial tree, specified by tests transcribed from Hull's worked examples; retrieval over the books I own, with page citations; and an agent that explains but never does the arithmetic. The engine is my homework, written one function at a time. The workbench comes after.</p>
+                </li>
+            </ul>
+        </section>
+
+        <section class="section shell">
+            <h2>Elsewhere</h2>
+            <p class="aside">The operations-research work, the corrugator scheduler, the truck-cubing model, and the writing about them live on my own site, <a href="https://justfetz.github.io">justfetz.github.io</a>. This site is only the money and the letters.</p>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-shell">
+            <span>Jason Fetzer, for Felix and August.</span>
+            <span><a href="https://github.com/justfetz/felix-august">Source</a> · <a href="https://github.com/justfetz">GitHub</a> · <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a></span>
+        </div>
+    </footer>
+
+    <script src="holdings-data.js?v=20261019"></script>
+    <script src="script.js?v=20261019"></script>
+</body>
+</html>

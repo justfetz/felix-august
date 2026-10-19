@@ -4,121 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markets | Felix/August</title>
-    <meta name="description" content="The market backdrop for Felix/August: the 10-year Treasury yield, the curve, and end-of-day quotes for the household's tracked tickers.">
+    <meta name="description" content="The Treasury curve and the household's tickers, refreshed on weekday evenings. The rate that prices everything else on this site.">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27 font-family=%27Georgia,serif%27 fill=%27%23412816%27%3Ef/a%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20261018b">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261019">
 </head>
 <body>
     <header class="site-header">
         <div class="shell nav-shell">
             <a class="brand" href="index.html">felix/august</a>
-            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
-                <span></span><span></span><span></span>
-            </button>
             <nav class="site-nav" id="primary-nav" aria-label="Primary">
-                <a href="index.html">Home</a>
-                <a href="about.html">Why This Exists</a>
-                <a href="services.html">Themes</a>
-                <a href="data.html">All Holdings</a>
+                <a href="index.html">Ledger</a>
                 <a href="markets.html">Markets</a>
+                <a href="tools.html">Tools</a>
+                <a href="letters.html">Letters</a>
                 <a href="reading.html">Reading</a>
-                <a href="contact.html">Notes</a>
+                <a href="about.html">About</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <section class="page-hero shell">
-            <p class="section-kicker">Backdrop</p>
+        <article class="entry shell">
             <h1>The rate that prices everything else.</h1>
-            <p class="hero-text">Every long-duration asset on this site — AI, semis, infrastructure — is discounted against the 10-year Treasury yield. When the 10-year moves, the present value of far-away earnings moves with it. This page keeps that backdrop visible next to the household's tickers.</p>
-            <p class="data-freshness" id="market-freshness">Loading market data&hellip;</p>
+            <p>Every long-duration asset on this site, the AI names, the semiconductors, the infrastructure, is discounted against the ten-year Treasury yield. When the ten-year moves, the present value of far-away earnings moves with it. This page keeps that backdrop visible next to the household's own tickers.</p>
+            <p class="note freshness" id="market-freshness">Loading market data&hellip;</p>
+        </article>
+
+        <section class="section shell">
+            <h2>Treasury par yields</h2>
+            <div id="rates-table"></div>
         </section>
 
-        <section class="shell page-body">
-            <div class="stats-grid" id="rates-stats"></div>
-
-            <details class="card collapsible" open>
-                <summary class="card-head collapsible-summary">
-                    <div>
-                        <h3>10-year Treasury yield</h3>
-                        <p>Daily par yield, refreshed by a scheduled GitHub Action</p>
-                    </div>
-                    <span class="collapse-chevron" aria-hidden="true"></span>
-                </summary>
-                <div class="collapsible-body">
-                    <div id="yield-chart" class="d3-chart"></div>
-                </div>
-            </details>
-
-            <div class="intro-grid">
-                <div class="card">
-                    <div class="card-head">
-                        <h3>Why the 10-year matters here</h3>
-                    </div>
-                    <p>Most of what this household owns is priced on earnings that arrive years from now. The 10-year yield is the market's toll on waiting: when it rises, future cash flows are worth less today and long-duration growth stocks usually feel it first; when it falls, the same holdings get a tailwind that has nothing to do with the businesses themselves.</p>
-                    <p>So when the portfolio has a great or terrible month, the honest first question is: how much of that was the companies, and how much was the discount rate? This page exists so the boys can learn to separate the two.</p>
-                </div>
-                <div class="card muted-card">
-                    <p class="small-label">How to read it</p>
-                    <ul class="note-list">
-                        <li><strong>10-yr rising</strong> — expect pressure on the AI and growth sleeve, even on good company news.</li>
-                        <li><strong>10-yr falling</strong> — multiples expand; do not confuse the tailwind with skill.</li>
-                        <li><strong>2s10s inverted</strong> (2-yr above 10-yr) — the bond market is bracing for a slowdown.</li>
-                        <li><strong>Utilities and energy</strong> often behave like bond proxies — they compete with the yield directly.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <details class="card collapsible" open>
-                <summary class="card-head collapsible-summary">
-                    <div>
-                        <h3>Tracked tickers</h3>
-                        <p>End-of-day closes for the household's core symbols and benchmarks</p>
-                    </div>
-                    <span class="collapse-chevron" aria-hidden="true"></span>
-                </summary>
-                <div class="collapsible-body">
-                    <div class="holdings-table-wrap">
-                        <table class="holdings-table quotes-table">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th>Lens</th>
-                                    <th>Close</th>
-                                    <th>Day change</th>
-                                    <th>Day %</th>
-                                    <th>As of</th>
-                                </tr>
-                            </thead>
-                            <tbody id="quotes-table-body"></tbody>
-                        </table>
-                    </div>
-                    <div class="holdings-mobile-list" id="quotes-mobile-list"></div>
-                </div>
-            </details>
-
-            <div class="card muted-card">
-                <p class="small-label">Plumbing</p>
-                <p class="card-copy">A scheduled GitHub Action (<code>.github/workflows/market-data.yml</code>) runs on weekday evenings, pulls the daily par yield curve from the U.S. Treasury and end-of-day quotes from Stooq — both keyless public sources — and commits <code>data/market.json</code>. No API keys ever touch the browser.</p>
-            </div>
+        <section class="section shell">
+            <h2>The ten-year</h2>
+            <figure>
+                <div id="yield-chart"></div>
+                <figcaption>Daily par yield, refreshed on weekday evenings by a scheduled job.</figcaption>
+            </figure>
         </section>
+
+        <section class="section shell">
+            <h2>Why the ten-year matters here</h2>
+            <p>Most of what this household owns is priced on earnings that arrive years from now. The ten-year yield is the market's toll on waiting: when it rises, future cash flows are worth less today and long-duration growth stocks usually feel it first; when it falls, the same holdings get a tailwind that has nothing to do with the businesses themselves.</p>
+            <p>So when the portfolio has a great or terrible month, the first question is how much of that was the companies and how much was the discount rate. This page exists so the boys can learn to separate the two.</p>
+            <ul>
+                <li><strong>Ten-year rising:</strong> expect pressure on the AI and growth sleeve, even on good company news.</li>
+                <li><strong>Ten-year falling:</strong> multiples expand; do not confuse the tailwind with skill.</li>
+                <li><strong>2s10s inverted</strong> (two-year above ten-year): the bond market is bracing for a slowdown.</li>
+                <li><strong>Utilities and energy</strong> often behave like bond proxies; they compete with the yield directly.</li>
+            </ul>
+        </section>
+
+        <section class="section shell">
+            <h2>The household's tickers</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Symbol</th><th class="text">Lens</th><th>Close</th><th>Day</th><th>Day %</th><th>As of</th></tr>
+                    </thead>
+                    <tbody id="quotes-table-body"></tbody>
+                </table>
+            </div>
+            <p class="note">End-of-day closes for the household's core symbols and the benchmarks they are measured against.</p>
+        </section>
+
+        <section class="section shell">
+            <h2>How this page is made</h2>
+            <p class="aside">A scheduled GitHub Action (<code>.github/workflows/market-data.yml</code>) runs on weekday evenings, pulls the daily par yield curve from the U.S. Treasury and end-of-day quotes from Alpha Vantage, and commits <code>data/market.json</code>. The quote key lives in an Action secret; nothing with a key ever reaches the browser.</p>
+        </section>
+
     </main>
 
     <footer class="site-footer">
         <div class="shell footer-shell">
-            <p>Felix/August is a personal journal about long-term ownership, family, and learning in public.</p>
-            <div class="footer-links">
-                <a href="https://github.com/justfetz">GitHub</a>
-                <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a>
-            </div>
+            <span>Jason Fetzer, for Felix and August.</span>
+            <span><a href="https://github.com/justfetz/felix-august">Source</a> · <a href="https://github.com/justfetz">GitHub</a> · <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a></span>
         </div>
     </footer>
 
-    <script src="holdings-data.js?v=20261018b"></script>
-    <script src="script.js?v=20261018b"></script>
+    <script src="holdings-data.js?v=20261019"></script>
+    <script src="script.js?v=20261019"></script>
 </body>
 </html>

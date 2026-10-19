@@ -115,34 +115,7 @@ const portfolioData = {
     accounts: allAccounts,
     holdings: combinedHoldings.slice(0, 18),
     allHoldings: combinedHoldings,
-    contributions: CONTRIBUTION_LEDGER.monthly,
-    census: {
-        cards: [
-            { key: "populationValue", label: "U.S. population", value: "334.9M", numeric: 334.9, source: "Census Population Estimates, 2023" },
-            { key: "medianAgeValue", label: "Median age", value: "39.2 years", numeric: 39.2, source: "ACS 1-year profile, 2023" },
-            { key: "medianIncomeValue", label: "Median household income", value: "$80,610", numeric: 80.61, source: "ACS 1-year profile, 2023" }
-        ],
-        rows: [
-            {
-                label: "Population",
-                displayValue: "334.9M",
-                ratio: 0.84,
-                note: "A larger country with more infrastructure, housing, and energy pressure."
-            },
-            {
-                label: "Median age",
-                displayValue: "39.2 years",
-                ratio: 0.65,
-                note: "An older population than past generations inherited at the same stage."
-            },
-            {
-                label: "Median household income",
-                displayValue: "$80.6k",
-                ratio: 0.58,
-                note: "Income matters, but purchasing power and housing costs matter just as much."
-            }
-        ]
-    }
+    contributions: CONTRIBUTION_LEDGER.monthly
 };
 
 const THEME_COLORS = {
@@ -154,22 +127,20 @@ const THEME_COLORS = {
     "Platform / Other": "#9a6b5f"
 };
 
+/* ---------------------------------------------------------------------------
+ * Formatting
+ * ------------------------------------------------------------------------ */
+
 function formatCurrency(value) {
-    return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0
-    }).format(value);
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
 }
 
 function formatSignedCurrency(value) {
-    const prefix = value >= 0 ? "+" : "-";
-    return `${prefix}${formatCurrency(Math.abs(value))}`;
+    return `${value < 0 ? "−" : "+"}${formatCurrency(Math.abs(value))}`;
 }
 
 function formatSignedPercent(value) {
-    const prefix = value >= 0 ? "+" : "";
-    return `${prefix}${value.toFixed(2)}%`;
+    return `${value < 0 ? "−" : "+"}${Math.abs(value).toFixed(2)}%`;
 }
 
 function valueClass(value) {
@@ -185,663 +156,357 @@ function escapeHtml(value) {
         .replace(/'/g, "&#39;");
 }
 
-function renderStats() {
-    const stats = [
-        ["Household contributed", formatCurrency(portfolioData.summary.householdContributed)],
-        ["Household value", formatCurrency(portfolioData.summary.householdValue)],
-        ["Household gain", formatSignedCurrency(portfolioData.summary.householdGain)],
-        ["Documented transfers", formatCurrency(portfolioData.summary.documentedTransferTotal)],
-        ["Imported accounts", `${portfolioData.summary.accounts}`],
-        ["Imported positions", `${portfolioData.summary.importedPositions}`]
-    ];
-
-    const container = document.getElementById("portfolio-stats");
-    if (!container) return;
-    container.hidden = true;  // the signal band carries these now; kept for the archive page's summary
-    container.innerHTML = stats.map(([label, value]) => `
-        <article class="stat-card">
-            <span class="small-label">${escapeHtml(label)}</span>
-            <strong>${escapeHtml(value)}</strong>
-        </article>
-    `).join("");
+/** "2026-10-18" -> "18 October 2026"; "2026-05" -> "May 2026". Dates are written, not formatted like a dashboard. */
+function longDate(iso) {
+    if (!iso) return "";
+    const [y, m, d] = iso.split("-").map(Number);
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    if (!m) return String(y);
+    return d ? `${d} ${months[m - 1]} ${y}` : `${months[m - 1]} ${y}`;
 }
 
-function renderSignalBand() {
-    const container = document.getElementById("signal-band");
-    if (!container) return;
+function normalizeMaybeNumber(value) {
+    if (typeof value === "number") return value;
+    if (value === null || value === undefined || value === "") return null;
+    const cleaned = String(value).replace(/[$,%+\s]/g, "").replace(/\((.*)\)/, "-$1");
+    const n = parseFloat(cleaned);
+    return Number.isFinite(n) ? n : null;
+}
 
+/* ---------------------------------------------------------------------------
+ * The ledger (home page)
+ * ------------------------------------------------------------------------ */
+
+function renderEntryHeadline() {
+    const el = document.getElementById("entry-headline");
+    if (!el) return;
+    const n = portfolioData.accounts.length;
+    el.textContent = `${formatCurrency(portfolioData.summary.householdValue)} across ${n === 2 ? "two" : n} account${n === 1 ? "" : "s"}.`;
+}
+
+function renderLedgerTable() {
+    const body = document.querySelector("#ledger-table tbody");
+    if (!body) return;
     const s = portfolioData.summary;
-    const items = [
-        {
-            label: "Household value",
-            value: formatCurrency(s.householdValue),
-            note: `${formatCurrency(s.householdValue - s.householdCash)} in positions · ${formatCurrency(s.householdCash)} cash`
-        },
-        {
-            label: "Put in",
-            value: formatCurrency(s.householdContributed),
-            note: `${formatSignedCurrency(s.householdGain)} unrealized across ${s.importedPositions} positions`
-        }
-    ];
-
-    container.innerHTML = items.map((item) => `
-        <article class="signal-card">
-            <span class="small-label">${escapeHtml(item.label)}</span>
-            <strong>${escapeHtml(item.value)}</strong>
-            <p>${escapeHtml(item.note)}</p>
-        </article>
-    `).join("");
+    const cls = (v) => (v < 0 ? ' class="num-neg"' : "");
+    const rows = portfolioData.accounts.map((a) => `
+        <tr>
+            <td>${escapeHtml(a.name)}<span class="sub">${escapeHtml(a.accountType)}${a.cash ? ` · ${formatCurrency(a.cash)} cash` : ""}<span class="show-sm"> · ${formatCurrency(a.weeklyCadence)}/week</span></span></td>
+            <td>${formatCurrency(a.currentValue)}</td>
+            <td>${formatCurrency(a.contributed)}</td>
+            <td${cls(a.gain)}>${formatSignedCurrency(a.gain)}</td>
+            <td class="hide-sm">${a.positions}</td>
+            <td class="hide-sm">${formatCurrency(a.weeklyCadence)}</td>
+        </tr>`).join("");
+    body.innerHTML = rows + `
+        <tr class="total">
+            <td>Household</td>
+            <td>${formatCurrency(s.householdValue)}</td>
+            <td>${formatCurrency(s.householdContributed)}</td>
+            <td${cls(s.householdGain)}>${formatSignedCurrency(s.householdGain)}</td>
+            <td class="hide-sm">${s.importedPositions}</td>
+            <td class="hide-sm">${formatCurrency(s.weeklyCadence)}</td>
+        </tr>`;
 }
 
-function renderAccountBreakdown() {
-    const container = document.getElementById("account-breakdown");
-    if (!container) return;
-
-    container.innerHTML = portfolioData.accounts.map((account) => `
-        <article class="holding-item">
-            <div>
-                <div class="row-labels">
-                    <strong>${escapeHtml(account.name)}</strong>
-                    <span>${escapeHtml(account.accountType)}</span>
-                </div>
-                <div class="holding-meta">
-                    <span>${escapeHtml(formatCurrency(account.currentValue))} current value</span>
-                    <span>&bull;</span>
-                    <span>${escapeHtml(formatCurrency(account.contributed))} contributed</span>
-                    <span>&bull;</span>
-                    <span>${account.positions} imported positions</span>
-                </div>
-            </div>
-            <div class="holding-gain">
-                <span class="${valueClass(account.gain)}">${escapeHtml(formatSignedCurrency(account.gain))}</span><br>
-                <span>${escapeHtml(formatCurrency(account.weeklyCadence))}/week</span>
-            </div>
-        </article>
-    `).join("");
+/** Provenance under the ledger. Export dates come from holdings-data.js (written by the import tool);
+ *  quote and Treasury dates from data/market.json. Nothing here is typed. */
+function renderLedgerNote(market) {
+    const note = document.getElementById("ledger-note");
+    if (!note) return;
+    const imports = window.holdingsImports || {};
+    const dates = [...new Set(Object.values(imports))].sort();
+    const parts = [];
+    if (dates.length === 1) parts.push(`Positions from the exports of ${longDate(dates[0])}`);
+    else if (dates.length > 1) parts.push(`Positions from exports of ${Object.entries(imports).map(([b, d]) => `${b} ${longDate(d)}`).join(" and ")}`);
+    if (market && !market.sample) {
+        const q = market.quotes && market.quotes.find((row) => row.date);
+        if (q) parts.push(`quotes as of ${longDate(q.date)}`);
+        const t = market.treasury && market.treasury.latest;
+        if (t && t.y10 !== null && t.y10 !== undefined) parts.push(`ten-year ${t.y10.toFixed(2)}% on ${longDate(t.date)}`);
+    }
+    note.textContent = parts.length ? parts.join("; ") + "." : "";
 }
 
-function renderHoldings() {
-    const container = document.getElementById("holdings-list");
-    if (!container) return;
-
-    container.innerHTML = portfolioData.holdings.map((holding) => {
-        const weight = ((holding.marketValue / portfolioData.summary.householdValue) * 100).toFixed(1);
-        return `
-            <article class="holding-item">
-                <div>
-                    <div class="row-labels">
-                        <strong>${escapeHtml(holding.ticker)}</strong>
-                        <span>${weight}% household weight</span>
-                    </div>
-                    <div class="holding-meta">
-                        <span>${escapeHtml(holding.label)}</span>
-                        <span>&bull;</span>
-                        <span>${escapeHtml(holding.account)}</span>
-                        <span>&bull;</span>
-                        <span>${escapeHtml(holding.theme)}</span>
-                        <span>&bull;</span>
-                        <span>${escapeHtml(formatCurrency(holding.marketValue))}</span>
-                    </div>
-                </div>
-                <div class="holding-gain">
-                    <span class="${valueClass(holding.totalGain)}">${escapeHtml(formatSignedCurrency(holding.totalGain))}</span><br>
-                    <span class="${valueClass(holding.gainPct)}">${escapeHtml(formatSignedPercent(holding.gainPct))}</span>
-                </div>
-            </article>
-        `;
-    }).join("");
-}
-
-function renderContributionChart() {
-    const container = document.getElementById("contribution-chart");
-    if (!container) return;
-
-    const max = Math.max(...portfolioData.contributions.map((item) => item.amount));
-    container.innerHTML = portfolioData.contributions.map((item) => {
-        const width = Math.round((item.amount / max) * 100);
-        return `
-            <div>
-                <div class="row-labels">
-                    <span>${escapeHtml(item.label)}</span>
-                    <span>${escapeHtml(formatCurrency(item.amount))}</span>
-                </div>
-                <div class="bar-track">
-                    <div class="bar-fill" style="width: ${width}%"></div>
-                </div>
-            </div>
-        `;
-    }).join("");
-}
-
-function svgText(x, y, text, className, anchor = "start") {
-    return `<text x="${x}" y="${y}" class="${className}" text-anchor="${anchor}">${escapeHtml(text)}</text>`;
-}
-
-function renderTopHoldingsChart() {
-    const container = document.getElementById("top-holdings-chart");
-    if (!container) return;
-
-    const data = portfolioData.holdings.slice(0, 8);
-    const width = 640;
-    const margin = { top: 18, right: 90, bottom: 16, left: 84 };
-    const rowHeight = 44;
-    const innerWidth = width - margin.left - margin.right;
-    const height = margin.top + margin.bottom + rowHeight * data.length;
-    const maxValue = Math.max(...data.map((item) => item.marketValue), 1);
-
-    const bars = data.map((item, index) => {
-        const y = margin.top + index * rowHeight;
-        const barWidth = (item.marketValue / maxValue) * innerWidth;
-        const labelY = y + 24;
-        return [
-            `<rect x="${margin.left}" y="${y + 6}" width="${barWidth}" height="22" rx="8" class="bar-primary"></rect>`,
-            svgText(margin.left - 12, labelY, item.ticker, "chart-label", "end"),
-            svgText(margin.left + barWidth + 10, labelY, formatCurrency(item.marketValue), "chart-value")
-        ].join("");
-    }).join("");
-
-    container.innerHTML = `
-        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Top holdings by market value">
-            ${bars}
-        </svg>
-    `;
-}
-
-function renderAccountSplitChart() {
-    const container = document.getElementById("account-split-chart");
-    if (!container) return;
-
-    const data = portfolioData.accounts;
-    const width = 520;
-    const height = 300;
-    const margin = { top: 20, right: 24, bottom: 54, left: 54 };
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-    const maxValue = Math.max(...data.map((item) => item.currentValue), 1);
-    const slotWidth = innerWidth / data.length;
-    const barWidth = Math.min(120, slotWidth * 0.55);
-
-    const bars = data.map((item, index) => {
-        const x = margin.left + index * slotWidth + (slotWidth - barWidth) / 2;
-        const barHeight = (item.currentValue / maxValue) * innerHeight;
-        const y = margin.top + (innerHeight - barHeight);
-        const fill = index === 0 ? "#4c2f18" : "#8a5a2b";
-        return [
-            `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="10" fill="${fill}"></rect>`,
-            svgText(x + barWidth / 2, y - 8, formatCurrency(item.currentValue), "chart-value", "middle"),
-            svgText(x + barWidth / 2, height - 22, item.name, "chart-label", "middle")
-        ].join("");
-    }).join("");
-
-    container.innerHTML = `
-        <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Account split by current value">
-            <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" class="chart-axis-line"></line>
-            ${bars}
-        </svg>
-    `;
+function renderTopHoldingsBars() {
+    const el = document.getElementById("top-holdings");
+    if (!el) return;
+    const top = portfolioData.holdings.slice(0, 8);
+    const max = Math.max(...top.map((h) => h.marketValue), 1);
+    el.innerHTML = top.map((h) => `
+        <span class="t">${escapeHtml(h.ticker)}</span>
+        <span class="b"><i style="width:${(100 * h.marketValue / max).toFixed(1)}%"></i></span>
+        <span class="v">${formatCurrency(h.marketValue)}</span>`).join("");
 }
 
 function renderThemeAllocationChart() {
     const container = document.getElementById("theme-allocation-chart");
     if (!container) return;
-
-    const themeTotals = portfolioData.allHoldings.reduce((accumulator, holding) => {
-        accumulator[holding.theme] = (accumulator[holding.theme] || 0) + holding.marketValue;
-        return accumulator;
-    }, {});
-
-    const data = Object.entries(themeTotals)
-        .map(([theme, value]) => ({ theme, value }))
-        .sort((a, b) => b.value - a.value);
-
+    const totals = portfolioData.allHoldings.reduce((acc, h) => { acc[h.theme] = (acc[h.theme] || 0) + h.marketValue; return acc; }, {});
+    const data = Object.entries(totals).map(([theme, value]) => ({ theme, value })).sort((a, b) => b.value - a.value);
     const total = data.reduce((sum, item) => sum + item.value, 0) || 1;
-    const legendItems = data.map((item) => {
-        const pct = ((item.value / total) * 100).toFixed(1);
-        const color = THEME_COLORS[item.theme] || "#8a5a2b";
-        return `
-            <div class="theme-row">
-                <span class="theme-swatch" style="background:${color}"></span>
-                <span>${escapeHtml(item.theme)}</span>
-                <strong>${escapeHtml(formatCurrency(item.value))}</strong>
-                <span>${pct}%</span>
-            </div>
-        `;
-    }).join("");
-
-    const stackedWidth = data.map((item) => {
-        const pct = (item.value / total) * 100;
-        const color = THEME_COLORS[item.theme] || "#8a5a2b";
-        return `<div class="theme-segment" style="width:${pct}%;background:${color}" title="${escapeHtml(item.theme)}: ${escapeHtml(formatCurrency(item.value))}"></div>`;
-    }).join("");
-
+    const color = (theme) => THEME_COLORS[theme] || "#8a5a2b";
     container.innerHTML = `
-        <div class="theme-stack" aria-label="Theme allocation stacked bar">
-            ${stackedWidth}
+        <div class="theme-stack" aria-hidden="true">
+            ${data.map((item) => `<div class="theme-segment" style="width:${(100 * item.value / total).toFixed(2)}%;background:${color(item.theme)}" title="${escapeHtml(item.theme)}"></div>`).join("")}
         </div>
         <div class="theme-legend">
-            ${legendItems}
-        </div>
-    `;
+            ${data.map((item) => `
+                <div class="theme-row">
+                    <span class="theme-swatch" style="background:${color(item.theme)}"></span>
+                    <span>${escapeHtml(item.theme)}</span>
+                    <strong>${escapeHtml(formatCurrency(item.value))}</strong>
+                    <span>${(100 * item.value / total).toFixed(1)}%</span>
+                </div>`).join("")}
+        </div>`;
 }
 
-function renderCensusCards() {
-    const container = document.getElementById("census-cards");
-    if (!container) return;
-
-    container.innerHTML = portfolioData.census.cards.map((card) => `
-        <article class="census-card">
-            <span class="small-label">${escapeHtml(card.label)}</span>
-            <strong>${escapeHtml(card.value)}</strong>
-            <p class="census-source">${escapeHtml(card.source)}</p>
-        </article>
-    `).join("");
+function renderContributionChart() {
+    const el = document.getElementById("contribution-chart");
+    if (!el) return;
+    const max = Math.max(...portfolioData.contributions.map((item) => item.amount), 1);
+    el.innerHTML = portfolioData.contributions.map((item) => `
+        <span class="t">${escapeHtml(item.label)}</span>
+        <span class="b"><i style="width:${(100 * item.amount / max).toFixed(1)}%"></i></span>
+        <span class="v">${formatCurrency(item.amount)}</span>`).join("");
 }
 
-function renderCensusChart() {
-    const container = document.getElementById("census-chart");
-    if (!container) return;
+/* ---------------------------------------------------------------------------
+ * Letters: letters.js is the hand-kept index (newest first). Each letter is its own page.
+ * ------------------------------------------------------------------------ */
 
-    container.innerHTML = `
-        <div class="census-chart-grid" aria-label="National backdrop snapshot">
-            ${portfolioData.census.rows.map((row) => `
-                <div class="census-row">
-                    <div class="census-row-head">
-                        <span>${escapeHtml(row.label)}</span>
-                        <strong>${escapeHtml(row.displayValue)}</strong>
-                    </div>
-                    <div class="census-row-scale">
-                        <div class="census-row-fill" style="width:${Math.max(10, row.ratio * 100)}%"></div>
-                    </div>
-                    <div class="census-row-note">${escapeHtml(row.note)}</div>
-                </div>
-            `).join("")}
-        </div>
-    `;
+function renderLetters() {
+    const letters = window.letters || [];
+    const item = (l) => `
+        <li>
+            <a href="${escapeHtml(l.href)}">${escapeHtml(l.title)}</a><span class="when">${escapeHtml(longDate(l.date))}</span>
+            ${l.summary ? `<p>${escapeHtml(l.summary)}</p>` : ""}
+        </li>`;
+    const all = document.getElementById("letters-list");
+    if (all) all.innerHTML = letters.map(item).join("") || "<li>No letters yet.</li>";
+    const latest = document.getElementById("letters-latest");
+    if (latest) latest.innerHTML = letters.slice(0, 3).map(item).join("");
 }
 
-function normalizeMaybeNumber(value) {
-    if (value === null || value === undefined || value === "") return null;
-    if (typeof value === "number") return Number.isNaN(value) ? null : value;
-    const cleaned = String(value).replace(/[$,% ,]/g, "").trim();
-    if (!cleaned || cleaned === "--" || cleaned === "N/A") return null;
-    const parsed = Number(cleaned);
-    return Number.isNaN(parsed) ? null : parsed;
-}
+/* ---------------------------------------------------------------------------
+ * All holdings: the full imported record, one ruled table, a text filter by brokerage
+ * ------------------------------------------------------------------------ */
 
 function sortByMarketValue(items) {
-    return items.slice().sort((left, right) => (right.marketValueNumber ?? -1) - (left.marketValueNumber ?? -1));
+    return items.slice().sort((a, b) => (b.marketValueNumber || 0) - (a.marketValueNumber || 0));
 }
 
 function renderAllHoldingsArchive() {
     const tableBody = document.getElementById("all-holdings-table-body");
-    const mobileList = document.getElementById("all-holdings-mobile-list");
     const summary = document.getElementById("holdings-summary");
     const filter = document.getElementById("holdings-filter");
-
-    if (!tableBody || !mobileList || !summary || !filter) return;
+    if (!tableBody || !summary || !filter) return;
 
     const allRows = sortByMarketValue((window.allHoldingsDetail || []).map((row) => ({
         ...row,
         marketValueNumber: normalizeMaybeNumber(row.marketValueNumber ?? row.marketValue),
         gainNumber: normalizeMaybeNumber(row.gainNumber ?? row.gain)
     })));
-
     const brokerages = ["All", ...new Set(allRows.map((row) => row.brokerage))];
-    let activeBrokerage = "All";
+    let active = "All";
 
-    const renderSummary = (rows) => {
-        const totalValue = rows.reduce((sum, row) => sum + (row.marketValueNumber || 0), 0);
-        const totalGain = rows.reduce((sum, row) => sum + (row.gainNumber || 0), 0);
-        const assetTypes = new Set(rows.map((row) => row.assetType).filter(Boolean)).size;
-
-        summary.innerHTML = [
-            ["Visible rows", `${rows.length}`],
-            ["Brokerage filter", activeBrokerage],
-            ["Visible market value", formatCurrency(totalValue)],
-            ["Visible gain", formatSignedCurrency(totalGain)],
-            ["Asset types", `${assetTypes}`]
-        ].map(([label, value]) => `
-            <article class="stat-card">
-                <span class="small-label">${escapeHtml(label)}</span>
-                <strong class="${label === "Visible gain" ? valueClass(totalGain) : ""}">${escapeHtml(value)}</strong>
-            </article>
-        `).join("");
+    const cell = (value, numeric) => {
+        const n = numeric ? normalizeMaybeNumber(value) : null;
+        return `<td${n !== null && n < 0 ? ' class="num-neg"' : ""}>${escapeHtml(value || "")}</td>`;
     };
 
-    const renderRows = (rows) => {
+    const draw = () => {
+        const rows = active === "All" ? allRows : allRows.filter((row) => row.brokerage === active);
+        const value = rows.reduce((sum, row) => sum + (row.marketValueNumber || 0), 0);
+        const gain = rows.reduce((sum, row) => sum + (row.gainNumber || 0), 0);
+        summary.textContent = `${rows.length} rows${active === "All" ? " across both accounts" : ` in ${active}`}, ${formatCurrency(value)} market value, ${formatSignedCurrency(gain)} total gain.`;
+        filter.innerHTML = brokerages.map((b) => `<button type="button" class="${b === active ? "is-active" : ""}" data-brokerage="${escapeHtml(b)}">${escapeHtml(b)}</button>`).join("");
+        filter.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => { active = button.dataset.brokerage; draw(); }));
         tableBody.innerHTML = rows.map((row) => `
             <tr>
                 <td>${escapeHtml(row.brokerage || "")}</td>
-                <td><strong>${escapeHtml(row.symbol || "")}</strong></td>
-                <td>${escapeHtml(row.description || "")}</td>
-                <td>${escapeHtml(row.quantity || "")}</td>
-                <td>${escapeHtml(row.price || "")}</td>
-                <td>${escapeHtml(row.marketValue || "")}</td>
-                <td class="${valueClass(normalizeMaybeNumber(row.dayChange))}">${escapeHtml(row.dayChange || "")}</td>
-                <td class="${valueClass(normalizeMaybeNumber(row.dayChangePct))}">${escapeHtml(row.dayChangePct || "")}</td>
-                <td>${escapeHtml(row.costBasis || "")}</td>
-                <td class="${valueClass(row.gainNumber)}">${escapeHtml(row.gain || "")}</td>
-                <td class="${valueClass(normalizeMaybeNumber(row.gainPct))}">${escapeHtml(row.gainPct || "")}</td>
-                <td>${escapeHtml(row.accountWeight || "")}</td>
-                <td>${escapeHtml(row.averageCostBasis || "")}</td>
-                <td>${escapeHtml(row.assetType || "")}</td>
-            </tr>
-        `).join("");
-
-        mobileList.innerHTML = rows.map((row) => `
-            <article class="holding-record-card">
-                <div class="row-labels">
-                    <strong>${escapeHtml(row.symbol || "—")}</strong>
-                    <span>${escapeHtml(row.brokerage || "")}</span>
-                </div>
-                <p class="holding-record-title">${escapeHtml(row.description || "")}</p>
-                <div class="holding-record-grid">
-                    <span>Qty</span><strong>${escapeHtml(row.quantity || "")}</strong>
-                    <span>Price</span><strong>${escapeHtml(row.price || "")}</strong>
-                    <span>Market value</span><strong>${escapeHtml(row.marketValue || "")}</strong>
-                    <span>Day change</span><strong class="${valueClass(normalizeMaybeNumber(row.dayChange))}">${escapeHtml(row.dayChange || "")}</strong>
-                    <span>Day %</span><strong class="${valueClass(normalizeMaybeNumber(row.dayChangePct))}">${escapeHtml(row.dayChangePct || "")}</strong>
-                    <span>Cost basis</span><strong>${escapeHtml(row.costBasis || "")}</strong>
-                    <span>Total gain</span><strong class="${valueClass(row.gainNumber)}">${escapeHtml(row.gain || "")}</strong>
-                    <span>Gain %</span><strong class="${valueClass(normalizeMaybeNumber(row.gainPct))}">${escapeHtml(row.gainPct || "")}</strong>
-                    <span>Account %</span><strong>${escapeHtml(row.accountWeight || "")}</strong>
-                    <span>Avg cost</span><strong>${escapeHtml(row.averageCostBasis || "")}</strong>
-                    <span>Asset type</span><strong>${escapeHtml(row.assetType || "")}</strong>
-                </div>
-            </article>
-        `).join("");
+                <td class="text"><strong>${escapeHtml(row.symbol || "")}</strong></td>
+                <td class="text">${escapeHtml(row.description || "")}</td>
+                ${cell(row.quantity)}${cell(row.price)}${cell(row.marketValue)}
+                ${cell(row.dayChange, true)}${cell(row.dayChangePct, true)}
+                ${cell(row.costBasis)}${cell(row.gain, true)}${cell(row.gainPct, true)}
+                ${cell(row.accountWeight)}${cell(row.averageCostBasis)}
+                <td class="text">${escapeHtml(row.assetType || "")}</td>
+            </tr>`).join("");
     };
-
-    const renderFilter = () => {
-        filter.innerHTML = brokerages.map((brokerage) => `
-            <button class="filter-pill${brokerage === activeBrokerage ? " is-active" : ""}" data-brokerage="${escapeHtml(brokerage)}" type="button">
-                ${escapeHtml(brokerage)}
-            </button>
-        `).join("");
-
-        filter.querySelectorAll("button").forEach((button) => {
-            button.addEventListener("click", () => {
-                activeBrokerage = button.dataset.brokerage || "All";
-                applyRender();
-            });
-        });
-    };
-
-    const applyRender = () => {
-        const rows = activeBrokerage === "All"
-            ? allRows
-            : allRows.filter((row) => row.brokerage === activeBrokerage);
-        renderSummary(rows);
-        renderRows(rows);
-        renderFilter();
-    };
-
-    applyRender();
-}
-
-renderStats();
-renderSignalBand();
-renderAccountBreakdown();
-renderHoldings();
-renderContributionChart();
-renderTopHoldingsChart();
-renderAccountSplitChart();
-renderThemeAllocationChart();
-renderCensusCards();
-renderCensusChart();
-renderAllHoldingsArchive();
-
-/* ---------------------------------------------------------------------------
- * Site chrome: mobile nav + active link
- * ------------------------------------------------------------------------ */
-
-function initNav() {
-    const toggle = document.querySelector(".nav-toggle");
-    const nav = document.getElementById("primary-nav") || document.querySelector(".site-nav");
-    if (!nav) return;
-
-    const current = (location.pathname.split("/").pop() || "index.html");
-    nav.querySelectorAll("a").forEach((link) => {
-        const target = link.getAttribute("href");
-        if (target === current) link.setAttribute("aria-current", "page");
-    });
-
-    if (!toggle) return;
-    toggle.addEventListener("click", () => {
-        const isOpen = nav.classList.toggle("is-open");
-        toggle.setAttribute("aria-expanded", String(isOpen));
-    });
-    nav.querySelectorAll("a").forEach((link) => {
-        link.addEventListener("click", () => {
-            nav.classList.remove("is-open");
-            toggle.setAttribute("aria-expanded", "false");
-        });
-    });
+    draw();
 }
 
 /* ---------------------------------------------------------------------------
- * Market backdrop: data/market.json (built by tools/fetch_market_data.py)
+ * Markets: data/market.json, written by the scheduled Action (tools/fetch_market_data.py)
  * ------------------------------------------------------------------------ */
 
 function formatYield(value) {
     return value === null || value === undefined ? "—" : `${value.toFixed(2)}%`;
 }
 
-function renderRatesStats(market) {
-    const container = document.getElementById("rates-stats");
+function renderRatesTable(market) {
+    const container = document.getElementById("rates-table");
     if (!container) return;
     const latest = market.treasury.latest;
-    const stats = [
-        ["10-yr Treasury", formatYield(latest.y10)],
-        ["2-yr Treasury", formatYield(latest.y2)],
-        ["30-yr Treasury", formatYield(latest.y30)],
-        ["2s10s spread", market.treasury.spread2s10s === null ? "—" : `${market.treasury.spread2s10s > 0 ? "+" : ""}${market.treasury.spread2s10s.toFixed(2)}%`]
-    ];
-    container.innerHTML = stats.map(([label, value]) => `
-        <article class="stat-card">
-            <span class="small-label">${escapeHtml(label)}</span>
-            <strong>${escapeHtml(value)}</strong>
-        </article>
-    `).join("");
+    const spread = market.treasury.spread2s10s;
+    const rows = [
+        ["3-month", latest.y3m], ["2-year", latest.y2], ["10-year", latest.y10], ["30-year", latest.y30]
+    ].map(([label, v]) => `<tr><td>${label}</td><td>${formatYield(v)}</td></tr>`).join("");
+    const spreadRow = `<tr class="total"><td>2s10s spread</td><td>${spread === null || spread === undefined ? "—" : `${spread > 0 ? "+" : spread < 0 ? "−" : ""}${Math.abs(spread).toFixed(2)}%`}</td></tr>`;
+    container.innerHTML = `<table><thead><tr><th>Treasury par yield, ${escapeHtml(longDate(latest.date))}</th><th></th></tr></thead><tbody>${rows}${spreadRow}</tbody></table>`;
+}
+
+function svgText(x, y, text, className, anchor = "start") {
+    return `<text x="${x}" y="${y}" class="${className}" text-anchor="${anchor}">${escapeHtml(text)}</text>`;
 }
 
 function renderYieldChart(market) {
     const container = document.getElementById("yield-chart");
     if (!container) return;
-
     const series = market.treasury.series.filter((row) => row.y10 !== null && row.y10 !== undefined);
     if (series.length < 2) {
-        container.innerHTML = "<p>Not enough yield history yet. The scheduled refresh will fill this in.</p>";
+        container.innerHTML = "<p class=\"note\">Not enough yield history yet; the scheduled refresh fills this in.</p>";
         return;
     }
-
-    const width = 720;
-    const height = 320;
-    const margin = { top: 18, right: 20, bottom: 40, left: 52 };
+    const width = 720, height = 300;
+    const margin = { top: 18, right: 20, bottom: 36, left: 52 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
-
     const values = series.map((row) => row.y10);
     const minY = Math.floor(Math.min(...values) * 10) / 10 - 0.1;
     const maxY = Math.ceil(Math.max(...values) * 10) / 10 + 0.1;
-
-    const x = (index) => margin.left + (index / (series.length - 1)) * innerWidth;
-    const y = (value) => margin.top + (1 - (value - minY) / (maxY - minY)) * innerHeight;
-
-    const path = series.map((row, index) => `${index === 0 ? "M" : "L"}${x(index).toFixed(1)},${y(row.y10).toFixed(1)}`).join(" ");
-    const areaPath = `${path} L${x(series.length - 1).toFixed(1)},${(margin.top + innerHeight).toFixed(1)} L${margin.left},${(margin.top + innerHeight).toFixed(1)} Z`;
-
-    const gridLines = [];
-    const step = (maxY - minY) / 4;
+    const x = (i) => margin.left + (i / (series.length - 1)) * innerWidth;
+    const y = (v) => margin.top + (1 - (v - minY) / (maxY - minY)) * innerHeight;
+    const path = series.map((row, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(row.y10).toFixed(1)}`).join(" ");
+    const area = `${path} L${x(series.length - 1).toFixed(1)},${(margin.top + innerHeight).toFixed(1)} L${margin.left},${(margin.top + innerHeight).toFixed(1)} Z`;
+    const grid = [];
     for (let tick = 0; tick <= 4; tick += 1) {
-        const value = minY + tick * step;
-        const yPos = y(value);
-        gridLines.push(`<line x1="${margin.left}" y1="${yPos.toFixed(1)}" x2="${width - margin.right}" y2="${yPos.toFixed(1)}" class="chart-axis-line"></line>`);
-        gridLines.push(svgText(margin.left - 10, yPos + 4, `${value.toFixed(2)}%`, "chart-label", "end"));
+        const v = minY + tick * (maxY - minY) / 4;
+        grid.push(`<line x1="${margin.left}" y1="${y(v).toFixed(1)}" x2="${width - margin.right}" y2="${y(v).toFixed(1)}" class="chart-axis-line"></line>`);
+        grid.push(svgText(margin.left - 10, y(v) + 4, `${v.toFixed(2)}%`, "chart-label", "end"));
     }
-
-    const labelEvery = Math.max(1, Math.floor(series.length / 6));
-    const dateLabels = series.map((row, index) => {
-        const isLast = index === series.length - 1;
-        if (!isLast && index % labelEvery !== 0) return "";
-        if (!isLast && series.length - 1 - index < labelEvery * 0.6) return "";
-        return svgText(x(index), height - 14, row.date.slice(5), "chart-label", "middle");
+    const every = Math.max(1, Math.floor(series.length / 6));
+    const dates = series.map((row, i) => {
+        const last = i === series.length - 1;
+        if (!last && (i % every !== 0 || series.length - 1 - i < every * 0.6)) return "";
+        return svgText(x(i), height - 12, row.date.slice(5), "chart-label", "middle");
     }).join("");
-
     const last = series[series.length - 1];
     container.innerHTML = `
         <svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="10-year Treasury yield over time">
-            ${gridLines.join("")}
-            <path d="${areaPath}" class="yield-area"></path>
+            ${grid.join("")}
+            <path d="${area}" class="yield-area"></path>
             <path d="${path}" class="yield-line" fill="none"></path>
-            <circle cx="${x(series.length - 1).toFixed(1)}" cy="${y(last.y10).toFixed(1)}" r="4" class="yield-dot"></circle>
+            <circle cx="${x(series.length - 1).toFixed(1)}" cy="${y(last.y10).toFixed(1)}" r="3.5" class="yield-dot"></circle>
             ${svgText(x(series.length - 1) - 8, y(last.y10) - 10, formatYield(last.y10), "chart-value", "end")}
-            ${dateLabels}
-        </svg>
-    `;
-}
-
-function formatSignedCurrencyCents(value) {
-    const prefix = value >= 0 ? "+" : "-";
-    return `${prefix}$${Math.abs(value).toFixed(2)}`;
+            ${dates}
+        </svg>`;
 }
 
 function renderQuoteBoard(market) {
     const tableBody = document.getElementById("quotes-table-body");
-    const mobileList = document.getElementById("quotes-mobile-list");
-    if (!tableBody || !mobileList) return;
-
-    const quotes = market.quotes.slice().sort((left, right) => left.symbol.localeCompare(right.symbol));
-
-    tableBody.innerHTML = quotes.map((quote) => `
+    if (!tableBody) return;
+    const quotes = market.quotes.slice().sort((a, b) => a.symbol.localeCompare(b.symbol));
+    const num = (v, fmt) => (v === null || v === undefined) ? "<td>—</td>" : `<td${v < 0 ? ' class="num-neg"' : ""}>${escapeHtml(fmt(v))}</td>`;
+    tableBody.innerHTML = quotes.map((q) => `
         <tr>
-            <td><strong>${escapeHtml(quote.symbol)}</strong></td>
-            <td>${escapeHtml(quote.label || "")}</td>
-            <td>${escapeHtml(quote.close === null ? "—" : `$${quote.close.toFixed(2)}`)}</td>
-            <td class="${valueClass(quote.dayChange ?? 0)}">${quote.dayChange === null || quote.dayChange === undefined ? "—" : escapeHtml(formatSignedCurrencyCents(quote.dayChange))}</td>
-            <td class="${valueClass(quote.dayChangePct ?? 0)}">${quote.dayChangePct === null || quote.dayChangePct === undefined ? "—" : escapeHtml(formatSignedPercent(quote.dayChangePct))}</td>
-            <td>${escapeHtml(quote.date || "")}</td>
-        </tr>
-    `).join("");
-
-    mobileList.innerHTML = quotes.map((quote) => `
-        <article class="holding-record-card">
-            <div class="row-labels">
-                <strong>${escapeHtml(quote.symbol)}</strong>
-                <span>${escapeHtml(quote.label || "")}</span>
-            </div>
-            <div class="holding-record-grid">
-                <span>Close</span><strong>${escapeHtml(quote.close === null ? "—" : `$${quote.close.toFixed(2)}`)}</strong>
-                <span>Day change</span><strong class="${valueClass(quote.dayChange ?? 0)}">${quote.dayChange === null || quote.dayChange === undefined ? "—" : escapeHtml(formatSignedCurrencyCents(quote.dayChange))}</strong>
-                <span>Day %</span><strong class="${valueClass(quote.dayChangePct ?? 0)}">${quote.dayChangePct === null || quote.dayChangePct === undefined ? "—" : escapeHtml(formatSignedPercent(quote.dayChangePct))}</strong>
-                <span>As of</span><strong>${escapeHtml(quote.date || "")}</strong>
-            </div>
-        </article>
-    `).join("");
+            <td><strong>${escapeHtml(q.symbol)}</strong></td>
+            <td class="text">${escapeHtml(q.label || "")}</td>
+            ${num(q.close, (v) => `$${v.toFixed(2)}`)}
+            ${num(q.dayChange, (v) => `${v < 0 ? "−" : "+"}$${Math.abs(v).toFixed(2)}`)}
+            ${num(q.dayChangePct, formatSignedPercent)}
+            <td>${escapeHtml(longDate(q.date))}</td>
+        </tr>`).join("");
 }
 
 function renderMarketFreshness(market) {
     const note = document.getElementById("market-freshness");
     if (!note) return;
-    const generated = market.generatedAt ? market.generatedAt.replace("T", " ").replace(/\+.*$/, " UTC") : "unknown";
     if (market.sample) {
-        note.textContent = "Sample data — real Treasury and quote data arrives with the first scheduled refresh.";
+        note.textContent = "Sample data; real Treasury and quote data arrives with the first scheduled refresh.";
         return;
     }
+    const generated = market.generatedAt ? `${longDate(market.generatedAt.slice(0, 10))}, ${market.generatedAt.slice(11, 16)} UTC` : "unknown";
     const quoteSource = market.sources && market.sources.quotes ? market.sources.quotes : "end-of-day closes";
     const quotesNote = market.quotesStale
-        ? ` Quotes are from ${market.quotesAsOf || "an earlier run"} and have not refreshed since; the curve is current.`
-        : (market.quotes && market.quotes.length ? ` · ${quoteSource}.` : " · quote board unavailable this run.");
-    note.textContent = `Data refreshed ${generated} · Treasury par yield curve.${quotesNote}`;
-}
-
-function renderSignalBandYield(market) {
-    const container = document.getElementById("signal-band");
-    if (!container || !market.treasury || !market.treasury.latest) return;
-    const latest = market.treasury.latest;
-    const card = document.createElement("article");
-    card.className = "signal-card";
-    card.innerHTML = `
-        <span class="small-label">10-yr Treasury${market.sample ? " (sample)" : ""}</span>
-        <strong>${escapeHtml(formatYield(latest.y10))}</strong>
-        <p>The discount rate behind every long-duration holding here. <a class="text-link" href="markets.html">See the backdrop</a></p>
-    `;
-    container.appendChild(card);
+        ? ` Quotes are from ${longDate(market.quotesAsOf)} and have not refreshed since; the curve is current.`
+        : (market.quotes && market.quotes.length ? ` Quotes: ${quoteSource}.` : " The quote board was unavailable this run.");
+    note.textContent = `Refreshed ${generated}. Treasury par yield curve from the U.S. Treasury.${quotesNote}`;
 }
 
 function loadMarketData() {
-    const wantsMarkets = document.getElementById("rates-stats") || document.getElementById("signal-band");
-    if (!wantsMarkets) return;
-
+    const wants = document.getElementById("rates-table") || document.getElementById("ledger-note") || document.getElementById("yield-chart");
+    if (!wants) return;
     fetch("data/market.json", { cache: "no-store" })
-        .then((response) => {
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return response.json();
-        })
+        .then((response) => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
         .then((market) => {
-            renderRatesStats(market);
+            renderRatesTable(market);
             renderYieldChart(market);
             renderQuoteBoard(market);
             renderMarketFreshness(market);
-            renderSignalBandYield(market);
+            renderLedgerNote(market);
         })
         .catch(() => {
+            renderLedgerNote(null);
             const note = document.getElementById("market-freshness");
-            if (note) note.textContent = "Market data unavailable (offline view). Serve the site over HTTP or wait for the scheduled refresh.";
+            if (note) note.textContent = "Market data unavailable in this view; it loads when the site is served over HTTP.";
         });
 }
 
 /* ---------------------------------------------------------------------------
- * Reading shelf: books-data.js (generated by tools/build_books.py)
+ * Reading: books-data.js (generated by tools/build_books.py from books/books.csv)
  * ------------------------------------------------------------------------ */
 
 function renderReadingShelf() {
     const container = document.getElementById("reading-shelf");
     if (!container) return;
-
     const shelf = window.readingShelf || [];
     if (!shelf.length) {
-        container.innerHTML = "<div class=\"card\"><p>No books yet — add rows to books/books.csv and run tools/build_books.py.</p></div>";
+        container.innerHTML = "<p class=\"note\">No books yet. Add rows to books/books.csv and run tools/build_books.py.</p>";
         return;
     }
-
-    const groups = [
-        ["reading", "Currently reading", "The lens being ground right now"],
-        ["finished", "Finished", "Takeaways I want the boys to keep"],
-        ["queued", "On the shelf", "Queued up next"]
-    ];
-
-    container.innerHTML = groups.map(([status, heading, note]) => {
+    const groups = [["reading", "Reading now"], ["finished", "Finished"], ["queued", "On the shelf"]];
+    container.innerHTML = groups.map(([status, heading]) => {
         const books = shelf.filter((book) => book.status === status);
         if (!books.length) return "";
         return `
-            <div class="section-heading shelf-heading">
-                <div>
-                    <p class="section-kicker">${escapeHtml(heading)}</p>
-                </div>
-                <p class="section-note">${escapeHtml(note)}</p>
-            </div>
-            <div class="shelf-grid">
-                ${books.map((book) => `
-                    <details class="card book-card collapsible">
-                        <summary class="collapsible-summary">
-                            <div>
-                                <p class="small-label">${escapeHtml(book.theme || "")}${book.year ? ` · ${escapeHtml(book.year)}` : ""}</p>
-                                <h3>${escapeHtml(book.title)}</h3>
-                                <p class="book-author">${escapeHtml(book.author)}</p>
-                            </div>
-                            <span class="collapse-chevron" aria-hidden="true"></span>
-                        </summary>
-                        <div class="collapsible-body">
-                            <blockquote class="book-takeaway">${escapeHtml(book.takeaway || "No takeaway written yet.")}</blockquote>
-                        </div>
-                    </details>
-                `).join("")}
-            </div>
-        `;
+            <section class="section">
+                <h2>${escapeHtml(heading)}</h2>
+                <ul class="list">
+                    ${books.map((book) => `
+                        <li>
+                            <strong>${escapeHtml(book.title)}</strong><span class="by">${escapeHtml(book.author)}${book.year ? `, ${escapeHtml(book.year)}` : ""}</span>
+                            ${book.takeaway ? `<blockquote>${escapeHtml(book.takeaway)}</blockquote>` : ""}
+                        </li>`).join("")}
+                </ul>
+            </section>`;
     }).join("");
 }
 
+/* ---------------------------------------------------------------------------
+ * Chrome
+ * ------------------------------------------------------------------------ */
+
+function initNav() {
+    const nav = document.getElementById("primary-nav");
+    if (!nav) return;
+    const path = location.pathname.replace(/\/$/, "/index.html");
+    const current = path.split("/").pop() || "index.html";
+    const inLetters = /\/letters\//.test(path);
+    nav.querySelectorAll("a").forEach((link) => {
+        const target = link.getAttribute("href").split("/").pop();
+        if (target === current || (inLetters && target === "letters.html")) link.setAttribute("aria-current", "page");
+    });
+}
+
+renderEntryHeadline();
+renderLedgerTable();
+renderTopHoldingsBars();
+renderThemeAllocationChart();
+renderContributionChart();
+renderLetters();
+renderAllHoldingsArchive();
+renderReadingShelf();
 initNav();
 loadMarketData();
-renderReadingShelf();

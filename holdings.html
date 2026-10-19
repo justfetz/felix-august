@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All holdings | Felix/August</title>
+    <meta name="description" content="Every position in both accounts, as imported from the brokerage exports: quantity, market value, cost basis, gain.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27 font-family=%27Georgia,serif%27 fill=%27%23412816%27%3Ef/a%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20261019">
+</head>
+<body>
+    <header class="site-header">
+        <div class="shell nav-shell">
+            <a class="brand" href="index.html">felix/august</a>
+            <nav class="site-nav" id="primary-nav" aria-label="Primary">
+                <a href="index.html">Ledger</a>
+                <a href="markets.html">Markets</a>
+                <a href="tools.html">Tools</a>
+                <a href="letters.html">Letters</a>
+                <a href="reading.html">Reading</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <article class="entry shell">
+            <h1>Everything we own, as imported.</h1>
+            <p>The full record from the brokerage exports: ticker, quantity, price, market value, cost basis, gain, and the day's move, sorted by market value. Nothing here is edited after import; if a number is wrong, the export was wrong.</p>
+        </article>
+
+        <section class="section shell-wide">
+            <p class="note" id="holdings-summary"></p>
+            <div class="filter" id="holdings-filter"></div>
+            <div class="table-wrap archive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Account</th>
+                            <th class="text">Symbol</th>
+                            <th class="text">Description</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Market value</th>
+                            <th>Day</th>
+                            <th>Day %</th>
+                            <th>Cost basis</th>
+                            <th>Gain</th>
+                            <th>Gain %</th>
+                            <th>Account %</th>
+                            <th>Avg cost</th>
+                            <th class="text">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-holdings-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-shell">
+            <span>Jason Fetzer, for Felix and August.</span>
+            <span><a href="https://github.com/justfetz/felix-august">Source</a> · <a href="https://github.com/justfetz">GitHub</a> · <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a></span>
+        </div>
+    </footer>
+
+    <script src="holdings-data.js?v=20261019"></script>
+    <script src="script.js?v=20261019"></script>
+</body>
+</html>

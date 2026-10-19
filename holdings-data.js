@@ -2046,3 +2046,7 @@ window.allHoldingsDetail = [
         "reinvestCapitalGains": "N/A"
     }
 ];
+window.holdingsImports = {
+    "Fidelity": "2026-10-18",
+    "thinkorswim": "2026-10-18"
+};

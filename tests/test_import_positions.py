@@ -71,11 +71,31 @@ def test_merge_replaces_only_target_brokerage(tmp_path):
     assert symbols == {"KEEP", "NVDA", "CHAT"}
 
 
-def test_round_trip_preserves_real_holdings_file():
+def test_round_trip_preserves_real_holdings_file(tmp_path):
     real = imp.load_existing_holdings(imp.HOLDINGS_JS)
+    dates = imp.load_import_dates(imp.HOLDINGS_JS)
     assert len(real) >= 80
-    rendered = imp.render_holdings_js(real)
-    assert json.loads(rendered.split("=", 1)[1].rstrip().rstrip(";")) == real
+    out = tmp_path / "holdings-data.js"
+    out.write_text(imp.render_holdings_js(real, dates))
+    assert imp.load_existing_holdings(out) == real
+    assert imp.load_import_dates(out) == dates
+
+
+def test_export_date_comes_from_the_file_name():
+    assert imp.export_date_from_name(Path("Portfolio_Positions_Oct-18-2026.csv")) == "2026-10-18"
+    assert imp.export_date_from_name(Path("Individual-Positions-2026-10-18-115328.csv")) == "2026-10-18"
+    assert imp.export_date_from_name(Path("thinkorswim_2026-07-06.tsv")) == "2026-07-06"
+    assert imp.export_date_from_name(Path("positions.csv")) is None
+
+
+def test_import_records_the_export_date(tmp_path):
+    holdings_js = tmp_path / "holdings-data.js"
+    holdings_js.write_text(imp.render_holdings_js([{"brokerage": "Fidelity", "symbol": "KEEP", "marketValueNumber": 2.0}],
+                                                  {"Fidelity": "2026-01-02"}))
+    assert imp.main(["--csv", str(FIXTURES / "canonical_sample.csv"), "--format", "canonical",
+                     "--brokerage", "thinkorswim", "--holdings-js", str(holdings_js), "--as-of", "2026-10-18"]) == 0
+    assert imp.load_import_dates(holdings_js) == {"Fidelity": "2026-01-02", "thinkorswim": "2026-10-18"}
+    assert {row["symbol"] for row in imp.load_existing_holdings(holdings_js)} == {"KEEP", "NVDA", "CHAT"}
 
 
 def test_missing_file_is_a_clean_error(tmp_path):
