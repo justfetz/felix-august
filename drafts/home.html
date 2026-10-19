@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Felix/August</title>
+    <meta name="description" content="A household investment journal kept for Felix and August. What we own, what went in, what I was reading and building, and what I got wrong.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27 font-family=%27Georgia,serif%27 fill=%27%23412816%27%3Ef/a%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css?v=20261018b">
+    <link rel="stylesheet" href="journal.css?v=draft1">
+</head>
+<body>
+    <div class="j-shell">
+        <header class="j-header">
+            <a class="j-brand" href="home.html">felix/august</a>
+            <nav class="j-nav" aria-label="Primary">
+                <a href="home.html" aria-current="page">Ledger</a>
+                <a href="../markets.html">Markets</a>
+                <a href="#tools">Tools</a>
+                <a href="../contact.html">Letters</a>
+                <a href="../reading.html">Reading</a>
+                <a href="../about.html">About</a>
+            </nav>
+        </header>
+
+        <main>
+            <article class="j-entry">
+                <p class="j-date" id="entry-date">Sunday, 18 October 2026</p>
+                <h1 id="entry-headline">$13,023 across two accounts.</h1>
+                <p>Earlier this month it touched fifteen. The ten-year went to <span id="entry-y10">5.09%</span> and the AI names repriced, which is what long-duration things do when the discount rate moves. Nothing changed in what we own, or in the $150 that goes in every week.</p>
+                <p class="j-aside">Most people should buy the index and get on with their lives. I keep this because I want you to understand what is going on, not because I think you should trade. The numbers below come from the brokerage exports; the only thing typed by hand is what we put in.</p>
+            </article>
+
+            <section class="j-section" id="ledger">
+                <h2>The ledger</h2>
+                <table class="j-table" id="ledger-table">
+                    <thead>
+                        <tr><th>Account</th><th>Value</th><th>Put in</th><th>Gain</th><th class="j-hide-sm">Positions</th><th class="j-hide-sm">Weekly</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <p class="j-note" id="ledger-note"></p>
+            </section>
+
+            <section class="j-section">
+                <h2>Largest positions</h2>
+                <figure class="j-figure">
+                    <div id="top-holdings" class="j-bars" role="img" aria-label="Largest positions by market value"></div>
+                    <figcaption>Market value, both accounts, from the exports. The full list with cost basis is on <a href="../data.html">All Holdings</a>.</figcaption>
+                </figure>
+            </section>
+
+            <section class="j-section">
+                <h2>Where it leans</h2>
+                <figure class="j-figure">
+                    <div id="theme-allocation-chart" class="d3-chart"></div>
+                    <figcaption>Themes are inferred from the tickers, so this is a sketch, not a classification.</figcaption>
+                </figure>
+            </section>
+
+            <section class="j-section">
+                <h2>What went in <small>by month</small></h2>
+                <figure class="j-figure">
+                    <div id="contribution-chart" class="chart-rows"></div>
+                    <figcaption>Transfers from the account histories, which no positions export carries.</figcaption>
+                </figure>
+            </section>
+
+            <section class="j-section" id="tools">
+                <h2>Tools</h2>
+                <ul class="j-list">
+                    <li>
+                        <a href="https://justfetz.github.io/posts/valuing-international-paper.html">A corrugator engineer values International Paper</a><span class="j-when">October 2026</span>
+                        <p>A DCF, a sum of the parts, and a Monte Carlo that reduce the bet to one question about the containerboard cycle.</p>
+                    </li>
+                    <li>
+                        <a href="../markets.html">The rate backdrop</a><span class="j-when">refreshed weekday evenings</span>
+                        <p>The Treasury curve next to the household's tickers. When the ten-year moves, the long-duration names on this page move with it.</p>
+                    </li>
+                    <li>
+                        <a href="https://github.com/justfetz/options-trainer">Options trainer</a><span class="j-when">in progress</span>
+                        <p>A pricing engine checked against Hull's worked examples; retrieval over the books with page citations; an agent that explains but never does the arithmetic.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="j-section" id="letters">
+                <h2>Letters</h2>
+                <ul class="j-list">
+                    <li>
+                        <a href="../contact.html">I was finishing grad school and watching GPT change the shape of the future.</a><span class="j-when">2022</span>
+                        <p>Why this started, and what I thought I was seeing.</p>
+                    </li>
+                </ul>
+            </section>
+        </main>
+
+        <footer class="j-footer">
+            <span>Jason Fetzer, for Felix and August.</span>
+            <span><a href="https://github.com/justfetz/felix-august">Source</a> · <a href="https://github.com/justfetz">GitHub</a> · <a href="https://linkedin.com/in/jasonmfetzer">LinkedIn</a></span>
+        </footer>
+    </div>
+
+    <script src="../holdings-data.js?v=20261018b"></script>
+    <script src="../script.js?v=20261018b"></script>
+    <script>
+    (function () {
+        // Draft-only wiring: the ledger table and the entry's numbers, from portfolioData (script.js)
+        // and data/market.json. Nothing here is typed in by hand.
+        const money = (v) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v);
+        const signed = (v) => (v < 0 ? "−" : "+") + money(Math.abs(v));
+        const cls = (v) => (v < 0 ? ' class="num-neg"' : "");
+        const s = portfolioData.summary;
+        const rows = portfolioData.accounts.map((a) => `
+            <tr>
+                <td>${escapeHtml(a.name)}<span class="j-sub">${escapeHtml(a.accountType)}${a.cash ? ` · ${money(a.cash)} cash` : ""}<span class="j-show-sm"> · ${money(a.weeklyCadence)}/week</span></span></td>
+                <td>${money(a.currentValue)}</td>
+                <td>${money(a.contributed)}</td>
+                <td${cls(a.gain)}>${signed(a.gain)}</td>
+                <td class="j-hide-sm">${a.positions}</td>
+                <td class="j-hide-sm">${money(a.weeklyCadence)}</td>
+            </tr>`).join("");
+        const total = `
+            <tr class="j-total">
+                <td>Household</td>
+                <td>${money(s.householdValue)}</td>
+                <td>${money(s.householdContributed)}</td>
+                <td${cls(s.householdGain)}>${signed(s.householdGain)}</td>
+                <td class="j-hide-sm">${s.importedPositions}</td>
+                <td class="j-hide-sm">${money(s.weeklyCadence)}</td>
+            </tr>`;
+        document.querySelector("#ledger-table tbody").innerHTML = rows + total;
+        document.getElementById("entry-headline").textContent = `${money(s.householdValue)} across two accounts.`;
+
+        // Largest positions as HTML bars (scales to any width; the SVG renderer's labels shrink on phones).
+        const top = portfolioData.holdings.slice(0, 8);
+        const max = Math.max(...top.map((h) => h.marketValue), 1);
+        document.getElementById("top-holdings").innerHTML = top.map((h) => `
+            <span class="t">${escapeHtml(h.ticker)}</span>
+            <span class="b"><i style="width:${(100 * h.marketValue / max).toFixed(1)}%"></i></span>
+            <span class="v">${money(h.marketValue)}</span>`).join("");
+
+        const longDate = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
+        fetch("../data/market.json", { cache: "no-store" }).then((r) => r.json()).then((m) => {
+            const t = m.treasury && m.treasury.latest;
+            if (t) document.getElementById("entry-y10").textContent = `${t.y10.toFixed(2)}%`;
+            const parts = [`Positions from the exports of ${longDate("2026-10-17")}`];
+            if (m.quotesAsOf) parts.push(`quotes as of ${longDate(m.quotes && m.quotes[0] && m.quotes[0].date || m.quotesAsOf)}`);
+            if (t) parts.push(`ten-year ${t.y10.toFixed(2)}% on ${longDate(t.date)}`);
+            document.getElementById("ledger-note").textContent = parts.join("; ") + ".";
+        }).catch(() => {
+            document.getElementById("ledger-note").textContent = `Positions from the exports of ${longDate("2026-10-17")}.`;
+        });
+    })();
+    </script>
+</body>
+</html>
