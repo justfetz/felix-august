@@ -466,13 +466,21 @@ function renderReadingShelf() {
         container.innerHTML = "<p class=\"note\">No books yet. Add rows to books/books.csv and run tools/build_books.py.</p>";
         return;
     }
-    const groups = [["reading", "Reading now"], ["finished", "Finished"], ["queued", "On the shelf"]];
-    container.innerHTML = groups.map(([status, heading]) => {
-        const books = shelf.filter((book) => book.status === status);
+    // The doomsday shelf is its own group whatever its status: crashes, frauds, and the structure underneath.
+    const DOOM = "Doomsday shelf";
+    const groups = [
+        ["reading", "Reading now", (b) => b.status === "reading" && b.theme !== DOOM, ""],
+        ["finished", "Finished", (b) => b.status === "finished" && b.theme !== DOOM, ""],
+        ["queued", "On the shelf", (b) => b.status === "queued" && b.theme !== DOOM, ""],
+        ["doom", "The doomsday shelf", (b) => b.theme === DOOM, "Crashes, frauds, and the structure underneath them. The books that answer what supports the end. Read them when you can stomach the data."]
+    ];
+    container.innerHTML = groups.map(([key, heading, keep, note]) => {
+        const books = shelf.filter(keep);
         if (!books.length) return "";
         return `
-            <section class="section">
+            <section class="section" id="${key}">
                 <h2>${escapeHtml(heading)}</h2>
+                ${note ? `<p class="note">${escapeHtml(note)}</p>` : ""}
                 <ul class="list">
                     ${books.map((book) => `
                         <li>

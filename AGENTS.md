@@ -62,7 +62,7 @@ Pages and what they are for:
   Markets, Tools, Letters, Reading, About; `../`-prefixed inside `letters/`),
   footer. `tests/test_site.py::test_nav_is_consistent` enforces it.
 - **Asset URLs carry a `?v=` cache-bust version.** Bump the version on
-  every CSS/JS change (currently `20261019`) across all pages at once;
+  every CSS/JS change (currently `20261019b`) across all pages at once;
   `test_cache_bust_is_uniform` catches a page left behind.
 - **Raw brokerage CSVs stay out of git by default** (`data/imports/*.csv`
   is gitignored — they carry account names). Committing one is a
