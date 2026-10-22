@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-21T22:36:35+00:00",
+  "generatedAt": "2026-10-22T22:34:26+00:00",
   "sample": false,
   "sources": {
     "treasury": "U.S. Treasury daily par yield curve (home.treasury.gov)",
@@ -7,13 +7,13 @@
   },
   "treasury": {
     "latest": {
-      "date": "2026-10-21",
-      "y3m": 4.25,
-      "y2": 4.81,
-      "y10": 5.13,
-      "y30": 5.42
+      "date": "2026-10-22",
+      "y3m": 4.22,
+      "y2": 4.65,
+      "y10": 4.96,
+      "y30": 5.29
     },
-    "spread2s10s": 0.32,
+    "spread2s10s": 0.31,
     "series": [
       {
         "date": "2026-01-02",
@@ -1428,6 +1428,13 @@
         "y2": 4.81,
         "y10": 5.13,
         "y30": 5.42
+      },
+      {
+        "date": "2026-10-22",
+        "y3m": 4.22,
+        "y2": 4.65,
+        "y10": 4.96,
+        "y30": 5.29
       }
     ]
   },
@@ -1435,133 +1442,133 @@
     {
       "symbol": "SPY",
       "label": "S&P 500 benchmark",
-      "date": "2026-10-21",
-      "close": 773.09,
-      "dayChange": 4.04,
-      "dayChangePct": 0.53
+      "date": "2026-10-22",
+      "close": 763.96,
+      "dayChange": -9.13,
+      "dayChangePct": -1.18
     },
     {
       "symbol": "QQQ",
       "label": "Nasdaq 100 benchmark",
-      "date": "2026-10-21",
-      "close": 725.2,
-      "dayChange": 7.57,
-      "dayChangePct": 1.05
+      "date": "2026-10-22",
+      "close": 704.47,
+      "dayChange": -20.73,
+      "dayChangePct": -2.86
     },
     {
       "symbol": "NVDA",
       "label": "AI compute",
-      "date": "2026-10-21",
-      "close": 221.97,
-      "dayChange": 5.5,
-      "dayChangePct": 2.54
+      "date": "2026-10-22",
+      "close": 212.21,
+      "dayChange": -9.76,
+      "dayChangePct": -4.4
     },
     {
       "symbol": "AMD",
       "label": "Semis",
-      "date": "2026-10-21",
-      "close": 552.72,
-      "dayChange": 17.98,
-      "dayChangePct": 3.36
+      "date": "2026-10-22",
+      "close": 507.93,
+      "dayChange": -44.79,
+      "dayChangePct": -8.1
     },
     {
       "symbol": "MU",
       "label": "Memory",
-      "date": "2026-10-21",
-      "close": 913.67,
-      "dayChange": 17.6,
-      "dayChangePct": 1.96
+      "date": "2026-10-22",
+      "close": 856.49,
+      "dayChange": -57.18,
+      "dayChangePct": -6.26
     },
     {
       "symbol": "SMCI",
       "label": "AI infrastructure",
-      "date": "2026-10-21",
-      "close": 35.57,
-      "dayChange": 3.1,
-      "dayChangePct": 9.55
+      "date": "2026-10-22",
+      "close": 33.72,
+      "dayChange": -1.85,
+      "dayChangePct": -5.2
     },
     {
       "symbol": "INTC",
       "label": "Domestic chips",
-      "date": "2026-10-21",
-      "close": 92.96,
-      "dayChange": 1.27,
-      "dayChangePct": 1.39
+      "date": "2026-10-22",
+      "close": 85.49,
+      "dayChange": -7.47,
+      "dayChangePct": -8.04
     },
     {
       "symbol": "MSFT",
       "label": "Platform + cloud",
-      "date": "2026-10-21",
-      "close": 532.95,
-      "dayChange": 1.08,
-      "dayChangePct": 0.2
+      "date": "2026-10-22",
+      "close": 521.08,
+      "dayChange": -11.87,
+      "dayChangePct": -2.23
     },
     {
       "symbol": "GOOGL",
       "label": "AI + search",
-      "date": "2026-10-21",
-      "close": 334.76,
-      "dayChange": -5.515,
-      "dayChangePct": -1.62
+      "date": "2026-10-22",
+      "close": 324.22,
+      "dayChange": -10.54,
+      "dayChangePct": -3.15
     },
     {
       "symbol": "AMZN",
       "label": "Cloud + commerce",
-      "date": "2026-10-21",
-      "close": 262.37,
-      "dayChange": -0.26,
-      "dayChangePct": -0.1
+      "date": "2026-10-22",
+      "close": 250.38,
+      "dayChange": -11.99,
+      "dayChangePct": -4.57
     },
     {
       "symbol": "AAPL",
       "label": "Platform",
-      "date": "2026-10-21",
-      "close": 343.99,
-      "dayChange": 4.49,
-      "dayChangePct": 1.32
+      "date": "2026-10-22",
+      "close": 348.22,
+      "dayChange": 4.23,
+      "dayChangePct": 1.23
     },
     {
       "symbol": "PLTR",
       "label": "AI software",
-      "date": "2026-10-21",
-      "close": 201.72,
-      "dayChange": 9.12,
-      "dayChangePct": 4.74
+      "date": "2026-10-22",
+      "close": 196.19,
+      "dayChange": -5.53,
+      "dayChangePct": -2.74
     },
     {
       "symbol": "VTI",
       "label": "Total market",
-      "date": "2026-10-21",
-      "close": 379.15,
-      "dayChange": 2.06,
-      "dayChangePct": 0.55
+      "date": "2026-10-22",
+      "close": 374.9,
+      "dayChange": -4.25,
+      "dayChangePct": -1.12
     },
     {
       "symbol": "XLE",
       "label": "Energy",
-      "date": "2026-10-21",
-      "close": 68.16,
-      "dayChange": 0.19,
-      "dayChangePct": 0.28
+      "date": "2026-10-22",
+      "close": 67.57,
+      "dayChange": -0.59,
+      "dayChangePct": -0.87
     },
     {
       "symbol": "DUK",
       "label": "Utilities",
-      "date": "2026-10-21",
-      "close": 120.67,
-      "dayChange": -0.66,
-      "dayChangePct": -0.54
+      "date": "2026-10-22",
+      "close": 125.4,
+      "dayChange": 4.73,
+      "dayChangePct": 3.92
     },
     {
       "symbol": "SLV",
       "label": "Silver",
-      "date": "2026-10-21",
-      "close": 52.26,
-      "dayChange": 0.14,
-      "dayChangePct": 0.27
+      "date": "2026-10-22",
+      "close": 49.34,
+      "dayChange": -2.92,
+      "dayChangePct": -5.59
     }
   ],
   "quotesStale": false,
-  "quotesAsOf": "2026-10-21",
+  "quotesAsOf": "2026-10-22",
   "errors": []
 }
