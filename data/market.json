@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-26T04:14:13+00:00",
+  "generatedAt": "2026-11-27T04:22:56+00:00",
   "sample": false,
   "sources": {
     "treasury": "U.S. Treasury daily par yield curve (home.treasury.gov)",
@@ -1730,6 +1730,6 @@
     }
   ],
   "quotesStale": false,
-  "quotesAsOf": "2026-11-26",
+  "quotesAsOf": "2026-11-27",
   "errors": []
 }
